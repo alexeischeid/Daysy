@@ -98,7 +98,7 @@ struct StatisticsView: View {
                     ForEach(0..<mostIcons.prefix(10).count, id: \.self) { item in
                         if String(mostIcons[item].prefix(7)) != "action:" {
                             VStack {
-                                if mostIcons[item].contains("customIconObject:") {
+                                if mostIcons[item].contains("customIconObject:") { //TODO: check if the only item(s) in the list are custom icons and handle, currently a bug where it won't display
                                     //check if default icon or custom icon and handle
                                     getCustomIcon(mostIcons[item])
                                         .scaledToFit()
