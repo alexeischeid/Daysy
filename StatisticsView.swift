@@ -49,7 +49,7 @@ struct StatisticsView: View {
             Text("\(Image(systemName: "chart.bar.xaxis")) Statistics")
                 .lineLimit(1)
                 .minimumScaleFactor(0.01)
-                .font(.system(size: 45, weight: .bold, design: .rounded))
+                .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
                 .padding()
             
             if #available(iOS 16.0, *) { //make the x axis label reflect the period of dates shown
@@ -145,7 +145,7 @@ struct StatisticsView: View {
                     VStack {
                         ZStack {
                             RoundedRectangle(cornerRadius: 20)
-                                .frame(width: 200, height: 100)
+                                .frame(width: horizontalSizeClass == .compact ? 100 : 200, height: horizontalSizeClass == .compact ? 50 : 100)
                                 .foregroundColor(.green)
                             Image(systemName: "checkmark")
                                 .font(.system(size: 50, weight: .heavy, design: .rounded))
@@ -156,7 +156,7 @@ struct StatisticsView: View {
                         .padding(.top, 300)
                         Text("Completed: \(completedIcons.count)")
                             .minimumScaleFactor(0.01)
-                            .font(.system(size: 30, weight: .bold, design: .rounded))
+                            .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .bold, design: .rounded))
                             .padding()
                             .multilineTextAlignment(.center)
                     }
@@ -164,7 +164,7 @@ struct StatisticsView: View {
                     VStack {
                         ZStack {
                             RoundedRectangle(cornerRadius: 20)
-                                .frame(width: 200, height: 100)
+                                .frame(width: horizontalSizeClass == .compact ? 100 : 200, height: horizontalSizeClass == .compact ? 50 : 100)
                                 .foregroundColor(.red)
                             Image(systemName: "trash")
                                 .minimumScaleFactor(0.1)
@@ -176,7 +176,7 @@ struct StatisticsView: View {
                         .padding(.top, 300)
                         Text("Removed: \(removedIcons.count)")
                             .minimumScaleFactor(0.01)
-                            .font(.system(size: 30, weight: .bold, design: .rounded))
+                            .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .bold, design: .rounded))
                             .padding()
                             .multilineTextAlignment(.center)
                     }
@@ -187,7 +187,7 @@ struct StatisticsView: View {
                     VStack {
                         ZStack {
                             RoundedRectangle(cornerRadius: 20)
-                                .frame(width: 200, height: (500 * (getCompletedRatio()) + 50))
+                                .frame(width: horizontalSizeClass == .compact ? 100 : 200, height: ((horizontalSizeClass == .compact ? 250 : 500) * (getCompletedRatio()) + (horizontalSizeClass == .compact ? 25 : 50)))
                                 .foregroundColor(.green)
                             Image(systemName: "checkmark")
                                 .font(.system(size: 25, weight: .heavy, design: .rounded))
@@ -204,7 +204,7 @@ struct StatisticsView: View {
                     VStack {
                         ZStack {
                             RoundedRectangle(cornerRadius: 20)
-                                .frame(width: 200, height: (500 * (getRemovedRatio()) + 50))
+                                .frame(width: horizontalSizeClass == .compact ? 100 : 200, height: ((horizontalSizeClass == .compact ? 250 : 500) * (getCompletedRatio()) + (horizontalSizeClass == .compact ? 25 : 50)))
                                 .foregroundColor(.red)
                             Image(systemName: "trash")
                                 .minimumScaleFactor(0.1)
@@ -238,7 +238,7 @@ struct StatisticsView: View {
                                     HStack(alignment: .bottom) {
                                         ZStack {
                                             RoundedRectangle(cornerRadius: 10)
-                                                .frame(width: 100, height: 50)
+                                                .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 25 : 50)
                                                 .foregroundColor(.green)
                                             Text("0")
                                                 .font(.system(size: 35, weight: .heavy, design: .rounded))
@@ -247,7 +247,7 @@ struct StatisticsView: View {
                                         }
                                         ZStack {
                                             RoundedRectangle(cornerRadius: 10)
-                                                .frame(width: 100, height: 50)
+                                                .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 25 : 50)
                                                 .foregroundColor(.red)
                                             Text("0")
                                                 .minimumScaleFactor(0.1)
@@ -270,7 +270,7 @@ struct StatisticsView: View {
                                     HStack(alignment: .bottom) {
                                         ZStack {
                                             RoundedRectangle(cornerRadius: 10)
-                                                .frame(width: 100, height: (200 * (getCurrCompletedRatio(allCompleted: CGFloat(getThisCompletedIcons(item: sheetArray[item])), allRemoved: CGFloat(getThisremovedIcons(item: sheetArray[item])))) + 50))
+                                                .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: ((horizontalSizeClass == .compact ? 100 : 200) * (getCurrCompletedRatio(allCompleted: CGFloat(getThisCompletedIcons(item: sheetArray[item])), allRemoved: CGFloat(getThisremovedIcons(item: sheetArray[item])))) + (horizontalSizeClass == .compact ? 25 : 50)))
                                                 .foregroundColor(.green)
                                             Text("\(sheetArray[item].completedIcons.count)")
                                                 .font(.system(size: 35, weight: .heavy, design: .rounded))
@@ -279,7 +279,7 @@ struct StatisticsView: View {
                                         }
                                         ZStack {
                                             RoundedRectangle(cornerRadius: 10)
-                                                .frame(width: 100, height: (200 * (1 - getCurrCompletedRatio(allCompleted: CGFloat(getThisCompletedIcons(item: sheetArray[item])), allRemoved: CGFloat(getThisremovedIcons(item: sheetArray[item])))) + 50))
+                                                .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: ((horizontalSizeClass == .compact ? 100 : 200) * (getCurrCompletedRatio(allCompleted: CGFloat(getThisCompletedIcons(item: sheetArray[item])), allRemoved: CGFloat(getThisremovedIcons(item: sheetArray[item])))) + (horizontalSizeClass == .compact ? 25 : 50)))
                                                 .foregroundColor(.red)
                                             Text("\(sheetArray[item].removedIcons.count)")
                                                 .minimumScaleFactor(0.1)
@@ -298,7 +298,7 @@ struct StatisticsView: View {
                             }
                         }
                     }
-                    .frame(width: 250, height: 400)
+                    .frame(width: horizontalSizeClass == .compact ? 100 : 250, height: horizontalSizeClass == .compact ? 200 : 400)
                     .background(Color(.systemGray5))
                     .cornerRadius(30)
                 }
@@ -311,13 +311,11 @@ struct StatisticsView: View {
         }) {
             Text("\(Image(systemName: "arrow.backward")) Back")
                 .lineLimit(1)
-                .minimumScaleFactor(0.1)
-                .font(.system(size: horizontalSizeClass == .compact ? 10 : 25, weight: .bold, design: .rounded))
+                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                 .foregroundColor(.primary)
-                .padding()
-                .padding()
+                .padding(horizontalSizeClass == .compact ? 20 : 30)
                 .background(Color(.systemGray5))
-                .cornerRadius(30)
+                .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
         }
         .padding()
         .navigationBarHidden(true)

@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ModImageView: View {
+    
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    
     @Binding var currSheet: SheetObject
     @Binding var modListIndex: Int
     @Binding var modSlotIndex: Int
@@ -22,14 +25,25 @@ struct ModImageView: View {
                 .padding()
         } else {
             if currSheet.currGrid[modListIndex].currIcons[modSlotIndex].currIcon.contains("customIconObject:") {
-                getCustomIconLarge(currSheet.currGrid[modListIndex].currIcons[modSlotIndex].currIcon)
-                    .scaledToFit()
-                    .clipShape(RoundedRectangle(cornerRadius: hasDetails ? 30 : 15))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: hasDetails ? 30 : 15)
-                            .stroke(.black, lineWidth: hasDetails ? 20 : 10)
-                    )
-                    .padding()
+                if horizontalSizeClass == .compact {
+                    getCustomIcon(currSheet.currGrid[modListIndex].currIcons[modSlotIndex].currIcon)
+                        .scaledToFit()
+                        .clipShape(RoundedRectangle(cornerRadius: hasDetails ? 30 : 15))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: hasDetails ? 30 : 15)
+                                .stroke(.black, lineWidth: hasDetails ? 10 : 6)
+                        )
+                        .padding()
+                } else {
+                    getCustomIconLarge(currSheet.currGrid[modListIndex].currIcons[modSlotIndex].currIcon)
+                        .scaledToFit()
+                        .clipShape(RoundedRectangle(cornerRadius: hasDetails ? 30 : 15))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: hasDetails ? 30 : 15)
+                                .stroke(.black, lineWidth: hasDetails ? 20 : 10)
+                        )
+                        .padding()
+                }
             } else {
                 loadImage(named: currSheet.currGrid[modListIndex].currIcons[modSlotIndex].currIcon)
                     .resizable()
@@ -37,7 +51,7 @@ struct ModImageView: View {
                     .clipShape(RoundedRectangle(cornerRadius: hasDetails ? 30 : 15))
                     .overlay(
                         RoundedRectangle(cornerRadius: hasDetails ? 30 : 15)
-                            .stroke(.black, lineWidth: hasDetails ? 20 : 10)
+                            .stroke(.black, lineWidth: hasDetails ? (horizontalSizeClass == .compact ? 10 : 20) : (horizontalSizeClass == .compact ? 6 : 10))
                     )
                     .padding()
             }

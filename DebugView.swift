@@ -46,7 +46,6 @@ struct DebugView: View {
                 SecureField("", text: $password)
                     .multilineTextAlignment(.center)
                     .font(.system(size: 30, weight: .semibold, design: .rounded))
-                    .keyboardType(.numberPad)
                     .accentColor(Color(.systemBackground))
                     .background(
                         RoundedRectangle(cornerRadius: 15)

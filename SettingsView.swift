@@ -1053,12 +1053,11 @@ struct SettingsView: View {
                     NavigationLink(destination: TimeslotView()) {
                         Text("\(Image(systemName: "book")) Tutorial")
                             .lineLimit(1)
-                            .font(.system(size: horizontalSizeClass == .compact ? 10 : 25, weight: .bold, design: .rounded))
+                            .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
-                            .padding()
-                            .padding()
+                            .padding(horizontalSizeClass == .compact ? 20 : 30)
                             .background(Color(.systemGray5))
-                            .cornerRadius(25)
+                            .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                     }
                     .padding()
                     .navigationViewStyle(StackNavigationViewStyle())
@@ -1068,12 +1067,11 @@ struct SettingsView: View {
                         Text("\(Image(systemName: "chart.bar.xaxis")) Statistics")
                             .lineLimit(1)
                         //.minimumScaleFactor(0.1)
-                            .font(.system(size: horizontalSizeClass == .compact ? 10 : 25, weight: .bold, design: .rounded))
+                            .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
-                            .padding()
-                            .padding()
+                            .padding(horizontalSizeClass == .compact ? 20 : 30)
                             .background(Color(.systemGray5))
-                            .cornerRadius(25)
+                            .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                     }
                     .padding()
                 }

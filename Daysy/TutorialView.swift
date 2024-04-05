@@ -8,6 +8,11 @@
 //theres some navigation destinations and stuff commented out because this was originally built with NavigationStack, but had to fall back to NavigationView for compatability, lower deployment target
 
 import SwiftUI
+import Foundation
+
+var progress = 0
+var totalSheets: CGFloat = 6
+
 
 struct TutorialView: View { //main welcome page
     
@@ -19,30 +24,37 @@ struct TutorialView: View { //main welcome page
     var body: some View {
         NavigationView {
             VStack {
+                GeometryReader { geometry in
+                    RoundedRectangle(cornerRadius: 20)
+                        .frame(width: geometry.size.width * (0/totalSheets), height: 5)
+                        .foregroundColor(.purple)
+                }
+                .frame(height: 5)
                 Spacer()
                 Text("Welcome to Daysy!")
                     .lineLimit(1)
                     .minimumScaleFactor(0.01)
-                    .font(.system(size: 100,  weight: .bold, design: .rounded))
+                    .font(.system(size: horizontalSizeClass == .compact ? 35 : 100, weight: .bold, design: .rounded))
                     .padding(.leading)
                     .padding(.trailing)
                 
                 Text("Let's Get Started.")
                     .lineLimit(1)
                     .minimumScaleFactor(0.01)
-                    .font(.system(size: 40,  weight: .semibold, design: .rounded))
+                    .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
                     .padding(.leading)
                     .padding(.trailing)
                 
                 NavigationLink(destination: TimeslotView()) {
                     Text("\(Image(systemName: "book")) View Tutorial")
-                        .font(.system(size: 40, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                         .padding()
                         .padding()
                         .background(Color.blue)
-                        .cornerRadius(25)
+                        .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .bold, design: .rounded))
+                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 30)
                 }
                 .padding()
                 /*
@@ -54,18 +66,18 @@ struct TutorialView: View { //main welcome page
                 Text("or")
                     .lineLimit(1)
                     .minimumScaleFactor(0.01)
-                    .font(.system(size: 40,  weight: .semibold, design: .rounded))
+                    .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
                     .foregroundColor(Color(.systemGray))
                 
                 NavigationLink(destination: ContentView()) {
                     Text("\(Image(systemName: "square.grid.3x3.square")) Begin Setup")
-                        .font(.system(size: 30, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
                         .padding()
                         .padding()
                         .background(Color(.systemGray6))
-                        .cornerRadius(30)
+                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 30)
                 }
                 .padding()
                 Spacer()
@@ -82,20 +94,28 @@ struct TutorialView: View { //main welcome page
 struct TimeslotView: View { //timeslot tutorial view
     @State var presentNext = false
     @Environment(\.presentationMode) var presentation
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
     var body: some View {
         VStack {
-            Text("Timeslots")
+            GeometryReader { geometry in
+                RoundedRectangle(cornerRadius: 20)
+                    .frame(width: geometry.size.width * (1/totalSheets), height: 5)
+                    .foregroundColor(.purple)
+            }
+            .frame(height: 5)
+            Text("\(Image(systemName: "timer")) Timeslots")
                 .lineLimit(1)
                 .minimumScaleFactor(0.01)
-                .font(.system(size: 40,  weight: .bold, design: .rounded))
-                .padding()
+                .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
+                .padding(horizontalSizeClass == .compact ? 5 : 15)
             Text("You can set up a Sheet using Timeslots. Daysy will automatically sort these to be in order, can show you the current Timeslot, and send you notifications.")
                 .minimumScaleFactor(0.01)
                 .multilineTextAlignment(.center)
-                .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
             Spacer()
             //Divider()
+            if horizontalSizeClass != .compact {
                 LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 20)
@@ -145,6 +165,60 @@ struct TimeslotView: View { //timeslot tutorial view
                                 .stroke(.black, lineWidth: 6)
                         )
                 }
+            } else {
+                //iPhone grid here
+                VStack {
+                    Text("12:00 PM")
+                        .lineLimit(1)
+                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                        .padding(.top)
+                    LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
+                        Image("eatlunch")
+                            .resizable()
+                            .scaledToFit()
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(.black, lineWidth: 6)
+                            )
+                            .padding()
+                        
+                        Image("brownie")
+                            .resizable()
+                            .scaledToFit()
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(.black, lineWidth: 6)
+                            )
+                            .padding()
+                        
+                        Image("playground")
+                            .resizable()
+                            .scaledToFit()
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(.black, lineWidth: 6)
+                            )
+                            .padding()
+                        
+                        Image("school")
+                            .resizable()
+                            .scaledToFit()
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(.black, lineWidth: 6)
+                            )
+                            .padding()
+                    }
+                }
+                .background(Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .padding([.leading, .trailing])
+                .padding([.leading, .trailing])
+            }
             //Divider()
             Spacer()
             HStack {
@@ -154,31 +228,29 @@ struct TimeslotView: View { //timeslot tutorial view
                     Text("\(Image(systemName: "arrow.backward")) Back")
                         .lineLimit(1)
                         .minimumScaleFactor(0.1)
-                        .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
-                        .padding()
-                        .padding()
+                        .padding(horizontalSizeClass == .compact ? 20 : 30)
                         .background(Color(.systemGray5))
-                        .cornerRadius(25)
+                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
                 
                 NavigationLink(destination: AsyncView()) {
                     Text("Next \(Image(systemName: "arrow.forward"))")
                         .lineLimit(1)
                         .minimumScaleFactor(0.1)
-                        .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
-                        .padding()
-                        .padding()
+                        .padding(horizontalSizeClass == .compact ? 20 : 30)
                         .background(Color(.systemGray5))
-                        .cornerRadius(25)
+                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
             } /*
-            .navigationDestination(isPresented: $presentNext) {
-                AsyncView()
-            } */
+               .navigationDestination(isPresented: $presentNext) {
+               AsyncView()
+               } */
             .navigationBarTitle("", displayMode: .inline)
         }
         .navigationBarHidden(true)
@@ -188,25 +260,33 @@ struct TimeslotView: View { //timeslot tutorial view
 struct AsyncView: View { //custom labels tutorial view
     @State var presentNext = false
     @Environment(\.presentationMode) var presentation
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
     var body: some View {
         VStack {
-            Text("Custom Labels")
+            GeometryReader { geometry in
+                RoundedRectangle(cornerRadius: 20)
+                    .frame(width: geometry.size.width * (2/totalSheets), height: 5)
+                    .foregroundColor(.purple)
+            }
+            .frame(height: 5)
+            Text("\(Image(systemName: "tag")) Custom Labels")
                 .lineLimit(1)
                 .minimumScaleFactor(0.01)
-                .font(.system(size: 40,  weight: .semibold, design: .rounded))
-                .padding()
+                .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
+                .padding(horizontalSizeClass == .compact ? 5 : 15)
             Text("You can also set up a Sheet that uses your own custom labels. These will not be sorted by Daysy.")
                 .minimumScaleFactor(0.01)
                 .multilineTextAlignment(.center)
-                .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
             Spacer()
             //Divider()
+            if horizontalSizeClass != .compact {
                 LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
                     ZStack {
-                         RoundedRectangle(cornerRadius: 20)
-                             .fill(Color(.systemGray5))
-                             .scaledToFit()
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.systemGray5))
+                            .scaledToFit()
                         Text("Jared")
                             .lineLimit(1)
                             .minimumScaleFactor(0.01)
@@ -251,6 +331,60 @@ struct AsyncView: View { //custom labels tutorial view
                                 .stroke(.black, lineWidth: 6)
                         )
                 }
+            } else {
+                //iPhone grid here
+                VStack {
+                    Text("Jared")
+                        .lineLimit(1)
+                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                        .padding(.top)
+                    LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
+                        Image("putsockson")
+                            .resizable()
+                            .scaledToFit()
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(.black, lineWidth: 6)
+                            )
+                            .padding()
+                        
+                        Image("dog")
+                            .resizable()
+                            .scaledToFit()
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(.black, lineWidth: 6)
+                            )
+                            .padding()
+                        
+                        Image("lunch")
+                            .resizable()
+                            .scaledToFit()
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(.black, lineWidth: 6)
+                            )
+                            .padding()
+                        
+                        Image("cleanup")
+                            .resizable()
+                            .scaledToFit()
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(.black, lineWidth: 6)
+                            )
+                            .padding()
+                    }
+                }
+                .background(Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .padding([.leading, .trailing])
+                .padding([.leading, .trailing])
+            }
             //Divider()
             Spacer()
             HStack {
@@ -260,27 +394,25 @@ struct AsyncView: View { //custom labels tutorial view
                     Text("\(Image(systemName: "arrow.backward")) Back")
                         .lineLimit(1)
                         .minimumScaleFactor(0.1)
-                        .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
-                        .padding()
-                        .padding()
+                        .padding(horizontalSizeClass == .compact ? 20 : 30)
                         .background(Color(.systemGray5))
-                        .cornerRadius(25)
+                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
                 
                 NavigationLink(destination: TryItView()) {
                     Text("Next \(Image(systemName: "arrow.forward"))")
                         .lineLimit(1)
                         .minimumScaleFactor(0.1)
-                        .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
-                        .padding()
-                        .padding()
+                        .padding(horizontalSizeClass == .compact ? 20 : 30)
                         .background(Color(.systemGray5))
-                        .cornerRadius(25)
+                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
             } /*
             .navigationDestination(isPresented: $presentNext) {
                 TryItView()
@@ -296,6 +428,12 @@ struct TryItView: View { //interactive little mini sheet to play with
     @Environment(\.presentationMode) var presentation
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
+    enum PickerOption: String, CaseIterable {
+        case timeslots = "Timeslots"
+        case customLabels = "Custom Labels"
+    }
+    @State var selectedOption = PickerOption.timeslots
+    
     @State var presentNext = false
     
     @State var showIcons = false
@@ -310,14 +448,21 @@ struct TryItView: View { //interactive little mini sheet to play with
     @State var currGrid = [Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder")]
     var body: some View {
         VStack {
+            GeometryReader { geometry in
+                RoundedRectangle(cornerRadius: 20)
+                    .frame(width: geometry.size.width * (3/totalSheets), height: 5)
+                    .foregroundColor(.purple)
+            }
+            .frame(height: 5)
             Spacer()
             Text("Practice setting up! The example below is fully interactive. You can try setting a time, setting a custom label, as well as adding icons.")
                 .minimumScaleFactor(0.01)
                 .multilineTextAlignment(.center)
-                .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                 .padding()
             Spacer()
             //Divider()
+            if horizontalSizeClass != .compact {
                 LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
                     Button(action: {showTime.toggle()}) {
                         ZStack {
@@ -584,7 +729,7 @@ struct TryItView: View { //interactive little mini sheet to play with
                         ZStack {
                             TextField("Your Label", text: $currText)
                             //.textFieldStyle(RoundedBorderTextFieldStyle())
-                                .font(.system(size: 100,  weight: .semibold, design: .rounded))
+                                .font(.system(size: horizontalSizeClass == .compact ? 40 : 100, weight: .bold, design: .rounded))
                                 .padding()
                                 .background(
                                     RoundedRectangle(cornerRadius: 20)
@@ -618,6 +763,34 @@ struct TryItView: View { //interactive little mini sheet to play with
                         .padding()
                     }
                 }
+            } else {
+                //iPhone grid here
+                //TODO: maybe just change the lazyvgrud and have all the sheets and fullscreencovers still work and scale
+                VStack {
+                    Picker("Options", selection: $selectedOption) {
+                        ForEach(PickerOption.allCases, id: \.self) { option in
+                            Text(option.rawValue)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding()
+                    if selectedOption == .timeslots {
+                        Image(systemName: "timer")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.purple)
+                            .shadow(radius: 5)
+                            .padding(25)
+                    } else if selectedOption == .customLabels {
+                        Image(systemName: "tag")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.purple)
+                            .shadow(radius: 5)
+                            .padding(25)
+                    }
+                }
+            }
             Spacer()
             HStack {
                 Button(action: {
@@ -626,27 +799,25 @@ struct TryItView: View { //interactive little mini sheet to play with
                     Text("\(Image(systemName: "arrow.backward")) Back")
                         .lineLimit(1)
                         .minimumScaleFactor(0.1)
-                        .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
-                        .padding()
-                        .padding()
+                        .padding(horizontalSizeClass == .compact ? 20 : 30)
                         .background(Color(.systemGray5))
-                        .cornerRadius(25)
+                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
                 
                 NavigationLink(destination: ModIconView()) {
                     Text("Next \(Image(systemName: "arrow.forward"))")
                         .lineLimit(1)
                         .minimumScaleFactor(0.1)
-                        .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
-                        .padding()
-                        .padding()
+                        .padding(horizontalSizeClass == .compact ? 20 : 30)
                         .background(Color(.systemGray5))
-                        .cornerRadius(25)
+                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
             } /*
             .navigationDestination(isPresented: $presentNext) {
                 ModIconView()
@@ -660,6 +831,7 @@ struct TryItView: View { //interactive little mini sheet to play with
 struct ModIconView: View { //tutorial view on completing or removing icon
     @State var presentNext = false
     @Environment(\.presentationMode) var presentation
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
     @State var showMod = false
     @State var currSetIndex = 0
@@ -668,78 +840,128 @@ struct ModIconView: View { //tutorial view on completing or removing icon
     @State var imageArray = [Image("zipup"), Image("trumpet"), Image("sitcrisscross"), Image("playkeyboard")]
     var body: some View {
         VStack {
+            GeometryReader { geometry in
+                RoundedRectangle(cornerRadius: 20)
+                    .frame(width: geometry.size.width * (4/totalSheets), height: 5)
+                    .foregroundColor(.purple)
+            }
+            .frame(height: 5)
             if isModded {
                 if isComplete {
                     Text("You have completed an icon!")
                         .lineLimit(1)
                         .minimumScaleFactor(0.01)
-                        .font(.system(size: 40, weight: .bold,  design: .rounded))
-                        .padding()
+                        .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
+                        .padding(horizontalSizeClass == .compact ? 5 : 15)
                     Text("Good job. You will be able to view all your completed icons for a individual Sheet after setup. You can try it again, or move on.")
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
-                        .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                 } else {
                     Text("You have removed an icon!")
                         .lineLimit(1)
                         .minimumScaleFactor(0.01)
-                        .font(.system(size: 40,  weight: .bold, design: .rounded))
-                        .padding()
+                        .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
+                        .padding(horizontalSizeClass == .compact ? 5 : 15)
                     Text("Good job. You will be able to view all your removed icons for a individual Sheet after setup. You can try it again, or move on.")
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
-                        .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                 }
             } else {
                 Text("Complete/Remove Your Icons")
                     .lineLimit(1)
                     .minimumScaleFactor(0.01)
-                    .font(.system(size: 40,  weight: .semibold, design: .rounded))
-                    .padding()
+                    .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
+                    .padding(horizontalSizeClass == .compact ? 5 : 15)
                 Text("After you’re done setting up, you can tap any icon to complete it, or remove it from the Sheet. Try it!")
                     .minimumScaleFactor(0.01)
                     .multilineTextAlignment(.center)
-                    .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
             }
             Spacer()
             //Divider()
-            LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(.systemGray5))
-                    .scaledToFit()
-                ForEach(0..<imageArray.count, id: \.self) { index in
-                    Button(action:{
-                        showMod.toggle()
-                        currSetIndex = index}) {
-                            if imageArray[index] != Image(systemName:"plus.viewfinder") {
-                                imageArray[index]
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .stroke(.black, lineWidth: 6)
-                                    )
-                                    .padding(5)
+            ZStack {
+                if horizontalSizeClass != .compact {
+                    LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.systemGray5))
+                            .scaledToFit()
+                        ForEach(0..<imageArray.count, id: \.self) { index in
+                            Button(action:{
+                                showMod.toggle()
+                                currSetIndex = index}) {
+                                    if imageArray[index] != Image(systemName:"plus.viewfinder") {
+                                        imageArray[index]
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(.black, lineWidth: 6)
+                                            )
+                                            .padding(5)
+                                    }
+                                }
+                                .foregroundColor(.primary)
+                        }
+                    }
+                } else {
+                    VStack {
+                        Text("12:00 PM")
+                            .lineLimit(1)
+                            .font(.system(size: 30, weight: .bold, design: .rounded))
+                            .padding(.top)
+                        LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
+                            ForEach(0..<imageArray.count, id: \.self) { index in
+                                Button(action:{
+                                    showMod.toggle()
+                                    currSetIndex = index}) {
+                                        if imageArray[index] != Image(systemName:"plus.viewfinder") {
+                                            imageArray[index]
+                                                .resizable()
+                                                .scaledToFit()
+                                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 16)
+                                                        .stroke(.black, lineWidth: 6)
+                                                )
+                                                .padding()
+                                        }
+                                    }
+                                    .foregroundColor(.primary)
+                            }
+                            if imageArray.count < 3 {
+                                HStack {
+                                    Image(systemName: "square.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .foregroundColor(.clear)
+                                        .padding()
+                                }
                             }
                         }
-                        .foregroundColor(.primary)
+                    }
+                    .background(Color(.systemGray6))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .padding([.leading, .trailing])
+                    .padding([.leading, .trailing])
                 }
             }
             .fullScreenCover(isPresented: $showMod) {
                 VStack {
                     TutorialModView(currImageArray: $imageArray, currIndex: $currSetIndex)
-                    HStack {
+                    HStack(alignment: .top) {
                         Button(action: {
                             showMod.toggle()
                         }) {
                             VStack {
                                 Image(systemName:"xmark.square.fill")
                                     .resizable()
-                                    .frame(width: min(150, 500), height: min(150, 500))
+                                    .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                 //.fontWeight(.bold)
                                 Text("Cancel")
-                                    .font(.system(size: 25, weight: .semibold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
                             }
                         }
                         .padding()
@@ -755,14 +977,14 @@ struct ModIconView: View { //tutorial view on completing or removing icon
                                 ZStack {
                                     Image(systemName: "square.fill")
                                         .resizable()
-                                        .frame(width: min(150, 500), height: min(150, 500))
+                                        .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                     Image(systemName: "square.slash")
                                         .resizable()
-                                        .frame(width: min(100, 250), height: min(100, 250))
+                                        .frame(width: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250), height: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250))
                                         .foregroundColor(Color(.systemBackground))
                                 }
                                 Text("Remove Icon")
-                                    .font(.system(size: 25, weight: .semibold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
                             }
                         }
                         .padding()
@@ -777,10 +999,10 @@ struct ModIconView: View { //tutorial view on completing or removing icon
                             VStack {
                                 Image(systemName: "checkmark.square.fill")
                                     .resizable()
-                                    .frame(width: min(150, 500), height: min(150, 500))
+                                    .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(100, 250), height: horizontalSizeClass == .compact ? min(100, 350) : min(100, 250))
                                 //.fontWeight(.bold)
                                 Text("Complete Icon")
-                                    .font(.system(size: 25, weight: .semibold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
                             }
                         }
                         .padding()
@@ -788,7 +1010,7 @@ struct ModIconView: View { //tutorial view on completing or removing icon
                     }
                 }
             }
-            //Divider()
+            
             Spacer()
             HStack {
                 Button(action: {
@@ -797,30 +1019,29 @@ struct ModIconView: View { //tutorial view on completing or removing icon
                     Text("\(Image(systemName: "arrow.backward")) Back")
                         .lineLimit(1)
                         .minimumScaleFactor(0.1)
-                        .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
-                        .padding()
-                        .padding()
+                        .padding(horizontalSizeClass == .compact ? 20 : 30)
                         .background(Color(.systemGray5))
-                        .cornerRadius(25)
+                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
+                
                 NavigationLink(destination: ButtonsView()) {
                     Text("Next \(Image(systemName: "arrow.forward"))")
                         .lineLimit(1)
                         .minimumScaleFactor(0.1)
-                        .font(.system(size: 30,  weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
-                        .padding()
-                        .padding()
+                        .padding(horizontalSizeClass == .compact ? 20 : 30)
                         .background(Color(.systemGray5))
-                        .cornerRadius(25)
+                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
             } /*
-            .navigationDestination(isPresented: $presentNext) {
-                ButtonsView()
-            } */
+               .navigationDestination(isPresented: $presentNext) {
+               ButtonsView()
+               } */
             .navigationBarTitle("", displayMode: .inline)
         }
         .navigationBarHidden(true)
@@ -830,9 +1051,16 @@ struct ModIconView: View { //tutorial view on completing or removing icon
 struct ButtonsView: View { //view describing the buttons on a sheet
     @State var presentNext = false
     @Environment(\.presentationMode) var presentation
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
     var body: some View {
         VStack {
+            GeometryReader { geometry in
+                RoundedRectangle(cornerRadius: 20)
+                    .frame(width: geometry.size.width * (5/totalSheets), height: 5)
+                    .foregroundColor(.purple)
+            }
+            .frame(height: 5)
             VStack(alignment: .leading) {
                 Spacer()
                 HStack {
@@ -851,14 +1079,15 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                     }
                     VStack(alignment: .leading) {
                         Text("Edit Sheet")
-                            .font(.system(.largeTitle, design: .rounded))
+                            .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
                             .fontWeight(.bold)
                         Text("Tap to edit your current Sheet.")
-                            .font(.system(.headline, design: .rounded))
+                            .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                            .foregroundColor(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
                             .fontWeight(.medium)
                     }
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
                 
                 HStack {
                     ZStack {
@@ -876,14 +1105,15 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                     }
                     VStack(alignment: .leading) {
                         Text("Settings")
-                            .font(.system(.largeTitle, design: .rounded))
+                            .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
                             .fontWeight(.bold)
                         Text("Customize Daysy to fit your personal needs and likes.")
-                            .font(.system(.headline, design: .rounded))
+                            .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                            .foregroundColor(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
                             .fontWeight(.medium)
                     }
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
                 
                 HStack {
                     ZStack {
@@ -901,14 +1131,15 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                     }
                     VStack(alignment: .leading) {
                         Text("View All Sheets")
-                            .font(.system(.largeTitle, design: .rounded))
+                            .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
                             .fontWeight(.bold)
                         Text("Tap to view all your Sheets, and switch between them.")
-                            .font(.system(.headline, design: .rounded))
+                            .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                            .foregroundColor(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
                             .fontWeight(.medium)
                     }
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
                 
                 HStack {
                     ZStack {
@@ -927,14 +1158,15 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                     }
                     VStack(alignment: .leading) {
                         Text("View Removed")
-                            .font(.system(.largeTitle, design: .rounded))
+                            .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
                             .fontWeight(.bold)
                         Text("Tap to view all icons that were deleted on the current Sheet.")
-                            .font(.system(.headline, design: .rounded))
+                            .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                            .foregroundColor(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
                             .fontWeight(.medium)
                     }
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
                 
                 HStack {
                     ZStack {
@@ -953,14 +1185,15 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                     }
                     VStack(alignment: .leading) {
                         Text("View Completed")
-                            .font(.system(.largeTitle, design: .rounded))
+                            .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
                             .fontWeight(.bold)
                         Text("Tap to view all icons that were completed on the current Sheet.")
-                            .font(.system(.headline, design: .rounded))
+                            .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                            .foregroundColor(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
                             .fontWeight(.medium)
                     }
                 }
-                .padding()
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
                 Spacer()
                 }
             }
@@ -972,29 +1205,27 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                 Text("\(Image(systemName: "arrow.backward")) Back")
                     .lineLimit(1)
                     .minimumScaleFactor(0.1)
-                    .font(.system(size: 30, weight: .semibold, design: .rounded))
+                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                     //.fontWeight(.semibold)
                     .foregroundColor(.primary)
-                    .padding()
-                    .padding()
+                    .padding(horizontalSizeClass == .compact ? 20 : 30)
                     .background(Color(.systemGray5))
-                    .cornerRadius(25)
+                    .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
             }
-            .padding()
+            .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
             
             NavigationLink(destination: GotItView()) {
                 Text("Next \(Image(systemName: "arrow.forward"))")
                     .lineLimit(1)
                     .minimumScaleFactor(0.1)
-                    .font(.system(size: 30, weight: .semibold, design: .rounded))
+                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                 //.fontWeight(.semibold)
                     .foregroundColor(.primary)
-                    .padding()
-                    .padding()
+                    .padding(horizontalSizeClass == .compact ? 20 : 30)
                     .background(Color(.systemGray5))
-                    .cornerRadius(25)
+                    .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
             }
-            .padding()
+            .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
         } /*
         .navigationDestination(isPresented: $presentNext) {
             GotItView()
@@ -1006,6 +1237,7 @@ struct ButtonsView: View { //view describing the buttons on a sheet
 struct GotItView: View { //confirmation to go back/create a sheet or to rewatch the tutorial
     @State var presentNext = false
     @Environment(\.presentationMode) var presentation
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
     @State var beginSetup = false
     @State var returnToSheets = false
@@ -1016,32 +1248,33 @@ struct GotItView: View { //confirmation to go back/create a sheet or to rewatch 
                 Text("Got all that?")
                     .lineLimit(1)
                     .minimumScaleFactor(0.01)
-                    .font(.system(size: 40,  weight: .semibold, design: .rounded))
+                    .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
                     .padding(.leading)
                     .padding(.trailing)
                 
                 if defaults.bool(forKey: "completedTutorial") {
                     NavigationLink(destination: ContentView()) {
                         Text("\(Image(systemName: "square.grid.3x3.square")) Return to Sheets")
-                            .font(.system(size: 40, design: .rounded))
+                            .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
                             .fontWeight(.semibold)
                             .foregroundColor(.primary)
                             .padding()
                             .padding()
                             .background(Color(.systemGray5))
-                            .cornerRadius(30)
+                            .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                     }
+                    .padding()
                     .navigationViewStyle(StackNavigationViewStyle())
                 } else {
                     NavigationLink(destination: ContentView()) {
                         Text("\(Image(systemName: "square.grid.3x3.square")) Begin Setup")
-                            .font(.system(size: 40, design: .rounded))
+                            .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
                             .fontWeight(.semibold)
                             .foregroundColor(.primary)
                             .padding()
                             .padding()
                             .background(Color(.systemGray5))
-                            .cornerRadius(30)
+                            .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                     }
                     .padding()
                 }
@@ -1049,18 +1282,18 @@ struct GotItView: View { //confirmation to go back/create a sheet or to rewatch 
                 Text("or")
                     .lineLimit(1)
                     .minimumScaleFactor(0.01)
-                    .font(.system(size: 40,  weight: .semibold, design: .rounded))
+                    .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
                     .foregroundColor(Color(.systemGray))
                 
                 NavigationLink(destination: TimeslotView()) {
                         Text("\(Image(systemName: "arrow.counterclockwise")) Restart Tutorial")
-                            .font(.system(size: 40, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
                             .fontWeight(.semibold)
                             .foregroundColor(.primary)
                             .padding()
                             .padding()
                             .background(Color(.systemGray5))
-                            .cornerRadius(25)
+                            .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
                 }
                 .padding()
                 .padding()/*

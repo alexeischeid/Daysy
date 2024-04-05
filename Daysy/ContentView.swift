@@ -109,12 +109,12 @@ struct ContentView: View {
                                             getCustomIconSmall(currSheet.currLabelIcon ?? "")
                                                 .scaledToFit()
                                                 .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
-                                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                .clipShape(RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16))
                                                 .overlay(
-                                                    RoundedRectangle(cornerRadius: 16)
-                                                        .stroke(.black, lineWidth: 3)
+                                                    RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16)
+                                                        .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
                                                 )
-                                                .padding()
+                                                .padding(horizontalSizeClass == .compact ? 0 : 10)
                                         } else if currSheet.currLabelIcon!.isEmpty {
                                             if #available(iOS 15.0, *) {
                                                 Image(systemName: "plus.square.dashed")
@@ -122,25 +122,25 @@ struct ContentView: View {
                                                     .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
                                                     .symbolRenderingMode(.hierarchical)
                                                     .foregroundColor(Color(.systemGray))
-                                                    .padding()
+                                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
                                             } else {
                                                 Image(systemName: "plus.square.dashed")
                                                     .resizable()
                                                     .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
                                                     .foregroundColor(Color(.systemGray))
-                                                    .padding()
+                                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
                                             }
                                         } else {
                                             loadImage(named: currSheet.currLabelIcon!)
                                                 .scaledToFit()
                                                 .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
-                                                .scaleEffect(0.25)
-                                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                .scaleEffect(horizontalSizeClass == .compact ? 0.125 : 0.25)
+                                                .clipShape(RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16))
                                                 .overlay(
-                                                    RoundedRectangle(cornerRadius: 16)
-                                                        .stroke(.black, lineWidth: 3)
+                                                    RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16)
+                                                        .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
                                                 )
-                                                .padding()
+                                                .padding(horizontalSizeClass == .compact ? 0 : 10)
                                         }
                                     } else {
                                         if #available(iOS 15.0, *) {
@@ -149,13 +149,13 @@ struct ContentView: View {
                                                 .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
                                                 .symbolRenderingMode(.hierarchical)
                                                 .foregroundColor(Color(.systemGray))
-                                                .padding()
+                                                .padding(horizontalSizeClass == .compact ? 0 : 10)
                                         } else {
                                             Image(systemName: "plus.square.dashed")
                                                 .resizable()
                                                 .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
                                                 .foregroundColor(Color(.systemGray))
-                                                .padding()
+                                                .padding(horizontalSizeClass == .compact ? 0 : 10)
                                         }
                                     }
                                 }
@@ -168,7 +168,7 @@ struct ContentView: View {
                                         RoundedRectangle(cornerRadius: 20)
                                             .fill(Color(.systemGray4))
                                     )
-                                    .padding()
+                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
                             } else {
                                 
                                 if currSheet.currLabelIcon != nil {
@@ -176,30 +176,30 @@ struct ContentView: View {
                                         getCustomIconSmall(currSheet.currLabelIcon ?? "")
                                             .scaledToFit()
                                             .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
-                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .clipShape(RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16))
                                             .overlay(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .stroke(.black, lineWidth: 3)
+                                                RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16)
+                                                    .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
                                             )
-                                            .padding()
+                                            .padding(horizontalSizeClass == .compact ? 0 : 10)
                                     } else if !currSheet.currLabelIcon!.isEmpty {
                                         loadImage(named: currSheet.currLabelIcon!)
                                             .scaledToFit()
                                             .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
-                                            .scaleEffect(0.25)
-                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .scaleEffect(horizontalSizeClass == .compact ? 0.125 : 0.25)
+                                            .clipShape(RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16))
                                             .overlay(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .stroke(.black, lineWidth: 3)
+                                                RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16)
+                                                    .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
                                             )
-                                            .padding()
+                                            .padding(horizontalSizeClass == .compact ? 0 : 10)
                                     }
                                 }
                                 Text(currSheet.label)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.01)
                                     .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                    .padding()
+                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
                             }
                         }
                         if horizontalSizeClass == .compact { //this is the main grid for iPhone
@@ -603,7 +603,7 @@ struct ContentView: View {
                                                     }
                                                 }
                                                 .foregroundColor(.primary)
-                                                .padding(horizontalSizeClass == .compact ? 0 : 10)
+                                                .padding(horizontalSizeClass == .compact ? 3 : 10)
                                                 .contextMenu {
                                                     if lockButtonsOn && !unlockButtons {
                                                         Button {
@@ -1361,7 +1361,7 @@ struct ContentView: View {
                 ScrollView {
                     TextField("\(Image(systemName: "magnifyingglass")) Search", text: $searchText)
                         .multilineTextAlignment(.center)
-                        .font(.system(size: 65, weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 35 : 65, weight: .semibold, design: .rounded))
                         .padding()
                         .background(
                             RoundedRectangle(cornerRadius: 20)
@@ -1369,7 +1369,7 @@ struct ContentView: View {
                         )
                         .padding()
                     
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
                         ForEach(0..<filteredCustomData.count, id: \.self) { key in //first display custom icon results
                             Button(action: {
                                 currSheet.currLabelIcon = "customIconObject:\(filteredCustomData[key])"
@@ -1433,7 +1433,7 @@ struct ContentView: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.01)
                             .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) { //grid of custom icons
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) { //grid of custom icons
                             ForEach(getCustomPECSAddresses().sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
                                 Button(action: {
                                     currSheet.currLabelIcon = "customIconObject:\(key)"
@@ -1467,7 +1467,7 @@ struct ContentView: View {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.01)
                                 .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
                                 ForEach(1..<icon.count, id: \.self) { sheeticonobject in
                                     Button(action: {
                                         currSheet.currLabelIcon = String(icon[sheeticonobject])
@@ -1529,7 +1529,7 @@ struct ContentView: View {
                 .datePickerStyle(WheelDatePickerStyle())
                 .labelsHidden()
                 .frame(width: 400, height: 400)
-                .scaleEffect(3)
+                .scaleEffect(horizontalSizeClass == .compact ? 1.5 : 3)
             Spacer()
             HStack {
                 Button(action: {
@@ -1662,9 +1662,35 @@ struct ContentView: View {
             
             VStack { //main list of all the icons
                 ScrollView {
+                    HStack(alignment: .top) {
+                        if horizontalSizeClass == .compact {
+                            VStack(alignment: .leading) {
+                                Text("\(Image(systemName: "square.grid.3x3")) All Icons")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                                    .padding(.top)
+                                    .padding(.bottom, 5)
+                            }
+                            .padding(.leading, horizontalSizeClass == .compact ? 20 : 0)
+                            if horizontalSizeClass == .compact {
+                                Spacer()
+                                Button(action: {
+                                    showIcons.toggle()
+                                }) {
+                                    Text("\(Image(systemName: "xmark.circle.fill"))")
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.5)
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray3): Color(.systemGray6))
+                                        .padding([.top, .trailing])
+                                }
+                            }
+                        }
+                    }
                     TextField("\(Image(systemName: "magnifyingglass")) Search", text: $searchText)
                         .multilineTextAlignment(.center)
-                        .font(.system(size: 65, weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 35 : 65, weight: .bold, design: .rounded))
                         .padding()
                         .background(
                             RoundedRectangle(cornerRadius: 20)
@@ -1672,7 +1698,7 @@ struct ContentView: View {
                         )
                         .padding()
                     
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
                         ForEach(0..<filteredCustomData.count, id: \.self) { key in //first display custom icon results
                             Button(action: {
                                 currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = "customIconObject:\(filteredCustomData[key])"
@@ -1696,7 +1722,7 @@ struct ContentView: View {
                                     )
                             }
                             .foregroundColor(.primary)
-                            .padding()
+                            .padding(horizontalSizeClass == .compact ? 3 : 10)
                             .overlay(
                                 VStack {
                                     HStack {
@@ -1752,7 +1778,7 @@ struct ContentView: View {
                                         } label: {
                                             Image(systemName: "pencil.circle.fill")
                                                 .resizable()
-                                                .frame(width: 40, height: 40)
+                                                .frame(width: horizontalSizeClass == .compact ? 20 : 40, height: horizontalSizeClass == .compact ? 20 : 40)
                                                 .foregroundColor(Color(.systemGray))
                                         }
                                         Spacer()
@@ -1786,7 +1812,7 @@ struct ContentView: View {
                                     )
                             }
                             .foregroundColor(.primary)
-                            .padding()
+                            .padding(horizontalSizeClass == .compact ? 3 : 10)
                         }
                     }
                     
@@ -1800,7 +1826,7 @@ struct ContentView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.01)
                         .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) { //grid of custom icons
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
                         Button(action: {
                             showCustom.toggle()
                         }) {
@@ -1816,7 +1842,7 @@ struct ContentView: View {
                             }
                         }
                         .foregroundColor(Color(.systemGray))
-                        .padding()
+                        .padding(horizontalSizeClass == .compact ? 3 : 10)
                         ForEach(customPECSAddresses.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
                             Button(action: {
                                 currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = "customIconObject:\(key)"
@@ -1899,7 +1925,7 @@ struct ContentView: View {
                                         } label: {
                                             Image(systemName: "pencil.circle.fill")
                                                 .resizable()
-                                                .frame(width: 40, height: 40)
+                                                .frame(width: horizontalSizeClass == .compact ? 20 : 40, height: horizontalSizeClass == .compact ? 20 : 40)
                                                 .foregroundColor(Color(.systemGray))
                                         }
                                         Spacer()
@@ -1915,7 +1941,7 @@ struct ContentView: View {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.01)
                                 .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
                                 ForEach(1..<icon.count, id: \.self) { sheeticonobject in
                                     Button(action: {
                                         currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = icon[sheeticonobject]
@@ -1941,7 +1967,7 @@ struct ContentView: View {
                                             )
                                     }
                                     .foregroundColor(.black)
-                                    .padding()
+                                    .padding(horizontalSizeClass == .compact ? 3 : 10)
                                 }
                             }
                         }
@@ -1954,38 +1980,72 @@ struct ContentView: View {
                         .foregroundColor(Color(.systemGray2))
                 }
                 HStack { //bottom button row
-                    Button(action: {
-                        showIcons.toggle()
-                    }) {
-                        Image(systemName: "xmark.square.fill")
-                            .resizable()
-                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                        //.fontWeight(.bold)
+                    if horizontalSizeClass != .compact {
+                        Button(action: {
+                            showIcons.toggle()
+                        }) {
+                            Image(systemName: "xmark.square.fill")
+                                .resizable()
+                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                            //.fontWeight(.bold)
+                        }
+                        .padding()
+                        .foregroundColor(Color(.systemGray))
                     }
-                    .padding()
-                    .foregroundColor(Color(.systemGray))
                     
-                    Button(action: {
-                        showIcons.toggle()
-                        currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = "plus.viewfinder"
-                        currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = []
-                        
-                        //save array aka "autosave"
-                        var newSheetArray = loadSheetArray()
-                        newSheetArray[getCurrSheetIndex()] = currSheet
-                        newSheetArray[getCurrSheetIndex()] = autoRemoveSlots(newSheetArray[getCurrSheetIndex()])
-                        currSheet = newSheetArray[getCurrSheetIndex()]
-                        saveSheetArray(sheetObjects: newSheetArray)
-                        animate.toggle()
-                        
-                    }) {
-                        Image(systemName: "trash.square.fill")
-                            .resizable()
-                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                        //.fontWeight(.bold)
+                    if currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon != "plus.viewfinder" {
+                        Button(action: {
+                            showIcons.toggle()
+                            currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = "plus.viewfinder"
+                            currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = []
+                            
+                            //save array aka "autosave"
+                            var newSheetArray = loadSheetArray()
+                            newSheetArray[getCurrSheetIndex()] = currSheet
+                            newSheetArray[getCurrSheetIndex()] = autoRemoveSlots(newSheetArray[getCurrSheetIndex()])
+                            currSheet = newSheetArray[getCurrSheetIndex()]
+                            saveSheetArray(sheetObjects: newSheetArray)
+                            animate.toggle()
+                            
+                        }) {
+                            ZStack {
+                                if currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon.contains("customIconObject:") {
+                                    getCustomIconSmall(currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon)
+                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                        .opacity(0.25)
+                                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(lineWidth: 3)
+                                        )
+                                } else {
+                                    loadImage(named: currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon)
+                                        .resizable()
+                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                        .opacity(0.25)
+                                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(lineWidth: 3)
+                                        )
+                                }
+                                
+                                if #available(iOS 15.0, *) {
+                                    Image(systemName: "trash.square.fill")
+                                        .resizable()
+                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                        .symbolRenderingMode(.hierarchical)
+                                } else {
+                                    Image(systemName: "trash.square.fill")
+                                        .resizable()
+                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                }
+                                //.fontWeight(.bold)
+                            }
+                        }
+                        .padding()
+                        .foregroundColor(.red)
                     }
-                    .padding()
-                    .foregroundColor(.red)
                 }
             }
             .ignoresSafeArea(.keyboard)
@@ -2002,81 +2062,108 @@ struct ContentView: View {
                         .overlay(
                             VStack {
                                 Spacer()
-                                if showImageMenu {
-                                    HStack {
-                                        Button(action: {
-                                            isImagePickerPresented.toggle()
-                                            showImageMenu.toggle()
-                                            customAnimate.toggle()
-                                        }) {
-                                            Image(systemName:"photo.on.rectangle")
-                                                .resizable()
-                                                .aspectRatio(1.25, contentMode: .fit)
-                                                .padding()
-                                        }
-                                        .padding()
-                                        
-                                        Button(action: {
-                                            if hasCameraPermission() {
-                                                showCamera.toggle()
-                                            } else {
-                                                if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                    UIApplication.shared.open(appSettings)
-                                                }
-                                            }
-                                        }) {
-                                            Image(systemName:"camera.on.rectangle")
-                                                .resizable()
-                                                .aspectRatio(1.25, contentMode: .fit)
-                                                .padding()
-                                        }
-                                        .padding()
-                                    }
-                                    .padding()
-                                    
-                                    Divider()
-                                    
-                                    HStack {
-                                        Button(action: {
-                                            showImageMenu.toggle()
-                                            customAnimate.toggle()
-                                        }) {
-                                            Image(systemName:"arrow.uturn.backward")
-                                                .resizable()
-                                                .aspectRatio(1, contentMode: .fit)
-                                                .foregroundColor(Color(.systemGray))
-                                                .padding()
-                                        }
-                                        .padding()
-                                        
-                                        Button(action: {
-                                            showImageMenu.toggle()
-                                            selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                                            customAnimate.toggle()
-                                        }) {
-                                            Image(systemName:"trash.square.fill")
-                                                .resizable()
-                                                .aspectRatio(1, contentMode: .fit)
-                                                .foregroundColor(.red)
-                                                .padding()
-                                        }
-                                        .padding()
-                                    }
-                                    .padding()
-                                    
-                                    Spacer()
-                                } else {
-                                    HStack {
-                                        Button(action: {
-                                            if selectedCustomImage != UIImage(systemName: "plus.viewfinder") {
+                                if !isCustomTextFieldActive {
+                                    if showImageMenu {
+                                        HStack {
+                                            Button(action: {
+                                                isImagePickerPresented.toggle()
                                                 showImageMenu.toggle()
                                                 customAnimate.toggle()
-                                            } else {
-                                                isImagePickerPresented.toggle()
-                                                lastSelected = 0
+                                            }) {
+                                                Image(systemName:"photo.on.rectangle")
+                                                    .resizable()
+                                                    .aspectRatio(1.25, contentMode: .fit)
+                                                    .padding()
                                             }
-                                        }) {
-                                            if !isCustomTextFieldActive {
+                                            .padding()
+                                            
+                                            Button(action: {
+                                                if hasCameraPermission() {
+                                                    showCamera.toggle()
+                                                    showImageMenu.toggle()
+                                                } else {
+                                                    if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
+                                                        UIApplication.shared.open(appSettings)
+                                                    }
+                                                }
+                                            }) {
+                                                Image(systemName:"camera.on.rectangle")
+                                                    .resizable()
+                                                    .aspectRatio(1.25, contentMode: .fit)
+                                                    .padding()
+                                            }
+                                            .padding()
+                                        }
+                                        .padding()
+                                        
+                                        Divider()
+                                        
+                                        HStack {
+                                            Button(action: {
+                                                showImageMenu.toggle()
+                                                customAnimate.toggle()
+                                            }) {
+                                                Image(systemName:"arrow.uturn.backward")
+                                                    .resizable()
+                                                    .aspectRatio(1, contentMode: .fit)
+                                                    .foregroundColor(Color(.systemGray))
+                                                    .padding()
+                                            }
+                                            .padding()
+                                            
+                                            Button(action: {
+                                                showImageMenu.toggle()
+                                                selectedCustomImage = UIImage(systemName: "plus.viewfinder")
+                                                customAnimate.toggle()
+                                            }) {
+                                                if selectedCustomImage != UIImage(systemName: "plus.viewfinder") {
+                                                    ZStack {
+                                                        selectedCustomImage?.asImage
+                                                            .resizable()
+                                                            .aspectRatio(1, contentMode: .fit)
+                                                            .clipShape(RoundedRectangle(cornerRadius: 40))
+                                                            .opacity(0.25)
+                                                            .padding()
+                                                        
+                                                        if #available(iOS 15.0, *) {
+                                                            Image(systemName: "trash.square.fill")
+                                                                .resizable()
+                                                                .aspectRatio(1, contentMode: .fit)
+                                                                .foregroundColor(.red)
+                                                                .padding()
+                                                                .symbolRenderingMode(.hierarchical)
+                                                        } else {
+                                                            Image(systemName:"trash.square.fill")
+                                                                .resizable()
+                                                                .aspectRatio(1, contentMode: .fit)
+                                                                .foregroundColor(.red)
+                                                                .padding()
+                                                        }
+                                                    }
+                                                } else {
+                                                    Image(systemName:"trash.square.fill")
+                                                        .resizable()
+                                                        .aspectRatio(1, contentMode: .fit)
+                                                        .foregroundColor(.red)
+                                                        .padding()
+                                                }
+                                            }
+                                            .padding()
+                                        }
+                                        .padding()
+                                        
+                                        Spacer()
+                                    } else {
+                                        HStack {
+                                            Button(action: {
+                                                if selectedCustomImage != UIImage(systemName: "plus.viewfinder") {
+                                                    showImageMenu.toggle()
+                                                    customAnimate.toggle()
+                                                } else {
+                                                    isImagePickerPresented.toggle()
+                                                    lastSelected = 0
+                                                }
+                                            }) {
                                                 if selectedCustomImage == UIImage(systemName: "square.fill") {
                                                     ZStack {
                                                         Image(systemName: "square.fill")
@@ -2113,42 +2200,39 @@ struct ContentView: View {
                                                     }
                                                 }
                                             }
-                                        }
-                                        if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                            Divider().padding()
-                                            Button(action: {
-                                                if hasCameraPermission() {
-                                                    showCamera.toggle()
-                                                } else {
-                                                    if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                        UIApplication.shared.open(appSettings)
+                                            if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
+                                                Divider().padding()
+                                                Button(action: {
+                                                    if hasCameraPermission() {
+                                                        showCamera.toggle()
+                                                    } else {
+                                                        if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
+                                                            UIApplication.shared.open(appSettings)
+                                                        }
                                                     }
-                                                }
-                                            }) {
-                                                if #available(iOS 15.0, *) {
-                                                    Image(systemName: "camera.on.rectangle")
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .symbolRenderingMode(.hierarchical)
-                                                        .padding()
-                                                } else {
-                                                    Image(systemName: "camera.on.rectangle")
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .padding()
+                                                }) {
+                                                    if #available(iOS 15.0, *) {
+                                                        Image(systemName: "camera.on.rectangle")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .symbolRenderingMode(.hierarchical)
+                                                            .padding()
+                                                    } else {
+                                                        Image(systemName: "camera.on.rectangle")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .padding()
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                if !isCustomTextFieldActive {
-                                    Spacer()
-                                }
                                 ZStack { //zstack with gray is to workaround low contrast on dark mode despite white background
                                     Text("Label")
                                         .minimumScaleFactor(0.1)
                                         .multilineTextAlignment(.center)
-                                        .font(.system(size: 135,weight: .semibold,  design: .rounded))
+                                        .font(.system(size: horizontalSizeClass == .compact ? 50 : 135,weight: .semibold,  design: .rounded))
                                         .foregroundColor(currCustomIconText.isEmpty ? Color(.systemGray) : .clear)
                                         .padding()
                                     //SuperTextField(placeholder: Text("Label"), text: $currCustomIconText, editingChanged: { editing in
@@ -2160,7 +2244,7 @@ struct ContentView: View {
                                     })
                                     .minimumScaleFactor(0.1)
                                     .multilineTextAlignment(.center)
-                                    .font(.system(size: 135,weight: .semibold,  design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 50 : 135,weight: .semibold,  design: .rounded))
                                     .foregroundColor(.black)
                                     .padding()
                                     //Spacer()
@@ -2187,40 +2271,44 @@ struct ContentView: View {
                                 .foregroundColor(Color(.systemGray))
                                 .padding()
                         }
-                        if !(selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty) {
-                            Button(action: { //perform checks for no image, no label, or no either and possibly save the icon
-                                if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
-                                    showCustom.toggle()
-                                    currCustomIconText = ""
-                                    selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                                    showImageMenu = false
-                                } else {
-                                    if customPECSAddresses[currCustomIconText] != nil {
-                                        var i = 1
-                                        while customPECSAddresses[String("\(i)#id\(currCustomIconText)")] != nil {
-                                            i += 1
+                        if selectedCustomImage != UIImage(systemName: "square.fill") {
+                            if !(selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty) {
+                                Button(action: { //perform checks for no image, no label, or no either and possibly save the icon
+                                    if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
+                                        showCustom.toggle()
+                                        currCustomIconText = ""
+                                        selectedCustomImage = UIImage(systemName: "plus.viewfinder")
+                                        showImageMenu = false
+                                    } else {
+                                        if customPECSAddresses[currCustomIconText] != nil {
+                                            var i = 1
+                                            while customPECSAddresses[String("\(i)#id\(currCustomIconText)")] != nil {
+                                                i += 1
+                                            }
+                                            currCustomIconText = String("\(i)#id\(currCustomIconText)")
                                         }
-                                        currCustomIconText = String("\(i)#id\(currCustomIconText)")
+                                        
+                                        customPECSAddresses[currCustomIconText] = saveImageToDocumentsDirectory(selectedCustomImage!)
+                                        saveCustomPECSAddresses(customPECSAddresses)
+                                        
+                                        if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
+                                            saveNoImageIcons(customPECSAddresses[currCustomIconText]!)
+                                        }
+                                        
+                                        showCustom.toggle()
+                                        currCustomIconText = ""
+                                        selectedCustomImage = UIImage(systemName: "plus.viewfinder")
                                     }
-                                    
-                                    customPECSAddresses[currCustomIconText] = saveImageToDocumentsDirectory(selectedCustomImage!)
-                                    saveCustomPECSAddresses(customPECSAddresses)
-                                    
-                                    if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                        saveNoImageIcons(customPECSAddresses[currCustomIconText]!)
+                                    updateUsage("action:createIcon")
+                                }) {
+                                    if selectedCustomImage != UIImage(systemName: "square.fill") {
+                                        Image(systemName:"checkmark.square.fill")
+                                            .resizable()
+                                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                            .foregroundColor(.green)
+                                            .padding()
                                     }
-                                    
-                                    showCustom.toggle()
-                                    currCustomIconText = ""
-                                    selectedCustomImage = UIImage(systemName: "plus.viewfinder")
                                 }
-                                updateUsage("action:createIcon")
-                            }) {
-                                Image(systemName:"checkmark.square.fill")
-                                    .resizable()
-                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                    .foregroundColor(.green)
-                                    .padding()
                             }
                         }
                     }
@@ -2247,82 +2335,110 @@ struct ContentView: View {
                             VStack {
                                 Spacer()
                                 //new stuff start here
-                                
-                                if showImageMenu {
-                                    HStack {
-                                        Button(action: {
-                                            isImagePickerPresented.toggle()
-                                            showImageMenu.toggle()
-                                            customAnimate.toggle()
-                                        }) {
-                                            Image(systemName:"photo.on.rectangle")
-                                                .resizable()
-                                                .aspectRatio(1.25, contentMode: .fit)
-                                                .padding()
-                                        }
-                                        .padding()
-                                        
-                                        Button(action: {
-                                            if hasCameraPermission() {
-                                                showCamera.toggle()
-                                            } else {
-                                                if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                    UIApplication.shared.open(appSettings)
-                                                }
+                                if !isCustomTextFieldActive {
+                                    
+                                    if showImageMenu {
+                                        HStack {
+                                            Button(action: {
+                                                isImagePickerPresented.toggle()
+                                                if selectedCustomImage != UIImage(systemName: "plus.viewfinder") { showImageMenu.toggle() }
+                                                customAnimate.toggle()
+                                            }) {
+                                                Image(systemName:"photo.on.rectangle")
+                                                    .resizable()
+                                                    .aspectRatio(1.25, contentMode: .fit)
+                                                    .padding()
                                             }
-                                        }) {
-                                            Image(systemName:"camera.on.rectangle")
-                                                .resizable()
-                                                .aspectRatio(1.25, contentMode: .fit)
-                                                .padding()
-                                        }
-                                        .padding()
-                                    }
-                                    .padding()
-                                    
-                                    Divider()
-                                    
-                                    HStack {
-                                        Button(action: {
-                                            showImageMenu.toggle()
-                                            customAnimate.toggle()
-                                        }) {
-                                            Image(systemName:"arrow.uturn.backward")
-                                                .resizable()
-                                                .aspectRatio(1, contentMode: .fit)
-                                                .foregroundColor(Color(.systemGray))
-                                                .padding()
+                                            .padding()
+                                            
+                                            Button(action: {
+                                                if hasCameraPermission() {
+                                                    showCamera.toggle()
+                                                    if selectedCustomImage != UIImage(systemName: "plus.viewfinder") { showImageMenu.toggle() }
+                                                } else {
+                                                    if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
+                                                        UIApplication.shared.open(appSettings)
+                                                    }
+                                                }
+                                            }) {
+                                                Image(systemName:"camera.on.rectangle")
+                                                    .resizable()
+                                                    .aspectRatio(1.25, contentMode: .fit)
+                                                    .padding()
+                                            }
+                                            .padding()
                                         }
                                         .padding()
                                         
-                                        Button(action: {
-                                            showImageMenu.toggle()
-                                            selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                                            customAnimate.toggle()
-                                        }) {
-                                            Image(systemName:"trash.square.fill")
-                                                .resizable()
-                                                .aspectRatio(1, contentMode: .fit)
-                                                .foregroundColor(.red)
-                                                .padding()
-                                        }
-                                        .padding()
-                                    }
-                                    .padding()
-                                    Spacer()
-                                } else {
-                                    HStack {
-                                        Button(action: {
-                                            if selectedCustomImage != UIImage(systemName: "plus.viewfinder") {
-                                                //lastSelected == 0 ? isImagePickerPresented.toggle() : showCamera.toggle()
+                                        Divider()
+                                        
+                                        HStack {
+                                            Button(action: {
                                                 showImageMenu.toggle()
                                                 customAnimate.toggle()
-                                            } else {
-                                                isImagePickerPresented.toggle()
-                                                lastSelected = 0
+                                            }) {
+                                                Image(systemName:"arrow.uturn.backward")
+                                                    .resizable()
+                                                    .aspectRatio(1, contentMode: .fit)
+                                                    .foregroundColor(Color(.systemGray))
+                                                    .padding()
                                             }
-                                        }) {
-                                            if !isCustomTextFieldActive {
+                                            .padding()
+                                            
+                                            Button(action: {
+                                                showImageMenu.toggle()
+                                                selectedCustomImage = UIImage(systemName: "plus.viewfinder")
+                                                customAnimate.toggle()
+                                            }) {
+                                                if selectedCustomImage != UIImage(systemName: "plus.viewfinder") {
+                                                    ZStack {
+                                                        selectedCustomImage?.asImage
+                                                            .resizable()
+                                                            .aspectRatio(1, contentMode: .fit)
+                                                            .clipShape(RoundedRectangle(cornerRadius: 40))
+                                                            .opacity(0.25)
+                                                            .padding()
+                                                        
+                                                        if #available(iOS 15.0, *) {
+                                                            Image(systemName: "trash.square.fill")
+                                                                .resizable()
+                                                                .aspectRatio(1, contentMode: .fit)
+                                                                .foregroundColor(.red)
+                                                                .padding()
+                                                                .symbolRenderingMode(.hierarchical)
+                                                        } else {
+                                                            Image(systemName:"trash.square.fill")
+                                                                .resizable()
+                                                                .aspectRatio(1, contentMode: .fit)
+                                                                .foregroundColor(.red)
+                                                                .padding()
+                                                        }
+                                                    }
+                                                } else {
+                                                    Image(systemName:"trash.square.fill")
+                                                        .resizable()
+                                                        .aspectRatio(1, contentMode: .fit)
+                                                        .foregroundColor(.red)
+                                                        .padding()
+                                                }
+                                                
+                                            }
+                                            .padding()
+                                        }
+                                        .padding()
+                                        Spacer()
+                                    } else {
+                                        HStack {
+                                            Button(action: {
+                                                if selectedCustomImage != UIImage(systemName: "plus.viewfinder") {
+                                                    //lastSelected == 0 ? isImagePickerPresented.toggle() : showCamera.toggle()
+                                                    showImageMenu.toggle()
+                                                    customAnimate.toggle()
+                                                } else {
+                                                    isImagePickerPresented.toggle()
+                                                    lastSelected = 0
+                                                }
+                                            }) {
                                                 if selectedCustomImage == UIImage(systemName: "square.fill") {
                                                     ZStack {
                                                         Image(systemName: "square.fill")
@@ -2359,40 +2475,39 @@ struct ContentView: View {
                                                     }
                                                 }
                                             }
-                                        }
-                                        if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                            Divider().padding()
-                                            Button(action: {
-                                                if hasCameraPermission() {
-                                                    showCamera.toggle()
-                                                } else {
-                                                    if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                        UIApplication.shared.open(appSettings)
+                                            if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
+                                                Divider().padding()
+                                                Button(action: {
+                                                    if hasCameraPermission() {
+                                                        showCamera.toggle()
+                                                    } else {
+                                                        if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
+                                                            UIApplication.shared.open(appSettings)
+                                                        }
                                                     }
-                                                }
-                                            }) {
-                                                if #available(iOS 15.0, *) {
-                                                    Image(systemName: "camera.on.rectangle")
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .symbolRenderingMode(.hierarchical)
-                                                        .padding()
-                                                } else {
-                                                    Image(systemName: "camera.on.rectangle")
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .padding()
+                                                }) {
+                                                    if #available(iOS 15.0, *) {
+                                                        Image(systemName: "camera.on.rectangle")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .symbolRenderingMode(.hierarchical)
+                                                            .padding()
+                                                    } else {
+                                                        Image(systemName: "camera.on.rectangle")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .padding()
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                
                                 ZStack { //zstack with gray is to workaround low contrast on dark mode despite white background
                                     Text("Label")
                                         .minimumScaleFactor(0.1)
                                         .multilineTextAlignment(.center)
-                                        .font(.system(size: 135,weight: .semibold,  design: .rounded))
+                                        .font(.system(size: horizontalSizeClass == .compact ? 50 : 135,weight: .semibold,  design: .rounded))
                                         .foregroundColor(currCustomIconText.isEmpty ? Color(.systemGray) : .clear)
                                         .padding()
                                     //SuperTextField(placeholder: Text("Label"), text: $currCustomIconText, editingChanged: { editing in
@@ -2404,7 +2519,7 @@ struct ContentView: View {
                                     })
                                     .minimumScaleFactor(0.1)
                                     .multilineTextAlignment(.center)
-                                    .font(.system(size: 135,weight: .semibold,  design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 50 : 135,weight: .semibold,  design: .rounded))
                                     .foregroundColor(.black)
                                     .padding()
                                     //Spacer()
@@ -2431,104 +2546,106 @@ struct ContentView: View {
                                 .padding()
                         }
                         .ignoresSafeArea(.keyboard)
-                        Button(action: { //perform checks for no image, no label, or no either and possibly save the icon
-                            //update and save completed icon
-                            //check to see if image and label are both blank, if so either delete or dont save?
-                            //possible change the nesting of the code so that it performs all the check to do nothing first before proceeding to others
-                            
-                            if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
+                        if selectedCustomImage != UIImage(systemName: "square.fill") {
+                            Button(action: { //perform checks for no image, no label, or no either and possibly save the icon
+                                //update and save completed icon
+                                //check to see if image and label are both blank, if so either delete or dont save?
+                                //possible change the nesting of the code so that it performs all the check to do nothing first before proceeding to others
                                 
-                                let newSheetArray = deleteCustomIcons(currIcon: oldEditingIcon)
-                                currSheet = newSheetArray[getCurrSheetIndex()]
-                                saveSheetArray(sheetObjects: newSheetArray)
-                                customPECSAddresses = getCustomPECSAddresses()
-                                removedIcons = currSheet.removedIcons
-                                completedIcons = currSheet.completedIcons
-                                
-                            } else {
-                                if oldEditingIcon == currCustomIconText && selectedCustomImage == UIImage(systemName: "plus.viewfinder") && getNoImageIcons().contains(oldEditingIcon) {
+                                if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
                                     
-                                    //it is an icon with no image that hasnt changed
+                                    let newSheetArray = deleteCustomIcons(currIcon: oldEditingIcon)
+                                    currSheet = newSheetArray[getCurrSheetIndex()]
+                                    saveSheetArray(sheetObjects: newSheetArray)
+                                    customPECSAddresses = getCustomPECSAddresses()
+                                    removedIcons = currSheet.removedIcons
+                                    completedIcons = currSheet.completedIcons
                                     
-                                } else if oldEditingIcon == currCustomIconText && selectedCustomImage == loadImageFromLocalURL(customPECSAddresses[oldEditingIcon]!) {
-                                    
-                                    //it is an image with an icon that hasnt changed
-                                    
-                                } else if oldEditingIcon == currCustomIconText && selectedCustomImage != loadImageFromLocalURL(customPECSAddresses[oldEditingIcon]!) {
-                                    
-                                    deleteFile(at: customPECSAddresses[oldEditingIcon]!)
-                                    customPECSAddresses[oldEditingIcon] = saveImageToDocumentsDirectory(selectedCustomImage!)
-                                    saveCustomPECSAddresses(customPECSAddresses)
-                                    if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                        saveNoImageIcons(customPECSAddresses[currCustomIconText]!)
-                                    }
-                                    //icon with image, only the image changed
-                                    
-                                }
-                                
-                                if oldEditingIcon != currCustomIconText {
-                                    
-                                    currSessionLog.append("old editing icon: \(oldEditingIcon), curr custom icon: \(currCustomIconText)")
-                                    
-                                    //perform checks for no image, no label, or no either and possibly save the icon
-                                    if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
-                                        //nothing to do
-                                    } else {
-                                        if customPECSAddresses[currCustomIconText] != nil {
-                                            var i = 1
-                                            while customPECSAddresses[String("\(i)#id\(currCustomIconText)")] != nil {
-                                                i += 1
-                                            }
-                                            currCustomIconText = String("\(i)#id\(currCustomIconText)")
-                                        }
+                                } else {
+                                    if oldEditingIcon == currCustomIconText && selectedCustomImage == UIImage(systemName: "plus.viewfinder") && getNoImageIcons().contains(oldEditingIcon) {
                                         
-                                        deleteFile(at: customPECSAddresses[oldEditingIcon] ?? "")
-                                        customPECSAddresses[currCustomIconText] = saveImageToDocumentsDirectory(selectedCustomImage!)
-                                        customPECSAddresses.removeValue(forKey: oldEditingIcon)
+                                        //it is an icon with no image that hasnt changed
+                                        
+                                    } else if oldEditingIcon == currCustomIconText && selectedCustomImage == loadImageFromLocalURL(customPECSAddresses[oldEditingIcon]!) {
+                                        
+                                        //it is an image with an icon that hasnt changed
+                                        
+                                    } else if oldEditingIcon == currCustomIconText && selectedCustomImage != loadImageFromLocalURL(customPECSAddresses[oldEditingIcon]!) {
+                                        
+                                        deleteFile(at: customPECSAddresses[oldEditingIcon]!)
+                                        customPECSAddresses[oldEditingIcon] = saveImageToDocumentsDirectory(selectedCustomImage!)
                                         saveCustomPECSAddresses(customPECSAddresses)
-                                        
                                         if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
                                             saveNoImageIcons(customPECSAddresses[currCustomIconText]!)
                                         }
+                                        //icon with image, only the image changed
                                         
-                                        let newArray = updateCustomIcons(oldKey: oldEditingIcon, newKey: currCustomIconText)
-                                        saveSheetArray(sheetObjects: newArray)
-                                        currSheet = newArray[getCurrSheetIndex()]
-                                        removedIcons = currSheet.removedIcons
-                                        completedIcons = currSheet.completedIcons
+                                    }
+                                    
+                                    if oldEditingIcon != currCustomIconText {
                                         
+                                        currSessionLog.append("old editing icon: \(oldEditingIcon), curr custom icon: \(currCustomIconText)")
                                         
-                                        if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                            saveNoImageIcons(customPECSAddresses[currCustomIconText]!)
+                                        //perform checks for no image, no label, or no either and possibly save the icon
+                                        if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
+                                            //nothing to do
+                                        } else {
+                                            if customPECSAddresses[currCustomIconText] != nil {
+                                                var i = 1
+                                                while customPECSAddresses[String("\(i)#id\(currCustomIconText)")] != nil {
+                                                    i += 1
+                                                }
+                                                currCustomIconText = String("\(i)#id\(currCustomIconText)")
+                                            }
+                                            
+                                            deleteFile(at: customPECSAddresses[oldEditingIcon] ?? "")
+                                            customPECSAddresses[currCustomIconText] = saveImageToDocumentsDirectory(selectedCustomImage!)
+                                            customPECSAddresses.removeValue(forKey: oldEditingIcon)
+                                            saveCustomPECSAddresses(customPECSAddresses)
+                                            
+                                            if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
+                                                saveNoImageIcons(customPECSAddresses[currCustomIconText]!)
+                                            }
+                                            
+                                            let newArray = updateCustomIcons(oldKey: oldEditingIcon, newKey: currCustomIconText)
+                                            saveSheetArray(sheetObjects: newArray)
+                                            currSheet = newArray[getCurrSheetIndex()]
+                                            removedIcons = currSheet.removedIcons
+                                            completedIcons = currSheet.completedIcons
+                                            
+                                            
+                                            if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
+                                                saveNoImageIcons(customPECSAddresses[currCustomIconText]!)
+                                            }
                                         }
                                     }
                                 }
-                            }
                                 
-                            currCustomIconText = ""
-                            oldEditingIcon = ""
-                            selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                            editCustom.toggle()
-                            updateUsage("action:editIcon")
-                            showImageMenu = false
-                            
-                        }) {
-                            if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
-                                Image(systemName:"trash.square.fill")
-                                    .resizable()
-                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                    .foregroundColor(.red)
-                                    .padding()
-                            } else {
-                                Image(systemName:"checkmark.square.fill")
-                                    .resizable()
-                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                //.fontWeight(.bold)
-                                    .foregroundColor(.green)
-                                    .padding()
+                                currCustomIconText = ""
+                                oldEditingIcon = ""
+                                selectedCustomImage = UIImage(systemName: "plus.viewfinder")
+                                editCustom.toggle()
+                                updateUsage("action:editIcon")
+                                showImageMenu = false
+                                
+                            }) {
+                                if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
+                                    Image(systemName:"trash.square.fill")
+                                        .resizable()
+                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                        .foregroundColor(.red)
+                                        .padding()
+                                } else {
+                                    Image(systemName:"checkmark.square.fill")
+                                        .resizable()
+                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                    //.fontWeight(.bold)
+                                        .foregroundColor(.green)
+                                        .padding()
+                                }
                             }
+                            .ignoresSafeArea(.keyboard)
                         }
-                        .ignoresSafeArea(.keyboard)
                     }
                     .ignoresSafeArea(.keyboard)
                 }
@@ -2536,6 +2653,9 @@ struct ContentView: View {
                 .sheet(isPresented: $isImagePickerPresented) {
                     UIImagePicker(selectedImage: $selectedCustomImage)
                 }
+                .fullScreenCover(isPresented: $showCamera, content: {
+                    CameraPickerView(selectedImage: $selectedCustomImage)
+                })
             }
         }
         .fullScreenCover(isPresented: $showMod) { //the fullscreencover that enlarges the icon and lets you remove or complete it
@@ -2567,14 +2687,25 @@ struct ContentView: View {
                                 }) {
                                     //loadImage() or getCustomIcon() depending
                                     if tempDetails[detail].contains("customIconObject:") {
-                                        getCustomIcon(tempDetails[detail])
-                                            .scaledToFit()
-                                            .clipShape(RoundedRectangle(cornerRadius: 15))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 15)
-                                                    .stroke(.black, lineWidth: 10)
-                                            )
-                                            .padding()
+                                        if horizontalSizeClass == .compact {
+                                            getCustomIconSmall(tempDetails[detail])
+                                                .scaledToFit()
+                                                .clipShape(RoundedRectangle(cornerRadius: 15))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 15)
+                                                        .stroke(.black, lineWidth: 6)
+                                                )
+                                                .padding()
+                                        } else {
+                                            getCustomIcon(tempDetails[detail])
+                                                .scaledToFit()
+                                                .clipShape(RoundedRectangle(cornerRadius: 15))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 15)
+                                                        .stroke(.black, lineWidth: 10)
+                                                )
+                                                .padding()
+                                        }
                                     } else {
                                         loadImage(named: tempDetails[detail])
                                             .resizable()
@@ -2582,13 +2713,13 @@ struct ContentView: View {
                                             .clipShape(RoundedRectangle(cornerRadius: 15))
                                             .overlay(
                                                 RoundedRectangle(cornerRadius: 15)
-                                                    .stroke(.black, lineWidth: 10)
+                                                    .stroke(.black, lineWidth: (horizontalSizeClass == .compact ? 6 : 10))
                                             )
                                             .padding()
                                     }
                                 }
                             }
-                            if tempDetails.count < 5 {
+                            if tempDetails.count < (horizontalSizeClass == .compact ? 3 : 5) {
                                 Button(action: {
                                     detailIconIndex = -1
                                     searchText = ""
@@ -2667,7 +2798,7 @@ struct ContentView: View {
                             ScrollView {
                                 TextField("\(Image(systemName: "magnifyingglass")) Search", text: $searchText)
                                     .multilineTextAlignment(.center)
-                                    .font(.system(size: 65, weight: .semibold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 35 : 65, weight: .semibold, design: .rounded))
                                     .padding()
                                     .background(
                                         RoundedRectangle(cornerRadius: 20)
@@ -2675,7 +2806,7 @@ struct ContentView: View {
                                     )
                                     .padding()
                                 
-                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
+                                LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
                                     ForEach(0..<filteredCustomData.count, id: \.self) { key in //first display custom icon results
                                         Button(action: {
                                             //select the custom icon and close the popover
@@ -2753,7 +2884,7 @@ struct ContentView: View {
                                         .lineLimit(1)
                                         .minimumScaleFactor(0.01)
                                         .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) { //grid of custom icons
+                                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) { //grid of custom icons
                                         ForEach(getCustomPECSAddresses().sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
                                             Button(action: {
                                                 //select the custom icon for the detail and close the popover
@@ -2794,7 +2925,7 @@ struct ContentView: View {
                                             .lineLimit(1)
                                             .minimumScaleFactor(0.01)
                                             .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
+                                        LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
                                             ForEach(1..<icon.count, id: \.self) { sheeticonobject in
                                                 Button(action: {
                                                     //assign the icon
@@ -2888,7 +3019,7 @@ struct ContentView: View {
                                         .clipShape(RoundedRectangle(cornerRadius: 15))
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 15)
-                                                .stroke(.black, lineWidth: 10)
+                                                .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 6 : 10)
                                         )
                                         .padding()
                                 }
@@ -2924,14 +3055,25 @@ struct ContentView: View {
                                 } label: {
                                     //loadImage() or getCustomIcon() depending
                                     if tempDetails[detail].contains("customIconObject:") {
-                                        getCustomIcon(tempDetails[detail])
-                                            .scaledToFit()
-                                            .clipShape(RoundedRectangle(cornerRadius: 15))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 15)
-                                                    .stroke(.black, lineWidth: 10)
-                                            )
-                                            .padding()
+                                        if horizontalSizeClass == .compact {
+                                            getCustomIconSmall(tempDetails[detail])
+                                                .scaledToFit()
+                                                .clipShape(RoundedRectangle(cornerRadius: 15))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 15)
+                                                        .stroke(.black, lineWidth: 6)
+                                                )
+                                                .padding()
+                                        } else {
+                                            getCustomIcon(tempDetails[detail])
+                                                .scaledToFit()
+                                                .clipShape(RoundedRectangle(cornerRadius: 15))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 15)
+                                                        .stroke(.black, lineWidth: 10)
+                                                )
+                                                .padding()
+                                        }
                                     } else {
                                         loadImage(named: tempDetails[detail])
                                             .resizable()
@@ -2939,7 +3081,7 @@ struct ContentView: View {
                                             .clipShape(RoundedRectangle(cornerRadius: 15))
                                             .overlay(
                                                 RoundedRectangle(cornerRadius: 15)
-                                                    .stroke(.black, lineWidth: 10)
+                                                    .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 6 : 10)
                                             )
                                             .padding()
                                     }
@@ -2949,7 +3091,7 @@ struct ContentView: View {
                     }
                 }
                 
-                HStack {
+                HStack(alignment: .top) {
                     if !editMode {
                         Button(action: {
                             showMod.toggle()
@@ -2958,10 +3100,10 @@ struct ContentView: View {
                             VStack {
                                 Image(systemName:"xmark.square.fill")
                                     .resizable()
-                                    .frame(width: min(150, 500), height: min(150, 500))
+                                    .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                 //.fontWeight(.bold)
                                 Text("Cancel")
-                                    .font(.system(size: 25, weight: .semibold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
                             }
                         }
                         .padding()
@@ -2980,9 +3122,9 @@ struct ContentView: View {
                                 VStack {
                                     Image(systemName: "lock.square")
                                         .resizable()
-                                        .frame(width: min(150, 500), height: min(150, 500))
+                                        .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                     Text("Buttons Locked")
-                                        .font(.system(size: 25, weight: .semibold, design: .rounded))
+                                        .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
                                 }
                             }
                             .padding()
@@ -3007,14 +3149,14 @@ struct ContentView: View {
                                     ZStack {
                                         Image(systemName: "square.fill")
                                             .resizable()
-                                            .frame(width: min(150, 500), height: min(150, 500))
+                                            .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                         Image(systemName: "square.slash")
                                             .resizable()
-                                            .frame(width: min(100, 250), height: min(100, 250))
+                                            .frame(width: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250), height: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250))
                                             .foregroundColor(Color(.systemBackground))
                                     }
                                     Text(tempDetails.isEmpty ? "Remove Icon" : "Remove All")
-                                        .font(.system(size: 25, weight: .semibold, design: .rounded))
+                                        .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
                                 }
                             }
                             .padding()
@@ -3038,10 +3180,10 @@ struct ContentView: View {
                                 VStack {
                                     Image(systemName: "checkmark.square.fill")
                                         .resizable()
-                                        .frame(width: min(150, 500), height: min(150, 500))
+                                        .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                     //.fontWeight(.bold)
                                     Text(tempDetails.isEmpty ? "Complete Icon" : "Complete All")
-                                        .font(.system(size: 25, weight: .semibold, design: .rounded))
+                                        .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
                                 }
                             }
                             .padding()
@@ -3057,12 +3199,12 @@ struct ContentView: View {
                             if checkDetails == currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? [] {
                                 Image(systemName:"xmark.square.fill")
                                     .resizable()
-                                    .frame(width: min(150, 500), height: min(150, 500))
+                                    .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                     .foregroundColor(Color(.systemGray))
                             } else {
                                 Image(systemName:"checkmark.square.fill")
                                     .resizable()
-                                    .frame(width: min(150, 500), height: min(150, 500))
+                                    .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                     .foregroundColor(.green)
                             }
                         }
@@ -3072,7 +3214,6 @@ struct ContentView: View {
             }
         }
         .fullScreenCover(isPresented: $showSettings) { //fullscreencover for the settings page
-            NavigationView {
                 SettingsView(onDismiss: {
                     lockButtonsOn = defaults.bool(forKey: "buttonsOn")
                     showCurrentSlot = defaults.bool(forKey: "showCurrSlot")
@@ -3080,9 +3221,6 @@ struct ContentView: View {
                     speakIcons = defaults.bool(forKey: "speakOn")
                     currSheet = autoRemoveSlots(currSheet)
                 })
-            }
-            .navigationViewStyle(StackNavigationViewStyle())
-            .navigationBarHidden(true)
         }
         .onAppear{ //re-check for notification permission when settings opened
             @State var notificationsAllowed: Bool?
@@ -3110,6 +3248,7 @@ struct ContentView: View {
                                 .minimumScaleFactor(0.5)
                                 .font(.system(size: 30, weight: .bold, design: .rounded))
                                 .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray3): Color(.systemGray6))
+                                .padding(.trailing)
                         }
                     }
                 }
@@ -3212,6 +3351,7 @@ struct ContentView: View {
                                 .minimumScaleFactor(0.5)
                                 .font(.system(size: 30, weight: .bold, design: .rounded))
                                 .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray3): Color(.systemGray6))
+                                .padding(.trailing)
                         }
                     }
                 }
@@ -3327,6 +3467,7 @@ struct ContentView: View {
                                     .minimumScaleFactor(0.5)
                                     .font(.system(size: 30, weight: .bold, design: .rounded))
                                     .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray3): Color(.systemGray6))
+                                    .padding([.top, .trailing])
                             }
                         }
                     }
@@ -3346,6 +3487,11 @@ struct ContentView: View {
                                             .foregroundColor(Color(.systemGray5))
                                             //.frame(width: horizontalSizeClass == .compact ? 125 : 200, height: horizontalSizeClass == .compact ? 125 : 200) this causes it to look strange on smaller iPads, not comapct screens but small enough to cause itemt to run un
                                             .scaledToFit()
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .foregroundColor(getCurrSheetIndex() == sheet ? .blue : Color(.systemGray5))
+                                            .scaledToFit()
+                                            .opacity(0.5)
                                         VStack {
                                             
                                             //check to see if there is a curc LabelIcon
@@ -3562,7 +3708,7 @@ struct ContentView: View {
                         }, onCommit: {
                             sheetAnimate.toggle()
                         })
-                        .font(.system(size: 65, weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 40 : 65, weight: .bold, design: .rounded))
                         .padding()
                         .background(
                             RoundedRectangle(cornerRadius: 20)
@@ -3573,109 +3719,215 @@ struct ContentView: View {
                     .padding()
                     Spacer()
                     if !isTextFieldActive { //just to handle the content getting pushed off screen by the keybpoard on smaller devices
-                        HStack {
+                        if horizontalSizeClass == .compact {
                             VStack {
-                                Button(action: {
-                                    newSheetTime = true
-                                    newSheetLabel = false
-                                    sheetAnimate.toggle()
-                                    
-                                    defaults.set(true, forKey: "completedTutorial")
-                                    if newSheetTime {
-                                        newSheet(gridType: "time", label: currSheetText)
-                                    } else if newSheetLabel {
-                                        newSheet(gridType: "label", label: currSheetText)
+                                VStack {
+                                    Button(action: {
+                                        newSheetTime = true
+                                        newSheetLabel = false
+                                        sheetAnimate.toggle()
+                                        
+                                        defaults.set(true, forKey: "completedTutorial")
+                                        if newSheetTime {
+                                            newSheet(gridType: "time", label: currSheetText)
+                                        } else if newSheetLabel {
+                                            newSheet(gridType: "label", label: currSheetText)
+                                        }
+                                        currTitleText = currSheetText
+                                        defaults.set(loadSheetArray().count - 1, forKey: "currSheetIndex")
+                                        sheetArray = loadSheetArray()
+                                        currSheetText = ""
+                                        currSheet = loadSheetArray()[getCurrSheetIndex()]
+                                        removedIcons = currSheet.removedIcons
+                                        completedIcons = currSheet.completedIcons
+                                        Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false) { timer in
+                                            editMode.toggle()
+                                            createNewSheet.toggle()
+                                            newSheetTime.toggle()
+                                            showAllSheets.toggle()
+                                        }
+                                        updateUsage("action:create")
+                                    }) {
+                                        ZStack {
+                                            Image(systemName: "square.fill")
+                                                .resizable()
+                                                .padding()
+                                                .foregroundColor(newSheetTime ? .blue : Color(.systemGray))
+                                                .scaledToFill()
+                                                .padding(newSheetTime ? 0 : 10)
+                                                .padding(newSheetTime ? 0 : 10)
+                                                .padding(newSheetTime ? 0 : 10)
+                                            Image(systemName: "timer")
+                                                .resizable()
+                                                .foregroundColor(newSheetTime ? .white : Color(.systemBackground))
+                                                .scaledToFit()
+                                                .padding(newSheetTime ? 0 : 85)
+                                        }
+                                        .scaledToFit()
                                     }
-                                    currTitleText = currSheetText
-                                    defaults.set(loadSheetArray().count - 1, forKey: "currSheetIndex")
-                                    sheetArray = loadSheetArray()
-                                    currSheetText = ""
-                                    currSheet = loadSheetArray()[getCurrSheetIndex()]
-                                    removedIcons = currSheet.removedIcons
-                                    completedIcons = currSheet.completedIcons
-                                    Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false) { timer in
-                                        editMode.toggle()
-                                        createNewSheet.toggle()
-                                        newSheetTime.toggle()
-                                        showAllSheets.toggle()
-                                    }
-                                    updateUsage("action:create")
-                                }) {
-                                    ZStack {
-                                        Image(systemName: "square.fill")
-                                            .resizable()
-                                            .padding()
-                                            .foregroundColor(newSheetTime ? .blue : Color(.systemGray))
-                                            .scaledToFill()
-                                            .padding(newSheetTime ? 0 : 10)
-                                            .padding(newSheetTime ? 0 : 10)
-                                            .padding(newSheetTime ? 0 : 10)
-                                        Image(systemName: "timer")
-                                            .resizable()
-                                            .foregroundColor(newSheetTime ? .white : Color(.systemBackground))
-                                            .scaledToFit()
-                                            .padding(newSheetTime ? 0 : 85)
-                                    }
-                                    .scaledToFit()
+                                    Text("Timeslot Sheet")
+                                        .minimumScaleFactor(0.01)
+                                        .multilineTextAlignment(.center)
+                                        .font(.system(size: 30, weight: .semibold, design: .rounded))
                                 }
-                                Text("Timeslot Sheet")
-                                    .minimumScaleFactor(0.01)
-                                    .multilineTextAlignment(.center)
-                                    .font(.system(size: 30, weight: .semibold, design: .rounded))
-                            }
-                            .padding()
-                            VStack {
-                                Button(action: {
-                                    newSheetTime = false
-                                    newSheetLabel = true
-                                    sheetAnimate.toggle()
-                                    
-                                    defaults.set(true, forKey: "completedTutorial")
-                                    if newSheetTime {
-                                        newSheet(gridType: "time", label: currSheetText)
-                                    } else {
-                                        newSheet(gridType: "label", label: currSheetText)
+                                .padding()
+                                VStack {
+                                    Button(action: {
+                                        newSheetTime = false
+                                        newSheetLabel = true
+                                        sheetAnimate.toggle()
+                                        
+                                        defaults.set(true, forKey: "completedTutorial")
+                                        if newSheetTime {
+                                            newSheet(gridType: "time", label: currSheetText)
+                                        } else {
+                                            newSheet(gridType: "label", label: currSheetText)
+                                        }
+                                        currTitleText = currSheetText
+                                        defaults.set(loadSheetArray().count - 1, forKey: "currSheetIndex")
+                                        sheetArray = loadSheetArray()
+                                        currSheetText = ""
+                                        currSheet = loadSheetArray()[getCurrSheetIndex()]
+                                        removedIcons = currSheet.removedIcons
+                                        completedIcons = currSheet.completedIcons
+                                        Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false) { timer in
+                                            editMode.toggle()
+                                            createNewSheet.toggle()
+                                            newSheetLabel.toggle()
+                                            showAllSheets.toggle()
+                                        }
+                                        updateUsage("action:create")
+                                    }) {
+                                        ZStack {
+                                            Image(systemName: "square.fill")
+                                                .resizable()
+                                                .padding()
+                                                .foregroundColor(newSheetLabel ? .blue : Color(.systemGray))
+                                                .scaledToFill()
+                                                .padding(newSheetLabel ? 0 : 10)
+                                                .padding(newSheetLabel ? 0 : 10)
+                                                .padding(newSheetLabel ? 0 : 10)
+                                            Image(systemName: "tag")
+                                                .resizable()
+                                                .foregroundColor(newSheetLabel ? .white : Color(.systemBackground))
+                                                .scaledToFit()
+                                                .padding(newSheetTime ? 0 : 85)
+                                        }
+                                        .scaledToFit()
                                     }
-                                    currTitleText = currSheetText
-                                    defaults.set(loadSheetArray().count - 1, forKey: "currSheetIndex")
-                                    sheetArray = loadSheetArray()
-                                    currSheetText = ""
-                                    currSheet = loadSheetArray()[getCurrSheetIndex()]
-                                    removedIcons = currSheet.removedIcons
-                                    completedIcons = currSheet.completedIcons
-                                    Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false) { timer in
-                                        editMode.toggle()
-                                        createNewSheet.toggle()
-                                        newSheetLabel.toggle()
-                                        showAllSheets.toggle()
-                                    }
-                                    updateUsage("action:create")
-                                }) {
-                                    ZStack {
-                                        Image(systemName: "square.fill")
-                                            .resizable()
-                                            .padding()
-                                            .foregroundColor(newSheetLabel ? .blue : Color(.systemGray))
-                                            .scaledToFill()
-                                            .padding(newSheetLabel ? 0 : 10)
-                                            .padding(newSheetLabel ? 0 : 10)
-                                            .padding(newSheetLabel ? 0 : 10)
-                                        Image(systemName: "tag.fill")
-                                            .resizable()
-                                            .foregroundColor(newSheetLabel ? .white : Color(.systemBackground))
-                                            .scaledToFit()
-                                            .padding(newSheetLabel ? 0 : 85)
-                                    }
-                                    .scaledToFit()
+                                    Text("Custom Labels Sheet")
+                                        .minimumScaleFactor(0.01)
+                                        .multilineTextAlignment(.center)
+                                        .font(.system(size: 30, weight: .semibold, design: .rounded))
                                 }
-                                Text("Custom Labels Sheet")
-                                    .minimumScaleFactor(0.01)
-                                    .multilineTextAlignment(.center)
-                                    .font(.system(size: 30, weight: .semibold, design: .rounded))
+                                .padding()
                             }
-                            .padding()
+                            .scaledToFit()
+                        } else {
+                            HStack {
+                                VStack {
+                                    Button(action: {
+                                        newSheetTime = true
+                                        newSheetLabel = false
+                                        sheetAnimate.toggle()
+                                        
+                                        defaults.set(true, forKey: "completedTutorial")
+                                        if newSheetTime {
+                                            newSheet(gridType: "time", label: currSheetText)
+                                        } else if newSheetLabel {
+                                            newSheet(gridType: "label", label: currSheetText)
+                                        }
+                                        currTitleText = currSheetText
+                                        defaults.set(loadSheetArray().count - 1, forKey: "currSheetIndex")
+                                        sheetArray = loadSheetArray()
+                                        currSheetText = ""
+                                        currSheet = loadSheetArray()[getCurrSheetIndex()]
+                                        removedIcons = currSheet.removedIcons
+                                        completedIcons = currSheet.completedIcons
+                                        Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false) { timer in
+                                            editMode.toggle()
+                                            createNewSheet.toggle()
+                                            newSheetTime.toggle()
+                                            showAllSheets.toggle()
+                                        }
+                                        updateUsage("action:create")
+                                    }) {
+                                        ZStack {
+                                            Image(systemName: "square.fill")
+                                                .resizable()
+                                                .padding()
+                                                .foregroundColor(newSheetTime ? .blue : Color(.systemGray))
+                                                .scaledToFill()
+                                                .padding(newSheetTime ? 0 : 10)
+                                                .padding(newSheetTime ? 0 : 10)
+                                                .padding(newSheetTime ? 0 : 10)
+                                            Image(systemName: "timer")
+                                                .resizable()
+                                                .foregroundColor(newSheetTime ? .white : Color(.systemBackground))
+                                                .scaledToFit()
+                                                .padding(newSheetTime ? 0 : 85)
+                                        }
+                                        .scaledToFit()
+                                    }
+                                    Text("Timeslot Sheet")
+                                        .minimumScaleFactor(0.01)
+                                        .multilineTextAlignment(.center)
+                                        .font(.system(size: 30, weight: .semibold, design: .rounded))
+                                }
+                                .padding()
+                                VStack {
+                                    Button(action: {
+                                        newSheetTime = false
+                                        newSheetLabel = true
+                                        sheetAnimate.toggle()
+                                        
+                                        defaults.set(true, forKey: "completedTutorial")
+                                        if newSheetTime {
+                                            newSheet(gridType: "time", label: currSheetText)
+                                        } else {
+                                            newSheet(gridType: "label", label: currSheetText)
+                                        }
+                                        currTitleText = currSheetText
+                                        defaults.set(loadSheetArray().count - 1, forKey: "currSheetIndex")
+                                        sheetArray = loadSheetArray()
+                                        currSheetText = ""
+                                        currSheet = loadSheetArray()[getCurrSheetIndex()]
+                                        removedIcons = currSheet.removedIcons
+                                        completedIcons = currSheet.completedIcons
+                                        Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false) { timer in
+                                            editMode.toggle()
+                                            createNewSheet.toggle()
+                                            newSheetLabel.toggle()
+                                            showAllSheets.toggle()
+                                        }
+                                        updateUsage("action:create")
+                                    }) {
+                                        ZStack {
+                                            Image(systemName: "square.fill")
+                                                .resizable()
+                                                .padding()
+                                                .foregroundColor(newSheetLabel ? .blue : Color(.systemGray))
+                                                .scaledToFill()
+                                                .padding(newSheetLabel ? 0 : 10)
+                                                .padding(newSheetLabel ? 0 : 10)
+                                                .padding(newSheetLabel ? 0 : 10)
+                                            Image(systemName: "tag")
+                                                .resizable()
+                                                .foregroundColor(newSheetLabel ? .white : Color(.systemBackground))
+                                                .scaledToFit()
+                                                .padding(newSheetTime ? 0 : 85)
+                                        }
+                                        .scaledToFit()
+                                    }
+                                    Text("Custom Labels Sheet")
+                                        .minimumScaleFactor(0.01)
+                                        .multilineTextAlignment(.center)
+                                        .font(.system(size: 30, weight: .semibold, design: .rounded))
+                                }
+                                .padding()
+                            }
+                            .scaledToFit()
                         }
-                        .scaledToFit()
                         Spacer()
                         HStack {
                             if defaults.bool(forKey: "completedTutorial") { //if they havent actually done anything take them back to the welcome screen
@@ -3744,7 +3996,7 @@ struct ContentView: View {
                             }
                             currSheetText = ""
                         })
-                        .font(.system(size: 65, weight: .semibold, design: .rounded))
+                        .font(.system(size: horizontalSizeClass == .compact ? 35 : 65, weight: .semibold, design: .rounded))
                         .padding()
                         .background(
                             RoundedRectangle(cornerRadius: 20)
@@ -3841,7 +4093,7 @@ struct ContentView: View {
                     ScrollView {
                         TextField("\(Image(systemName: "magnifyingglass")) Search", text: $searchText)
                             .multilineTextAlignment(.center)
-                            .font(.system(size: 65, weight: .semibold, design: .rounded))
+                            .font(.system(size: horizontalSizeClass == .compact ? 35 : 65, weight: .semibold, design: .rounded))
                             .padding()
                             .background(
                                 RoundedRectangle(cornerRadius: 20)
@@ -3849,7 +4101,7 @@ struct ContentView: View {
                             )
                             .padding()
                         
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
                             ForEach(0..<filteredCustomData.count, id: \.self) { key in //first display custom icon results
                                 Button(action: {
                                     sheetArray[currSheetIndex].currLabelIcon = "customIconObject:\(filteredCustomData[key])"
@@ -3909,7 +4161,7 @@ struct ContentView: View {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.01)
                                 .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) { //grid of custom icons
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) { //grid of custom icons
                                 ForEach(getCustomPECSAddresses().sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
                                     Button(action: {
                                         sheetArray[currSheetIndex].currLabelIcon = "customIconObject:\(key)"
@@ -3941,7 +4193,7 @@ struct ContentView: View {
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.01)
                                     .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
+                                LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
                                     ForEach(1..<icon.count, id: \.self) { sheeticonobject in
                                         Button(action: {
                                             sheetArray[currSheetIndex].currLabelIcon = String(icon[sheeticonobject])

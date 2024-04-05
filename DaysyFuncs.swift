@@ -484,18 +484,18 @@ func fillMissingDates(in usageArray: [UsageData]) -> [UsageData] {
 }
 
 func hasCameraPermission() -> Bool {
-        let status = AVCaptureDevice.authorizationStatus(for: .video)
-
-        switch status {
-        case .authorized:
-            return true
-        case .notDetermined:
-            var isAuthorized = false
-            AVCaptureDevice.requestAccess(for: .video) { granted in
-                isAuthorized = granted
-            }
-            return isAuthorized
-        default:
-            return false
+    let status = AVCaptureDevice.authorizationStatus(for: .video)
+    
+    switch status {
+    case .authorized:
+        return true
+    case .notDetermined:
+        var isAuthorized = false
+        AVCaptureDevice.requestAccess(for: .video) { granted in
+            isAuthorized = granted
         }
+        return isAuthorized
+    default:
+        return false
     }
+}
