@@ -674,18 +674,43 @@ struct TryItView: View { //interactive little mini sheet to play with
                         .padding()
                         .foregroundColor(Color(.systemGray))
                         
-                        Button(action: {
-                            showIcons.toggle()
-                            currGrid[currSetIndex] = loadSystemImage(named: "plus.viewfinder")
-                            
-                        }) {
-                            Image(systemName: "trash.square.fill")
-                                .resizable()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                //.fontWeight(.bold)
+                        if currGrid[currSetIndex] != Image(systemName: "plus.viewfinder") {
+                            Button(action: {
+                                showIcons.toggle()
+                                currGrid[currSetIndex] = loadSystemImage(named: "plus.viewfinder")
+                                
+                            }) {
+                                ZStack {
+                                    currGrid[currSetIndex]
+                                        .resizable()
+                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                        .opacity(0.25)
+                                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(lineWidth: 3)
+                                        )
+                                    
+                                    if #available(iOS 15.0, *) {
+                                        Image(systemName: "trash.square.fill")
+                                            .resizable()
+                                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                            .symbolRenderingMode(.hierarchical)
+                                    } else {
+                                        Image(systemName: "trash.square.fill")
+                                            .resizable()
+                                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                    }
+                                }
+                            }
+                            .padding()
+                            .foregroundColor(.red)
                         }
-                        .padding()
-                        .foregroundColor(.red)
+                        
+                        
+                        
+                        
+                        
                     }
                 }
                 .ignoresSafeArea(.keyboard)
@@ -999,7 +1024,7 @@ struct ModIconView: View { //tutorial view on completing or removing icon
                             VStack {
                                 Image(systemName: "checkmark.square.fill")
                                     .resizable()
-                                    .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(100, 250), height: horizontalSizeClass == .compact ? min(100, 350) : min(100, 250))
+                                    .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                 //.fontWeight(.bold)
                                 Text("Complete Icon")
                                     .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))

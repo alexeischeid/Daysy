@@ -17,6 +17,9 @@ struct ContentView: View {
     @Environment(\.presentationMode) var presentation
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
+    @State private var orientation = UIDeviceOrientation.unknown
+    @State private var lastOrientation = UIDeviceOrientation.unknown
+    
     @State var currSheet = loadSheetArray()[getCurrSheetIndex()]
     
     //for contentview
@@ -1306,6 +1309,12 @@ struct ContentView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .navigationBarHidden(true)
+        .onRotate { newOrientation in
+            orientation = newOrientation
+            if !newOrientation.isFlat {
+                lastOrientation = newOrientation
+            }
+        }
         .sheet(isPresented: $pickIcon) {
             var filteredCustomData: [String] { //search results for custom icons
                 if searchText.isEmpty {
@@ -2051,14 +2060,14 @@ struct ContentView: View {
             .ignoresSafeArea(.keyboard)
             .fullScreenCover(isPresented: $showCustom) { //fullscreencover for creating a custom icon
                 VStack {
-                    RoundedRectangle(cornerRadius: 50)
-                        .stroke(Color.black, lineWidth: 25)
+                    RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50)
+                        .stroke(Color.black, lineWidth: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 12 : 25) : 25)
                         .background(
-                            RoundedRectangle(cornerRadius: 50)
+                            RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50)
                                 .fill(Color.white)
                         )
-                        .aspectRatio(isTextFieldActive ? nil : 1, contentMode: .fill)
-                        .clipShape(RoundedRectangle(cornerRadius: 50))
+                        .aspectRatio(lastOrientation.isLandscape ? (isCustomTextFieldActive ? 4 : 1) : 1, contentMode: .fill)
+//                        .clipShape(RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50))
                         .overlay(
                             VStack {
                                 Spacer()
@@ -2081,9 +2090,12 @@ struct ContentView: View {
                                                 if hasCameraPermission() {
                                                     showCamera.toggle()
                                                     showImageMenu.toggle()
+                                                    defaults.set(true, forKey: "checkedCameraPermission")
                                                 } else {
-                                                    if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                        UIApplication.shared.open(appSettings)
+                                                    if defaults.bool(forKey: "checkedCameraPermission") {
+                                                        if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
+                                                            UIApplication.shared.open(appSettings)
+                                                        }
                                                     }
                                                 }
                                             }) {
@@ -2121,17 +2133,22 @@ struct ContentView: View {
                                                         selectedCustomImage?.asImage
                                                             .resizable()
                                                             .aspectRatio(1, contentMode: .fit)
-                                                            .clipShape(RoundedRectangle(cornerRadius: 40))
+                                                            .clipShape(RoundedRectangle(cornerRadius: 16))
                                                             .opacity(0.25)
+                                                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                                                            .overlay(
+                                                                RoundedRectangle(cornerRadius: 16)
+                                                                    .stroke(lineWidth: 7)
+                                                            )
                                                             .padding()
                                                         
                                                         if #available(iOS 15.0, *) {
                                                             Image(systemName: "trash.square.fill")
                                                                 .resizable()
                                                                 .aspectRatio(1, contentMode: .fit)
-                                                                .foregroundColor(.red)
                                                                 .padding()
                                                                 .symbolRenderingMode(.hierarchical)
+                                                                .foregroundColor(.red)
                                                         } else {
                                                             Image(systemName:"trash.square.fill")
                                                                 .resizable()
@@ -2140,6 +2157,7 @@ struct ContentView: View {
                                                                 .padding()
                                                         }
                                                     }
+                                                    .foregroundColor(.red)
                                                 } else {
                                                     Image(systemName:"trash.square.fill")
                                                         .resizable()
@@ -2205,9 +2223,12 @@ struct ContentView: View {
                                                 Button(action: {
                                                     if hasCameraPermission() {
                                                         showCamera.toggle()
+                                                        defaults.set(true, forKey: "checkedCameraPermission")
                                                     } else {
-                                                        if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                            UIApplication.shared.open(appSettings)
+                                                        if defaults.bool(forKey: "checkedCameraPermission") {
+                                                            if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
+                                                                UIApplication.shared.open(appSettings)
+                                                            }
                                                         }
                                                     }
                                                 }) {
@@ -2232,7 +2253,7 @@ struct ContentView: View {
                                     Text("Label")
                                         .minimumScaleFactor(0.1)
                                         .multilineTextAlignment(.center)
-                                        .font(.system(size: horizontalSizeClass == .compact ? 50 : 135,weight: .semibold,  design: .rounded))
+                                        .font(.system(size: horizontalSizeClass == .compact ? (lastOrientation.isLandscape ? 30 : 50) : (lastOrientation.isLandscape ? 75 : 135), weight: .semibold,  design: .rounded))
                                         .foregroundColor(currCustomIconText.isEmpty ? Color(.systemGray) : .clear)
                                         .padding()
                                     //SuperTextField(placeholder: Text("Label"), text: $currCustomIconText, editingChanged: { editing in
@@ -2241,10 +2262,11 @@ struct ContentView: View {
                                         customAnimate.toggle()
                                     }, onCommit: {
                                         customAnimate.toggle()
+                                        showImageMenu = false
                                     })
                                     .minimumScaleFactor(0.1)
                                     .multilineTextAlignment(.center)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 50 : 135,weight: .semibold,  design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? (lastOrientation.isLandscape ? 30 : 50) : (lastOrientation.isLandscape ? 75 : 135), weight: .semibold,  design: .rounded))
                                     .foregroundColor(.black)
                                     .padding()
                                     //Spacer()
@@ -2323,14 +2345,14 @@ struct ContentView: View {
             }
             .fullScreenCover(isPresented: $editCustom) { //fullscreencover for editing a custom icon
                 VStack {
-                    RoundedRectangle(cornerRadius: 50)
-                        .stroke(Color.black, lineWidth: 25)
+                    RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50)
+                        .stroke(Color.black, lineWidth: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 12 : 25) : 25)
                         .background(
-                            RoundedRectangle(cornerRadius: 50)
+                            RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50)
                                 .fill(Color.white)
                         )
-                        .aspectRatio(isTextFieldActive ? nil : 1, contentMode: .fill)
-                        .clipShape(RoundedRectangle(cornerRadius: 50))
+                        .aspectRatio(lastOrientation.isLandscape ? (isCustomTextFieldActive ? 4 : 1) : 1, contentMode: .fill)
+//                        .clipShape(RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50))
                         .overlay(
                             VStack {
                                 Spacer()
@@ -2355,9 +2377,12 @@ struct ContentView: View {
                                                 if hasCameraPermission() {
                                                     showCamera.toggle()
                                                     if selectedCustomImage != UIImage(systemName: "plus.viewfinder") { showImageMenu.toggle() }
+                                                    defaults.set(true, forKey: "checkedCameraPermission")
                                                 } else {
-                                                    if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                        UIApplication.shared.open(appSettings)
+                                                    if defaults.bool(forKey: "checkedCameraPermission") {
+                                                        if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
+                                                            UIApplication.shared.open(appSettings)
+                                                        }
                                                     }
                                                 }
                                             }) {
@@ -2395,17 +2420,22 @@ struct ContentView: View {
                                                         selectedCustomImage?.asImage
                                                             .resizable()
                                                             .aspectRatio(1, contentMode: .fit)
-                                                            .clipShape(RoundedRectangle(cornerRadius: 40))
+                                                            .clipShape(RoundedRectangle(cornerRadius: 16))
                                                             .opacity(0.25)
+                                                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                                                            .overlay(
+                                                                RoundedRectangle(cornerRadius: 16)
+                                                                    .stroke(lineWidth: 7)
+                                                            )
                                                             .padding()
                                                         
                                                         if #available(iOS 15.0, *) {
                                                             Image(systemName: "trash.square.fill")
                                                                 .resizable()
                                                                 .aspectRatio(1, contentMode: .fit)
-                                                                .foregroundColor(.red)
                                                                 .padding()
                                                                 .symbolRenderingMode(.hierarchical)
+                                                                .foregroundColor(.red)
                                                         } else {
                                                             Image(systemName:"trash.square.fill")
                                                                 .resizable()
@@ -2414,6 +2444,7 @@ struct ContentView: View {
                                                                 .padding()
                                                         }
                                                     }
+                                                    .foregroundColor(.red)
                                                 } else {
                                                     Image(systemName:"trash.square.fill")
                                                         .resizable()
@@ -2431,7 +2462,6 @@ struct ContentView: View {
                                         HStack {
                                             Button(action: {
                                                 if selectedCustomImage != UIImage(systemName: "plus.viewfinder") {
-                                                    //lastSelected == 0 ? isImagePickerPresented.toggle() : showCamera.toggle()
                                                     showImageMenu.toggle()
                                                     customAnimate.toggle()
                                                 } else {
@@ -2480,9 +2510,12 @@ struct ContentView: View {
                                                 Button(action: {
                                                     if hasCameraPermission() {
                                                         showCamera.toggle()
+                                                        defaults.set(true, forKey: "checkedCameraPermission")
                                                     } else {
-                                                        if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                            UIApplication.shared.open(appSettings)
+                                                        if defaults.bool(forKey: "checkedCameraPermission") {
+                                                            if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
+                                                                UIApplication.shared.open(appSettings)
+                                                            }
                                                         }
                                                     }
                                                 }) {
@@ -2507,7 +2540,7 @@ struct ContentView: View {
                                     Text("Label")
                                         .minimumScaleFactor(0.1)
                                         .multilineTextAlignment(.center)
-                                        .font(.system(size: horizontalSizeClass == .compact ? 50 : 135,weight: .semibold,  design: .rounded))
+                                        .font(.system(size: horizontalSizeClass == .compact ? (lastOrientation.isLandscape ? 30 : 50) : (lastOrientation.isLandscape ? 75 : 135), weight: .semibold,  design: .rounded))
                                         .foregroundColor(currCustomIconText.isEmpty ? Color(.systemGray) : .clear)
                                         .padding()
                                     //SuperTextField(placeholder: Text("Label"), text: $currCustomIconText, editingChanged: { editing in
@@ -2516,10 +2549,11 @@ struct ContentView: View {
                                         customAnimate.toggle()
                                     }, onCommit: {
                                         customAnimate.toggle()
+                                        showImageMenu = false
                                     })
                                     .minimumScaleFactor(0.1)
                                     .multilineTextAlignment(.center)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 50 : 135,weight: .semibold,  design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? (lastOrientation.isLandscape ? 30 : 50) : (lastOrientation.isLandscape ? 75 : 135), weight: .semibold,  design: .rounded))
                                     .foregroundColor(.black)
                                     .padding()
                                     //Spacer()
