@@ -462,358 +462,346 @@ struct TryItView: View { //interactive little mini sheet to play with
                 .padding()
             Spacer()
             //Divider()
-            if horizontalSizeClass != .compact {
-                LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
-                    Button(action: {showTime.toggle()}) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color(.systemGray5))
-                                .scaledToFit()
-                            HStack {
-                                Image(systemName: "square.and.pencil")
-                                    .resizable()
-                                    .minimumScaleFactor(0.01)
-                                    .frame(width: 30, height: 30)
-                                    .padding(.leading)
-                                    .foregroundColor(Color(.systemGray))
-                                
-                                Text(currTime)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.01)
-                                    .font(.system(size: 300,  weight: .bold, design: .rounded))
-                                    .padding(.trailing)
-                                    .foregroundColor(.primary)
-                            }
-                        }
-                    }
-                    .foregroundColor(.primary)
-                    ForEach(0..<4, id: \.self) { index in
-                        Button(action:{
-                            currSetIndex = index
-                            searchText = ""
-                            showIcons.toggle()}) {
-                                if currGrid[index] == Image(systemName:"plus.viewfinder") {
-                                    if #available(iOS 15.0, *) {
-                                        Image(systemName: "plus.viewfinder")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .symbolRenderingMode(.hierarchical)
-                                            .foregroundColor(Color(.systemGray))
-                                            .padding()
-                                    } else {
-                                        Image(systemName: "plus.viewfinder")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .foregroundColor(Color(.systemGray))
-                                            .padding()
-                                    }
-                                } else {
-                                    currGrid[index]
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 20)
-                                                .stroke(.black, lineWidth: 6)
-                                        )
-                                        .padding(5)
-                                }
-                            }
-                            .foregroundColor(.primary)
-                    }
-                }
-            Divider()
-            LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
-                Button(action: {showLabels.toggle()}) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color(.systemGray5))
-                            .scaledToFit()
-                        HStack {
-                            Image(systemName: "square.and.pencil")
-                                .resizable()
-                                .minimumScaleFactor(0.01)
-                                .frame(width: 30, height: 30)
-                                .padding(.leading)
-                                .foregroundColor(Color(.systemGray))
-                            
-                            Text(currLabel)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: 300,  weight: .bold, design: .rounded))
-                                .padding(.trailing)
-                                .foregroundColor(.primary)
-                        }
-                    }
-                }
-                .foregroundColor(.primary)
-                ForEach(4..<8, id: \.self) { index in
-                    Button(action:{
-                        currSetIndex = index
-                        showIcons.toggle()}) {
-                            if currGrid[index] == Image(systemName:"plus.viewfinder") {
-                                if #available(iOS 15.0, *) {
-                                    Image(systemName: "plus.viewfinder")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .symbolRenderingMode(.hierarchical)
-                                        .foregroundColor(Color(.systemGray))
-                                        .padding()
-                                } else {
-                                    Image(systemName: "plus.viewfinder")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.systemGray))
-                                        .padding()
-                                }
-                            } else {
-                                currGrid[index]
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .stroke(.black, lineWidth: 6)
-                                    )
-                                    .padding(5)
-                            }
-                    }
-                        .foregroundColor(.primary)
-                }
-            }
-            .fullScreenCover(isPresented: $showIcons) {
-                var filteredData: [String] {
-                    if searchText.isEmpty {
-                        return []
-                    } else {
-                        return allPECS.filter { $0.localizedCaseInsensitiveContains(searchText) }
-                    }
-                }
-                
-                VStack {
-                    ScrollView {
-                        TextField("\(Image(systemName: "magnifyingglass")) Search", text: $searchText)
-                            .multilineTextAlignment(.center)
-                            .font(.system(size: 65,  weight: .semibold, design: .rounded))
-                            .padding()
-                            .background(
+            ZStack {
+                if horizontalSizeClass != .compact {
+                    LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
+                        Button(action: {showTime.toggle()}) {
+                            ZStack {
                                 RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color(.systemGray4))
-                            )
-                            .padding()
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
-                            ForEach(0..<filteredData.count, id: \.self) { pecsIcon in
-                                if filteredData[pecsIcon] != "plus.viewfinder" && filteredData[pecsIcon] != "All Icons" {
-                                    Button(action: {
-                                        currGrid[currSetIndex] = loadImage(named: filteredData[pecsIcon])
-                                        showIcons.toggle()
-                                    }) {
-                                        loadImage(named: filteredData[pecsIcon])
+                                    .fill(Color(.systemGray5))
+                                    .scaledToFit()
+                                HStack {
+                                    Image(systemName: "square.and.pencil")
+                                        .resizable()
+                                        .minimumScaleFactor(0.01)
+                                        .frame(width: 30, height: 30)
+                                        .padding(.leading)
+                                        .foregroundColor(Color(.systemGray))
+                                    
+                                    Text(currTime)
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.01)
+                                        .font(.system(size: 300,  weight: .bold, design: .rounded))
+                                        .padding(.trailing)
+                                        .foregroundColor(.primary)
+                                }
+                            }
+                        }
+                        .foregroundColor(.primary)
+                        ForEach(0..<4, id: \.self) { index in
+                            Button(action:{
+                                currSetIndex = index
+                                searchText = ""
+                                showIcons.toggle()}) {
+                                    if currGrid[index] == Image(systemName:"plus.viewfinder") {
+                                        if #available(iOS 15.0, *) {
+                                            Image(systemName: "plus.viewfinder")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .symbolRenderingMode(.hierarchical)
+                                                .foregroundColor(Color(.systemGray))
+                                                .padding()
+                                        } else {
+                                            Image(systemName: "plus.viewfinder")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .foregroundColor(Color(.systemGray))
+                                                .padding()
+                                        }
+                                    } else {
+                                        currGrid[index]
                                             .resizable()
-                                            .scaledToFill()
+                                            .scaledToFit()
                                             .clipShape(RoundedRectangle(cornerRadius: 20))
                                             .overlay(
                                                 RoundedRectangle(cornerRadius: 20)
-                                                    .stroke(lineWidth: 3)
+                                                    .stroke(.black, lineWidth: 6)
                                             )
-                                    }
-                                    .foregroundColor(.primary)
-                                    .padding()
-                                }
-                            }
-                        }
-                        
-                        if filteredData.count > 0 {
-                            Divider()
-                                .padding()
-                        }
-                        
-                        ForEach(pecsCategories, id: \.self) { icon in
-                            VStack(alignment: .center) {
-                                Text(icon[0])
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.01)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
-                                    ForEach(1..<icon.count, id: \.self) { sheeticonobject in
-                                        Button(action: {
-                                            currGrid[currSetIndex] = loadImage(named: icon[sheeticonobject])
-                                            showIcons.toggle()
-                                        }) {
-                                            loadImage(named: String(icon[sheeticonobject]))
-                                                .resizable()
-                                                .scaledToFill()
-                                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 16)
-                                                        .stroke(lineWidth: 3)
-                                                )
-                                        }
-                                        .foregroundColor(.black)
-                                        .padding()
+                                            .padding(5)
                                     }
                                 }
-                            }
-                            .padding()
+                                .foregroundColor(.primary)
                         }
-                        Text(verbatim: "Daysy Icons provided by www.mypecs.com")
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.01)
-                            .font(.system(size: 25, weight: .medium, design: .rounded))
-                            .foregroundColor(Color(.systemGray2))
                     }
-                    HStack {
-                        Button(action: {
-                            showIcons.toggle()
-                        }) {
-                            Image(systemName: "xmark.square.fill")
-                                .resizable()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                //.fontWeight(.bold)
-                        }
-                        .padding()
-                        .foregroundColor(Color(.systemGray))
-                        
-                        if currGrid[currSetIndex] != Image(systemName: "plus.viewfinder") {
-                            Button(action: {
-                                showIcons.toggle()
-                                currGrid[currSetIndex] = loadSystemImage(named: "plus.viewfinder")
-                                
-                            }) {
-                                ZStack {
-                                    currGrid[currSetIndex]
+                    Divider()
+                    LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
+                        Button(action: {showLabels.toggle()}) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color(.systemGray5))
+                                    .scaledToFit()
+                                HStack {
+                                    Image(systemName: "square.and.pencil")
                                         .resizable()
-                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                        .opacity(0.25)
-                                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .stroke(lineWidth: 3)
-                                        )
+                                        .minimumScaleFactor(0.01)
+                                        .frame(width: 30, height: 30)
+                                        .padding(.leading)
+                                        .foregroundColor(Color(.systemGray))
                                     
-                                    if #available(iOS 15.0, *) {
-                                        Image(systemName: "trash.square.fill")
-                                            .resizable()
-                                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                            .symbolRenderingMode(.hierarchical)
+                                    Text(currLabel)
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.01)
+                                        .font(.system(size: 300,  weight: .bold, design: .rounded))
+                                        .padding(.trailing)
+                                        .foregroundColor(.primary)
+                                }
+                            }
+                        }
+                        .foregroundColor(.primary)
+                        ForEach(4..<8, id: \.self) { index in
+                            Button(action:{
+                                currSetIndex = index
+                                showIcons.toggle()}) {
+                                    if currGrid[index] == Image(systemName:"plus.viewfinder") {
+                                        if #available(iOS 15.0, *) {
+                                            Image(systemName: "plus.viewfinder")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .symbolRenderingMode(.hierarchical)
+                                                .foregroundColor(Color(.systemGray))
+                                                .padding()
+                                        } else {
+                                            Image(systemName: "plus.viewfinder")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .foregroundColor(Color(.systemGray))
+                                                .padding()
+                                        }
                                     } else {
-                                        Image(systemName: "trash.square.fill")
+                                        currGrid[index]
                                             .resizable()
-                                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(.black, lineWidth: 6)
+                                            )
+                                            .padding(5)
+                                    }
+                                }
+                                .foregroundColor(.primary)
+                        }
+                    }
+                } else {
+                    //iPhone grid here
+                    //TODO: maybe just change the lazyvgrud and have all the sheets and fullscreencovers still work and scale
+                    VStack {
+                        Picker("Options", selection: $selectedOption) {
+                            ForEach(PickerOption.allCases, id: \.self) { option in
+                                Text(option.rawValue)
+                            }
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding()
+                        if selectedOption == .timeslots {
+                            VStack {
+                                Button(action: {showTime.toggle()}) {
+                                    HStack {
+                                        Image(systemName: "square.and.pencil")
+                                            .resizable()
+                                            .minimumScaleFactor(0.01)
+                                            .frame(width: 30, height: 30)
+                                            .padding(.leading)
+                                            .foregroundColor(Color(.systemGray))
+                                        
+                                        Text(currTime)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.01)
+                                            .font(.system(size: 30,  weight: .bold, design: .rounded))
+                                            .padding(.trailing)
+                                            .foregroundColor(.primary)
+                                    }
+                                    .padding(.top)
+                                }
+                                LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
+                                    ForEach(0..<4, id: \.self) { index in
+                                        Button(action:{
+                                            currSetIndex = index
+                                            searchText = ""
+                                            showIcons.toggle()}) {
+                                                if currGrid[index] == Image(systemName:"plus.viewfinder") {
+                                                    if #available(iOS 15.0, *) {
+                                                        Image(systemName: "plus.viewfinder")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .symbolRenderingMode(.hierarchical)
+                                                            .foregroundColor(Color(.systemGray))
+                                                            .padding()
+                                                    } else {
+                                                        Image(systemName: "plus.viewfinder")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .foregroundColor(Color(.systemGray))
+                                                            .padding()
+                                                    }
+                                                } else {
+                                                    currGrid[index]
+                                                        .resizable()
+                                                        .scaledToFit()
+                                                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                        .overlay(
+                                                            RoundedRectangle(cornerRadius: 20)
+                                                                .stroke(.black, lineWidth: 6)
+                                                        )
+                                                        .padding(5)
+                                                }
+                                            }
+                                            .foregroundColor(.primary)
                                     }
                                 }
                             }
-                            .padding()
-                            .foregroundColor(.red)
+                            .background(Color(.systemGray6))
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .padding([.leading, .trailing])
+                            .padding([.leading, .trailing])
+                        } else if selectedOption == .customLabels {
+                            VStack {
+                                Button(action: {showLabels.toggle()}) {
+                                    HStack {
+                                        Image(systemName: "square.and.pencil")
+                                            .resizable()
+                                            .minimumScaleFactor(0.01)
+                                            .frame(width: 30, height: 30)
+                                            .padding(.leading)
+                                            .foregroundColor(Color(.systemGray))
+                                        
+                                        Text(currLabel)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.01)
+                                            .font(.system(size: 30,  weight: .bold, design: .rounded))
+                                            .padding(.trailing)
+                                            .foregroundColor(.primary)
+                                    }
+                                    .padding(.top)
+                                }
+                                LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
+                                    ForEach(4..<8, id: \.self) { index in
+                                        Button(action:{
+                                            currSetIndex = index
+                                            showIcons.toggle()}) {
+                                                if currGrid[index] == Image(systemName:"plus.viewfinder") {
+                                                    if #available(iOS 15.0, *) {
+                                                        Image(systemName: "plus.viewfinder")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .symbolRenderingMode(.hierarchical)
+                                                            .foregroundColor(Color(.systemGray))
+                                                            .padding()
+                                                    } else {
+                                                        Image(systemName: "plus.viewfinder")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .foregroundColor(Color(.systemGray))
+                                                            .padding()
+                                                    }
+                                                } else {
+                                                    currGrid[index]
+                                                        .resizable()
+                                                        .scaledToFit()
+                                                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                        .overlay(
+                                                            RoundedRectangle(cornerRadius: 20)
+                                                                .stroke(.black, lineWidth: 6)
+                                                        )
+                                                        .padding(5)
+                                                }
+                                            }
+                                            .foregroundColor(.primary)
+                                    }
+                                }
+                            }
+                            .background(Color(.systemGray6))
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .padding([.leading, .trailing])
+                            .padding([.leading, .trailing])
                         }
-                        
-                        
-                        
-                        
-                        
                     }
                 }
-                .ignoresSafeArea(.keyboard)
             }
-            //.scrollIndicators(.visible)
-                .sheet(isPresented: $showTime) {
+            .fullScreenCover(isPresented: $showIcons) {
+                
+                AllIconsPickerView(currSheet: SheetObject(), //no sheet to provide tutorial,
+                                   currImage: "plus.viewfinder",
+                                   modifyIcon: { newIcon in
+                    currGrid[currSetIndex] = loadImage(named: newIcon)
+                }, modifyDetails: { newDetails in
+                    //no need to modify details here
+                }, modifySheet: {newSheet in
+                    //no need to modify sheet in tutorial
+                }, showCreateCustom: false,
+                tutorialMode: true)
+
+            }
+            .sheet(isPresented: $showTime) {
+                Spacer()
+                DatePicker("", selection: $selectedDate, displayedComponents: .hourAndMinute)
+                    .datePickerStyle(WheelDatePickerStyle())
+                    .labelsHidden()
+                    .frame(width: 400, height: 400)
+                    .scaleEffect(horizontalSizeClass == .compact ? 1.5 : 3)
+                Spacer()
+                HStack {
+                    Button(action: {
+                        showTime.toggle()
+                    }) {
+                        Image(systemName:"xmark.square.fill")
+                            .resizable()
+                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                            .foregroundColor(Color(.systemGray))
+                        //.fontWeight(.bold)
+                            .padding()
+                    }
+                    Button(action: {
+                        showTime.toggle()
+                        currTime = getTime(date: selectedDate)
+                    }) {
+                        Image(systemName:"checkmark.square.fill")
+                            .resizable()
+                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                        //.fontWeight(.bold)
+                            .foregroundColor(.green)
+                            .padding()
+                    }
+                }
+            }
+            .sheet(isPresented: $showLabels) {
+                VStack {
                     Spacer()
-                    DatePicker("", selection: $selectedDate, displayedComponents: .hourAndMinute)
-                        .datePickerStyle(WheelDatePickerStyle())
-                        .labelsHidden()
-                        .frame(width: 400, height: 400)
-                        .scaleEffect(3)
+                    ZStack {
+                        TextField("Your Label", text: $currText)
+                        //.textFieldStyle(RoundedBorderTextFieldStyle())
+                            .font(.system(size: horizontalSizeClass == .compact ? 40 : 100, weight: .bold, design: .rounded))
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color(.systemGray5))
+                            )
+                    }
+                    .padding()
                     Spacer()
-                    HStack {
-                        Button(action: {
-                            showTime.toggle()
-                        }) {
+                    Button(action: {
+                        showLabels.toggle()
+                        if !currText.isEmpty {
+                            currLabel = currText
+                        }
+                    }) {
+                        if currText.isEmpty {
                             Image(systemName:"xmark.square.fill")
                                 .resizable()
                                 .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                .foregroundColor(Color(.systemGray))
                             //.fontWeight(.bold)
+                                .foregroundColor(Color(.systemGray))
                                 .padding()
-                        }
-                        Button(action: {
-                            showTime.toggle()
-                            currTime = getTime(date: selectedDate)
-                        }) {
+                        } else {
                             Image(systemName:"checkmark.square.fill")
                                 .resizable()
                                 .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                //.fontWeight(.bold)
+                            //.fontWeight(.bold)
                                 .foregroundColor(.green)
                                 .padding()
                         }
                     }
-                }
-                .sheet(isPresented: $showLabels) {
-                    VStack {
-                        Spacer()
-                        ZStack {
-                            TextField("Your Label", text: $currText)
-                            //.textFieldStyle(RoundedBorderTextFieldStyle())
-                                .font(.system(size: horizontalSizeClass == .compact ? 40 : 100, weight: .bold, design: .rounded))
-                                .padding()
-                                .background(
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color(.systemGray5))
-                                )
-                        }
-                        .padding()
-                        Spacer()
-                        Button(action: {
-                            showLabels.toggle()
-                            if !currText.isEmpty {
-                            currLabel = currText
-                            }
-                        }) {
-                            if currText.isEmpty {
-                                Image(systemName:"xmark.square.fill")
-                                    .resizable()
-                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                //.fontWeight(.bold)
-                                    .foregroundColor(Color(.systemGray))
-                                    .padding()
-                            } else {
-                                Image(systemName:"checkmark.square.fill")
-                                    .resizable()
-                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                //.fontWeight(.bold)
-                                    .foregroundColor(.green)
-                                    .padding()
-                            }
-                        }
-                        .padding()
-                    }
-                }
-            } else {
-                //iPhone grid here
-                //TODO: maybe just change the lazyvgrud and have all the sheets and fullscreencovers still work and scale
-                VStack {
-                    Picker("Options", selection: $selectedOption) {
-                        ForEach(PickerOption.allCases, id: \.self) { option in
-                            Text(option.rawValue)
-                        }
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
                     .padding()
-                    if selectedOption == .timeslots {
-                        Image(systemName: "timer")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.purple)
-                            .shadow(radius: 5)
-                            .padding(25)
-                    } else if selectedOption == .customLabels {
-                        Image(systemName: "tag")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.purple)
-                            .shadow(radius: 5)
-                            .padding(25)
-                    }
                 }
             }
             Spacer()

@@ -18,6 +18,10 @@ let calendar = Calendar.current
 
 let suggestedIcons: [String] = ["Suggested Icons"] + mostUsedIcons().prefix(5)
 
+let animation = LoadingIndicator.LoadingAnimation.self
+let sizes = LoadingIndicator.Size.allCases
+let speeds = LoadingIndicator.Speed.allCases
+
 
 let seasonsTime: [String] = ["Seasons and Time",
                       "january",

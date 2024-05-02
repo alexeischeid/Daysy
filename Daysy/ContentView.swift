@@ -11,14 +11,12 @@ import SwiftUI
 import AVFoundation
 import LocalAuthentication
 import PhotosUI
+//import OpenAIKit
 
 struct ContentView: View {
     
     @Environment(\.presentationMode) var presentation
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    
-    @State private var orientation = UIDeviceOrientation.unknown
-    @State private var lastOrientation = UIDeviceOrientation.unknown
     
     @State var currSheet = loadSheetArray()[getCurrSheetIndex()]
     
@@ -32,13 +30,13 @@ struct ContentView: View {
     @State var showSettings = false
     @State var showCompleted = false
     @State var showRemoved = false
+    @State var showCommunication = false
     @State var showAllSheets = false
     @State var showTutorial = false
     @State var animate = false
     @State var unlockButtons = false
     @State var lockButtonsOn = defaults.bool(forKey: "buttonsOn")
     @State var currGreenSlot = loadSheetArray()[getCurrSheetIndex()].getCurrSlot()
-    @State var showCustom = false
     @State var renameSheet = false
     @State var speakIcons = defaults.bool(forKey: "speakOn")
     @State var showCurrentSlot = defaults.bool(forKey: "showCurrSlot")
@@ -52,6 +50,7 @@ struct ContentView: View {
     @State var checkDetails: [String] = []
     @State var detailIconIndex = -1
     @State var showMore = false
+    @State var isTextFieldActive = false
     
     //custom password variables
     @State var showCustomPassword = false
@@ -77,37 +76,94 @@ struct ContentView: View {
     @State var currSheetText = ""
     @State var presentAlert = false
     
-    //custom icons
-    @State var isImagePickerPresented = false
-    @State var selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-    @State var currCustomIconText = ""
-    @State var customPECSAddresses = getCustomPECSAddresses()
-    @State var isTextFieldActive = false
-    @State var isCustomTextFieldActive = false
-    @State var customAnimate = false
-    @State var oldEditingIcon = ""
-    @State var editCustom = false
-    @State var cameraPermission = false
-    @State var showCamera = false
-    @State var lastSelected = 0 //0 is library, 1 is camera
-    @State var showImageMenu = false
+    @State var deleteAnimationFix = false
+    
+    @State var sanitizedPrompt = ""
     
     var body: some View {
         
-        ScrollViewReader { proxy in
-            VStack {
-                ScrollView {
-                    if currSheet.label != "Debug, ignore this page" { //always a sheet to render in the background, bug fix
-                        HStack {
-                            
-                            if editMode {
+        ZStack {
+            ScrollViewReader { proxy in
+                VStack {
+                    ScrollView {
+                        if currSheet.label != "Debug, ignore this page" { //always a sheet to render in the background, bug fix
+                            HStack {
                                 
-                                Button(action: {
-                                    if editMode {
-                                        pickIcon.toggle()
+                                if editMode {
+                                    
+                                    Button(action: {
+                                        if editMode {
+                                            pickIcon.toggle()
+                                        }
+                                    }) {
+                                        if currSheet.currLabelIcon != nil && currSheet.currLabelIcon != "plus.viewfinder" {
+                                            if currSheet.currLabelIcon!.contains("customIconObject:") {
+                                                getCustomIconSmall(currSheet.currLabelIcon ?? "")
+                                                    .scaledToFit()
+                                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                                    .clipShape(RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16))
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16)
+                                                            .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
+                                                    )
+                                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
+                                            } else if currSheet.currLabelIcon!.isEmpty {
+                                                if #available(iOS 15.0, *) {
+                                                    Image(systemName: "plus.square.dashed")
+                                                        .resizable()
+                                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                                        .symbolRenderingMode(.hierarchical)
+                                                        .foregroundColor(Color(.systemGray))
+                                                        .padding(horizontalSizeClass == .compact ? 0 : 10)
+                                                } else {
+                                                    Image(systemName: "plus.square.dashed")
+                                                        .resizable()
+                                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                                        .foregroundColor(Color(.systemGray))
+                                                        .padding(horizontalSizeClass == .compact ? 0 : 10)
+                                                }
+                                            } else {
+                                                loadImage(named: currSheet.currLabelIcon!)
+                                                    .scaledToFit()
+                                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                                    .scaleEffect(horizontalSizeClass == .compact ? 0.125 : 0.25)
+                                                    .clipShape(RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16))
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16)
+                                                            .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
+                                                    )
+                                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
+                                            }
+                                        } else {
+                                            if #available(iOS 15.0, *) {
+                                                Image(systemName: "plus.square.dashed")
+                                                    .resizable()
+                                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                                    .symbolRenderingMode(.hierarchical)
+                                                    .foregroundColor(Color(.systemGray))
+                                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
+                                            } else {
+                                                Image(systemName: "plus.square.dashed")
+                                                    .resizable()
+                                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                                    .foregroundColor(Color(.systemGray))
+                                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
+                                            }
+                                        }
                                     }
-                                }) {
-                                    if currSheet.currLabelIcon != nil {
+                                    
+                                    TextField("Name Sheet", text: $currTitleText)
+                                        .multilineTextAlignment(.center)
+                                        .font(.system(size: horizontalSizeClass == .compact ? 50 : 100, weight: .semibold, design: .rounded))
+                                        .padding()
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .fill(Color(.systemGray4))
+                                        )
+                                        .padding(horizontalSizeClass == .compact ? 0 : 10)
+                                } else {
+                                    
+                                    if currSheet.currLabelIcon != nil && currSheet.currLabelIcon != "plus.viewfinder" {
                                         if currSheet.currLabelIcon!.contains("customIconObject:") {
                                             getCustomIconSmall(currSheet.currLabelIcon ?? "")
                                                 .scaledToFit()
@@ -118,22 +174,7 @@ struct ContentView: View {
                                                         .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
                                                 )
                                                 .padding(horizontalSizeClass == .compact ? 0 : 10)
-                                        } else if currSheet.currLabelIcon!.isEmpty {
-                                            if #available(iOS 15.0, *) {
-                                                Image(systemName: "plus.square.dashed")
-                                                    .resizable()
-                                                    .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
-                                                    .symbolRenderingMode(.hierarchical)
-                                                    .foregroundColor(Color(.systemGray))
-                                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
-                                            } else {
-                                                Image(systemName: "plus.square.dashed")
-                                                    .resizable()
-                                                    .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
-                                                    .foregroundColor(Color(.systemGray))
-                                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
-                                            }
-                                        } else {
+                                        } else if !currSheet.currLabelIcon!.isEmpty {
                                             loadImage(named: currSheet.currLabelIcon!)
                                                 .scaledToFit()
                                                 .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
@@ -145,240 +186,43 @@ struct ContentView: View {
                                                 )
                                                 .padding(horizontalSizeClass == .compact ? 0 : 10)
                                         }
-                                    } else {
-                                        if #available(iOS 15.0, *) {
-                                            Image(systemName: "plus.square.dashed")
-                                                .resizable()
-                                                .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
-                                                .symbolRenderingMode(.hierarchical)
-                                                .foregroundColor(Color(.systemGray))
-                                                .padding(horizontalSizeClass == .compact ? 0 : 10)
-                                        } else {
-                                            Image(systemName: "plus.square.dashed")
-                                                .resizable()
-                                                .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
-                                                .foregroundColor(Color(.systemGray))
-                                                .padding(horizontalSizeClass == .compact ? 0 : 10)
-                                        }
                                     }
+                                    Text(currSheet.label)
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.01)
+                                        .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
+                                        .padding(horizontalSizeClass == .compact ? 0 : 10)
                                 }
-                                
-                                TextField("Name Sheet", text: $currTitleText)
-                                    .multilineTextAlignment(.center)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 50 : 100, weight: .semibold, design: .rounded))
-                                    .padding()
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .fill(Color(.systemGray4))
-                                    )
-                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
-                            } else {
-                                
-                                if currSheet.currLabelIcon != nil {
-                                    if currSheet.currLabelIcon!.contains("customIconObject:") {
-                                        getCustomIconSmall(currSheet.currLabelIcon ?? "")
-                                            .scaledToFit()
-                                            .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
-                                            .clipShape(RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16)
-                                                    .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
-                                            )
-                                            .padding(horizontalSizeClass == .compact ? 0 : 10)
-                                    } else if !currSheet.currLabelIcon!.isEmpty {
-                                        loadImage(named: currSheet.currLabelIcon!)
-                                            .scaledToFit()
-                                            .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
-                                            .scaleEffect(horizontalSizeClass == .compact ? 0.125 : 0.25)
-                                            .clipShape(RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16)
-                                                    .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
-                                            )
-                                            .padding(horizontalSizeClass == .compact ? 0 : 10)
-                                    }
-                                }
-                                Text(currSheet.label)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.01)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                    .padding(horizontalSizeClass == .compact ? 0 : 10)
                             }
-                        }
-                        if horizontalSizeClass == .compact { //this is the main grid for iPhone
-                            ForEach(0..<currSheet.currGrid.count, id: \.self) { list in
-                                VStack {
-                                    //show the time or label
-                                    if currSheet.gridType == "time" {
-                                        Button(action: {
-                                            if editMode {
-                                                currListIndex = list
-                                                selectedDate = currSheet.currGrid[list].currTime
-                                                showTime.toggle()
-                                            }
-                                        }) {
-                                            if editMode {
-                                                Image(systemName: "square.and.pencil")
-                                                    .resizable()
-                                                    .minimumScaleFactor(0.01)
-                                                    .frame(width: 30, height: 30)
-                                                    .foregroundColor(Color(.systemGray))
-                                                    .padding(.trailing)
-                                            }
-                                            
-                                            Text(getTime(date: currSheet.currGrid[list].currTime))
-                                                .lineLimit(1)
-                                                .minimumScaleFactor(0.01)
-                                                .font(.system(size: 30, weight: .bold, design: .rounded))
-                                        }
-                                        .foregroundColor(.primary)
-                                        .shadow(color: currGreenSlot == list && !editMode && showCurrentSlot ? Color(.systemBackground) : Color.clear, radius: 5)
-                                        .padding()
-                                        .contextMenu {
-                                            if lockButtonsOn && !unlockButtons {
-                                                Button {
-                                                    if !canUseBiometrics() && !canUsePassword() {
-                                                        showCustomPassword = true
-                                                    } else {
-                                                        authenticateWithBiometrics()
-                                                    }
-                                                } label: {
-                                                    Label("Unlock Buttons", systemImage: "lock.open")
-                                                }
-                                            } else {
-                                                Button {
-                                                    currListIndex = list
-                                                    selectedDate = currSheet.currGrid[list].currTime
-                                                    showTime.toggle()
-                                                } label: {
-                                                    Label("Edit Time", systemImage: "square.and.pencil")
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        Button(action: {
-                                            if editMode {
-                                                currListIndex = list
-                                                showLabels.toggle()
-                                                currText = currSheet.currGrid[list].currLabel
-                                            }
-                                        }) {
-                                            if editMode {
-                                                Image(systemName: "square.and.pencil")
-                                                    .resizable()
-                                                    .minimumScaleFactor(0.01)
-                                                    .frame(width: 30, height: 30)
-                                                    .foregroundColor(Color(.systemGray))
-                                            }
-                                            
-                                            Text(currSheet.currGrid[list].currLabel)
-                                                .lineLimit(1)
-                                                .minimumScaleFactor(0.01)
-                                                .font(.system(size: 30, weight: .bold, design: .rounded))
-                                        }
-                                        .foregroundColor(.primary)
-                                        .padding()
-                                        .contextMenu {
-                                            if lockButtonsOn && !unlockButtons {
-                                                Button {
-                                                    if !canUseBiometrics() && !canUsePassword() {
-                                                        showCustomPassword = true
-                                                    } else {
-                                                        authenticateWithBiometrics()
-                                                    }
-                                                } label: {
-                                                    Label("Unlock Buttons", systemImage: "lock.open")
-                                                }
-                                            } else {
-                                                Button {
-                                                    currListIndex = list
-                                                    showLabels.toggle()
-                                                    currText = currSheet.currGrid[list].currLabel
-                                                } label: {
-                                                    Label("Edit Label", systemImage: "square.and.pencil")
-                                                }
-                                            }
-                                        }
-                                    }
-                                    LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
-                                        ForEach(0..<currSheet.currGrid[list].currIcons.count, id: \.self) { slot in //this loop displays the slots/images
+                            if horizontalSizeClass == .compact { //this is the main grid for iPhone
+                                ForEach(0..<currSheet.currGrid.count, id: \.self) { list in
+                                    VStack {
+                                        //show the time or label
+                                        if currSheet.gridType == "time" {
                                             Button(action: {
                                                 if editMode {
                                                     currListIndex = list
-                                                    currSlotIndex = slot
-                                                    showIcons.toggle()
-                                                    searchText = ""
-                                                } else if currSheet.currGrid[list].currIcons[slot].currIcon != "plus.viewfinder" {
-                                                    currListIndex = list
-                                                    currSlotIndex = slot
-                                                    showMod.toggle()
-                                                    tempDetails = []
-                                                    Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
-                                                        tempDetails = currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? []
-                                                        checkDetails = currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? []
-                                                        animate.toggle()
-                                                    }
-                                                    unlockButtons = false
-                                                    if speakIcons { //speak the icon, handle below
-                                                        if currSheet.currGrid[list].currIcons[slot].currIcon.contains("customIconObject:") {
-                                                            speechSynthesizer.speak(extractKey(from: currSheet.currGrid[list].currIcons[slot].currIcon))
-                                                        } else {
-                                                            speechSynthesizer.speak(currSheet.currGrid[list].currIcons[slot].currIcon)
-                                                        }
-                                                    }
+                                                    selectedDate = currSheet.currGrid[list].currTime
+                                                    showTime.toggle()
                                                 }
                                             }) {
-                                                if currSheet.currGrid[list].currIcons[slot].currIcon == "plus.viewfinder" { //if there isnt an icon
-                                                    if #available(iOS 15.0, *) {
-                                                        Image(systemName: "plus.viewfinder")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .symbolRenderingMode(.hierarchical)
-                                                            .foregroundColor(editMode ? Color(.systemGray) : .clear)
-                                                    } else {
-                                                        Image(systemName: "plus.viewfinder")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .foregroundColor(editMode ? Color(.systemGray) : .clear)
-                                                    }
-                                                } else {
-                                                    ZStack {
-                                                        if currSheet.currGrid[list].currIcons[slot].currIcon.contains("customIconObject:") {
-                                                            //check if default icon or custom icon and handle
-                                                            getCustomIconSmall(currSheet.currGrid[list].currIcons[slot].currIcon)
-                                                                .scaledToFit()
-                                                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                                                .overlay(
-                                                                    RoundedRectangle(cornerRadius: 16)
-                                                                        .stroke(.black, lineWidth: 6)
-                                                                )
-                                                        } else {
-                                                            loadImage(named: currSheet.currGrid[list].currIcons[slot].currIcon)
-                                                                .resizable()
-                                                                .scaledToFit()
-                                                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                                                .overlay(
-                                                                    RoundedRectangle(cornerRadius: 16)
-                                                                        .stroke(.black, lineWidth: 6)
-                                                                )
-                                                        }
-                                                        VStack {
-                                                            HStack {
-                                                                if (currSheet.currGrid[list].currIcons[slot].currDetails ?? []).count > 0 {
-                                                                    Image(systemName: "\((currSheet.currGrid[list].currIcons[slot].currDetails ?? []).count).circle.fill")
-                                                                        .resizable()
-                                                                        .frame(width: horizontalSizeClass == .compact ? 20 : 40, height: horizontalSizeClass == .compact ? 20 : 40)
-                                                                        .foregroundColor(Color(.systemGray2))
-                                                                        .padding(.trailing, horizontalSizeClass == .compact ? 5 : 10)
-                                                                        .padding(.bottom, horizontalSizeClass == .compact ? 5 : 10)
-                                                                }
-                                                                Spacer()
-                                                            }
-                                                            Spacer()
-                                                        }
-                                                    }
+                                                if editMode {
+                                                    Image(systemName: "square.and.pencil")
+                                                        .resizable()
+                                                        .minimumScaleFactor(0.01)
+                                                        .frame(width: 30, height: 30)
+                                                        .foregroundColor(Color(.systemGray))
+                                                        .padding(.trailing)
                                                 }
+                                                
+                                                Text(getTime(date: currSheet.currGrid[list].currTime))
+                                                    .lineLimit(1)
+                                                    .minimumScaleFactor(0.01)
+                                                    .font(.system(size: 30, weight: .bold, design: .rounded))
                                             }
+                                            .foregroundColor(.primary)
+                                            .shadow(color: currGreenSlot == list && !editMode && showCurrentSlot ? Color(.systemBackground) : Color.clear, radius: 5)
+                                            .padding()
                                             .contextMenu {
                                                 if lockButtonsOn && !unlockButtons {
                                                     Button {
@@ -391,244 +235,61 @@ struct ContentView: View {
                                                         Label("Unlock Buttons", systemImage: "lock.open")
                                                     }
                                                 } else {
-                                                    if currSheet.currGrid[list].currIcons[slot].currIcon == "plus.viewfinder" {
-                                                        Button {
-                                                            currListIndex = list
-                                                            currSlotIndex = slot
-                                                            showIcons.toggle()
-                                                            searchText = ""
-                                                        } label: {
-                                                            Label("Add Icon", systemImage: "plus.viewfinder")
-                                                        }
-                                                    } else {
-                                                        
-                                                        Button {
-                                                            currListIndex = list
-                                                            currSlotIndex = slot
-                                                            showIcons.toggle()
-                                                            searchText = ""
-                                                        } label: {
-                                                            Label("Change Icon", systemImage: "arrow.2.squarepath")
-                                                        }
-                                                        
-                                                        Button {
-                                                            tempDetails = [""] //hacky fix instead of binding, fixes not updating
-                                                            animate.toggle()
-                                                            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
-                                                                tempDetails = currSheet.currGrid[list].currIcons[slot].currDetails ?? []
-                                                                checkDetails = currSheet.currGrid[list].currIcons[slot].currDetails ?? []
-                                                            }
-                                                            currListIndex = list
-                                                            currSlotIndex = slot
-                                                            if !editMode {editMode.toggle()} else {wasEditing.toggle()}
-                                                            showMod.toggle()
-                                                        } label: {
-                                                            Label("Add Details", systemImage: "plus.square.on.square")
-                                                        }
-                                                        
-                                                        Divider()
-                                                        
-                                                        if editMode {
-                                                            
-                                                            if #available(iOS 15.0, *) {
-                                                                Button(role: .destructive) {
-                                                                    currSheet.currGrid[list].currIcons[slot].currIcon = "plus.viewfinder"
-                                                                    currSheet.currGrid[list].currIcons[slot].currDetails = []
-                                                                    animate.toggle()
-                                                                } label: {
-                                                                    Label("Delete Icon", systemImage: "trash")
-                                                                }
-                                                            } else {
-                                                                Button {
-                                                                    currSheet.currGrid[list].currIcons[slot].currIcon = "plus.viewfinder"
-                                                                    currSheet.currGrid[list].currIcons[slot].currDetails = []
-                                                                    animate.toggle()
-                                                                } label: {
-                                                                    Label("Delete Icon", systemImage: "trash")
-                                                                }
-                                                            }
-                                                            
-                                                        } else {
-                                                            Button {
-                                                                unlockButtons = false
-                                                                animate.toggle()
-                                                                removedIcons.append(currSheet.currGrid[list].currIcons[slot])
-                                                                currSheet.currGrid[list].currIcons[slot].currIcon = "plus.viewfinder"
-                                                                currSheet.currGrid[list].currIcons[slot].currDetails = []
-                                                                currSheet.removedIcons = removedIcons
-                                                                var newArray = loadSheetArray()
-                                                                newArray[getCurrSheetIndex()] = currSheet
-                                                                newArray[getCurrSheetIndex()] = autoRemoveSlots(newArray[getCurrSheetIndex()])
-                                                                currSheet = newArray[getCurrSheetIndex()]
-                                                                saveSheetArray(sheetObjects: newArray)
-                                                            } label: {
-                                                                Label("Remove Icon", systemImage: "square.slash")
-                                                            }
-                                                            
-                                                            Button {
-                                                                unlockButtons = false
-                                                                animate.toggle()
-                                                                completedIcons.append(currSheet.currGrid[list].currIcons[slot])
-                                                                currSheet.currGrid[list].currIcons[slot].currIcon = "plus.viewfinder"
-                                                                currSheet.currGrid[list].currIcons[slot].currDetails = []
-                                                                currSheet.completedIcons = completedIcons
-                                                                var newArray = loadSheetArray()
-                                                                newArray[getCurrSheetIndex()] = currSheet
-                                                                newArray[getCurrSheetIndex()] = autoRemoveSlots(newArray[getCurrSheetIndex()])
-                                                                currSheet = newArray[getCurrSheetIndex()]
-                                                                saveSheetArray(sheetObjects: newArray)
-                                                            } label: {
-                                                                Label("Complete Icon", systemImage: "checkmark")
-                                                            }
-                                                        }
+                                                    Button {
+                                                        currListIndex = list
+                                                        selectedDate = currSheet.currGrid[list].currTime
+                                                        showTime.toggle()
+                                                    } label: {
+                                                        Label("Edit Time", systemImage: "square.and.pencil")
                                                     }
                                                 }
                                             }
+                                        } else {
+                                            Button(action: {
+                                                if editMode {
+                                                    currListIndex = list
+                                                    showLabels.toggle()
+                                                    currText = currSheet.currGrid[list].currLabel
+                                                }
+                                            }) {
+                                                if editMode {
+                                                    Image(systemName: "square.and.pencil")
+                                                        .resizable()
+                                                        .minimumScaleFactor(0.01)
+                                                        .frame(width: 30, height: 30)
+                                                        .foregroundColor(Color(.systemGray))
+                                                }
+                                                
+                                                Text(currSheet.currGrid[list].currLabel)
+                                                    .lineLimit(1)
+                                                    .minimumScaleFactor(0.01)
+                                                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                                            }
+                                            .foregroundColor(.primary)
                                             .padding()
-                                        }
-                                    }
-                                    if editMode {
-                                        Button(action: {
-                                            if currSheet.currGrid.count > 1 {
-                                                animate.toggle()
-                                                currSheet.currGrid.remove(at: list)
-                                            } else {
-                                                currSheet.currGrid.removeAll()
-                                                currSheet.currGrid.append(GridSlot(currLabel: currSheet.gridType))
-                                            }
-                                        }) {
-                                            if #available(iOS 15.0, *) {
-                                                Image(systemName: "trash.square.fill")
-                                                    .resizable()
-                                                    .frame(width: 75, height: 75)
-                                                    .padding()
-                                                    .symbolRenderingMode(.hierarchical)
-                                                    .foregroundColor(.red)
-                                            } else {
-                                                Image(systemName: "trash.square.fill")
-                                                    .resizable()
-                                                    .frame(width: 75, height: 75)
-                                                    .padding()
-                                                    .foregroundColor(.red)
-                                            }
-                                        }
-                                        .padding(.leading)
-                                    }
-                                }
-                                .background(currGreenSlot == list && !editMode && showCurrentSlot ? .green : Color(.systemGray6))
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                .padding()
-                                
-                            }
-                        } else { //this is the main grid for iPad
-                            ZStack { //this is the left hand rectangle behind the labels
-                                GeometryReader { geometry in
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .frame(width: editMode ? (geometry.size.width / 6) - 7 : (geometry.size.width / 5) - 7, height: geometry.size.height)
-                                        .foregroundColor(Color(.systemGray4))
-                                }
-                                VStack {
-                                    LazyVGrid(columns: Array(repeating: GridItem(), count: editMode ? 6 : 5)) { //this is the main grid for the app
-                                        ForEach(0..<currSheet.currGrid.count, id: \.self) { list in
-                                            if currSheet.gridType == "time" {
-                                                ZStack {
-                                                    RoundedRectangle(cornerRadius: 20)
-                                                        .foregroundColor(currGreenSlot == list && !editMode && showCurrentSlot ? .green : .clear)
-                                                        .scaledToFill()
-                                                    Button(action: {
-                                                        if editMode {
-                                                            currListIndex = list
-                                                            selectedDate = currSheet.currGrid[list].currTime
-                                                            showTime.toggle()
-                                                        }
-                                                    }) {
-                                                        HStack {
-                                                            if editMode {
-                                                                Image(systemName: "square.and.pencil")
-                                                                    .resizable()
-                                                                    .minimumScaleFactor(0.01)
-                                                                    .frame(width: 30, height: 30)
-                                                                    .foregroundColor(Color(.systemGray))
-                                                            }
-                                                            
-                                                            Text(getTime(date: currSheet.currGrid[list].currTime))
-                                                                .lineLimit(1)
-                                                                .minimumScaleFactor(0.01)
-                                                                .font(.system(size: 100, weight: .bold, design: .rounded))
-                                                        }
-                                                    }
-                                                    .foregroundColor(.primary)
-                                                    .shadow(color: currGreenSlot == list && !editMode && showCurrentSlot ? Color(.systemBackground) : Color.clear, radius: 5)
-                                                    .padding()
-                                                    .contextMenu {
-                                                        if lockButtonsOn && !unlockButtons {
-                                                            Button {
-                                                                if !canUseBiometrics() && !canUsePassword() {
-                                                                    showCustomPassword = true
-                                                                } else {
-                                                                    authenticateWithBiometrics()
-                                                                }
-                                                            } label: {
-                                                                Label("Unlock Buttons", systemImage: "lock.open")
-                                                            }
+                                            .contextMenu {
+                                                if lockButtonsOn && !unlockButtons {
+                                                    Button {
+                                                        if !canUseBiometrics() && !canUsePassword() {
+                                                            showCustomPassword = true
                                                         } else {
-                                                            Button {
-                                                                currListIndex = list
-                                                                selectedDate = currSheet.currGrid[list].currTime
-                                                                showTime.toggle()
-                                                            } label: {
-                                                                Label("Edit Time", systemImage: "square.and.pencil")
-                                                            }
+                                                            authenticateWithBiometrics()
                                                         }
+                                                    } label: {
+                                                        Label("Unlock Buttons", systemImage: "lock.open")
                                                     }
-                                                }
-                                            } else {
-                                                Button(action: {
-                                                    if editMode {
+                                                } else {
+                                                    Button {
                                                         currListIndex = list
                                                         showLabels.toggle()
                                                         currText = currSheet.currGrid[list].currLabel
-                                                    }
-                                                }) {
-                                                    HStack {
-                                                        if editMode {
-                                                            Image(systemName: "square.and.pencil")
-                                                                .resizable()
-                                                                .minimumScaleFactor(0.01)
-                                                                .frame(width: 30, height: 30)
-                                                                .foregroundColor(Color(.systemGray))
-                                                        }
-                                                        
-                                                        Text(currSheet.currGrid[list].currLabel)
-                                                            .lineLimit(1)
-                                                            .minimumScaleFactor(0.01)
-                                                            .font(.system(size: 100, weight: .bold, design: .rounded))
-                                                    }
-                                                }
-                                                .foregroundColor(.primary)
-                                                .padding(horizontalSizeClass == .compact ? 3 : 10)
-                                                .contextMenu {
-                                                    if lockButtonsOn && !unlockButtons {
-                                                        Button {
-                                                            if !canUseBiometrics() && !canUsePassword() {
-                                                                showCustomPassword = true
-                                                            } else {
-                                                                authenticateWithBiometrics()
-                                                            }
-                                                        } label: {
-                                                            Label("Unlock Buttons", systemImage: "lock.open")
-                                                        }
-                                                    } else {
-                                                        Button {
-                                                            currListIndex = list
-                                                            showLabels.toggle()
-                                                            currText = currSheet.currGrid[list].currLabel
-                                                        } label: {
-                                                            Label("Edit Label", systemImage: "square.and.pencil")
-                                                        }
+                                                    } label: {
+                                                        Label("Edit Label", systemImage: "square.and.pencil")
                                                     }
                                                 }
                                             }
+                                        }
+                                        LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                                             ForEach(0..<currSheet.currGrid[list].currIcons.count, id: \.self) { slot in //this loop displays the slots/images
                                                 Button(action: {
                                                     if editMode {
@@ -661,14 +322,12 @@ struct ContentView: View {
                                                             Image(systemName: "plus.viewfinder")
                                                                 .resizable()
                                                                 .scaledToFit()
-                                                                .padding(10)
                                                                 .symbolRenderingMode(.hierarchical)
                                                                 .foregroundColor(editMode ? Color(.systemGray) : .clear)
                                                         } else {
                                                             Image(systemName: "plus.viewfinder")
                                                                 .resizable()
                                                                 .scaledToFit()
-                                                                .padding(10)
                                                                 .foregroundColor(editMode ? Color(.systemGray) : .clear)
                                                         }
                                                     } else {
@@ -680,9 +339,8 @@ struct ContentView: View {
                                                                     .clipShape(RoundedRectangle(cornerRadius: 20))
                                                                     .overlay(
                                                                         RoundedRectangle(cornerRadius: 16)
-                                                                            .stroke(currGreenSlot == list && !editMode && showCurrentSlot ? .green : .black, lineWidth: currGreenSlot == list && showCurrentSlot ? 10 : 6)
+                                                                            .stroke(.black, lineWidth: 6)
                                                                     )
-                                                                    .padding(horizontalSizeClass == .compact ? 0 : 5)
                                                             } else {
                                                                 loadImage(named: currSheet.currGrid[list].currIcons[slot].currIcon)
                                                                     .resizable()
@@ -690,9 +348,8 @@ struct ContentView: View {
                                                                     .clipShape(RoundedRectangle(cornerRadius: 20))
                                                                     .overlay(
                                                                         RoundedRectangle(cornerRadius: 16)
-                                                                            .stroke(currGreenSlot == list && !editMode && showCurrentSlot ? .green : .black, lineWidth: currGreenSlot == list && showCurrentSlot ? 10 : 6)
+                                                                            .stroke(.black, lineWidth: 6)
                                                                     )
-                                                                    .padding(horizontalSizeClass == .compact ? 0 : 5)
                                                             }
                                                             VStack {
                                                                 HStack {
@@ -816,9 +473,18 @@ struct ContentView: View {
                                                         }
                                                     }
                                                 }
+                                                .padding()
                                             }
-                                            if editMode {
-                                                Button(action: {
+                                        }
+                                        if editMode {
+                                            Button(action: {
+                                                if !deleteAnimationFix {
+                                                    
+                                                    deleteAnimationFix = true //if you spam click delete on the last row on iPad, it will try to delete through the animation which results in a crash from attempting to delete an index that doesnt exist. This is just a hacky fix that doesnt let you delete things less than one second apart (which shouldnt be an issue anyways)
+                                                    Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
+                                                        deleteAnimationFix = false
+                                                    }
+                                                    
                                                     if currSheet.currGrid.count > 1 {
                                                         animate.toggle()
                                                         currSheet.currGrid.remove(at: list)
@@ -826,711 +492,882 @@ struct ContentView: View {
                                                         currSheet.currGrid.removeAll()
                                                         currSheet.currGrid.append(GridSlot(currLabel: currSheet.gridType))
                                                     }
-                                                }) {
-                                                    if #available(iOS 15.0, *) {
-                                                        Image(systemName: "trash.square.fill")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .padding()
-                                                            .symbolRenderingMode(.hierarchical)
-                                                            .foregroundColor(.red)
-                                                    } else {
-                                                        Image(systemName: "trash.square.fill")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .padding()
-                                                            .foregroundColor(.red)
-                                                    }
                                                 }
-                                                .padding()
+                                                
+                                            }) {
+                                                if #available(iOS 15.0, *) {
+                                                    Image(systemName: "trash.square.fill")
+                                                        .resizable()
+                                                        .frame(width: 75, height: 75)
+                                                        .padding()
+                                                        .symbolRenderingMode(.hierarchical)
+                                                        .foregroundColor(.red)
+                                                } else {
+                                                    Image(systemName: "trash.square.fill")
+                                                        .resizable()
+                                                        .frame(width: 75, height: 75)
+                                                        .padding()
+                                                        .foregroundColor(.red)
+                                                }
                                             }
+                                            .padding(.leading)
                                         }
                                     }
-                                }
-                            }
-                        }
-                    }
-                    if editMode { //show the plus under the main grid while in edit mode
-                        Button(action: {
-                            currSheet.currGrid.append(GridSlot(currLabel: currSheet.currGrid.count < 1 ? "First" : "Then"))
-                            animate.toggle()
-                        }) {
-                            Image(systemName:"plus.square.fill")
-                                .resizable()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            //.fontWeight(.bold)
-                                .foregroundColor(.green)
-                                .padding()
-                        }
-                    }
-                    Rectangle() //this was originally when plus and minus were in bottom row, you can id this rectangle and use it to scroll to button
-                        .foregroundColor(.clear)
-                        .navigationBarHidden(true)
-                        .frame(width: 1, height: 1)
-                }
-            }
-            .navigationViewStyle(StackNavigationViewStyle())
-            .navigationBarHidden(true)
-            .onAppear{ //have to use timer because of a bug in NavigationView on ios 15 and older, displays too fast
-                Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
-                    if currSheet.label == "Debug, ignore this page" || loadSheetArray().count < 2 {
-                        showAllSheets = true
-                        createNewSheet = true
-                    }
-                }
-                updateUsage("action:open")
-                if showCurrentSlot {
-                    let currentDate = Date()
-                    let secondsUntilNextMinute = 60 - Calendar.current.component(.second, from: currentDate)
-                    let delayInSeconds = TimeInterval(secondsUntilNextMinute)
-
-                    Timer.scheduledTimer(withTimeInterval: delayInSeconds, repeats: true) { _ in
-                        currGreenSlot = loadSheetArray()[getCurrSheetIndex()].getCurrSlot()
-                        animate.toggle()
-                    }
-                }
-            }
-            
-            if horizontalSizeClass == .compact { //bottom row of buttons for iPhone
-                
-                if editMode { //show the bottom row of buttons for edit mode
-                    HStack {
-                        Button(action: {
-                            if sheetArray.count > 1 {
-                                presentAlert.toggle()
-                            }
-                        }) {
-                            Image(systemName:"trash.square.fill")
-                                .resizable()
-                                .frame(width: 75, height: 75)
-                            //.fontWeight(.bold)
-                                .foregroundColor(.red)
-                                .padding()
-                        }
-                        
-                        Button(action: { //saves the array and disables edit mode
-                            if currSheet.gridType == "time" {
-                                currSheet.currGrid = sortSheet(currSheet.currGrid)
-                            }
-                            currSheet.label = currTitleText
-                            var newSheetArray = loadSheetArray()
-                            newSheetArray[getCurrSheetIndex()] = currSheet
-                            newSheetArray[getCurrSheetIndex()] = autoRemoveSlots(newSheetArray[getCurrSheetIndex()])
-                            currSheet = newSheetArray[getCurrSheetIndex()]
-                            saveSheetArray(sheetObjects: newSheetArray)
-                            animate.toggle()
-                            manageNotifications()
-                            editMode.toggle()
-                            
-                        }) { //sheetobject isnt equatable rn, this is the desired behavior:
-                            /*
-                             if currSheet == loadSheetArray()[getCurrSheetIndex()] {
-                             Image(systemName:"xmark.square.fill")
-                             .resizable()
-                             .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                             .foregroundColor(Color(.systemGray))
-                             .padding()
-                             } else { */
-                            Image(systemName:"checkmark.square.fill")
-                                .resizable()
-                                .frame(width: 75, height: 75)
-                                .foregroundColor(.green)
-                                .padding()
-                            //}
-                        }
-                    }
-                } else { //show the non edit mode buttons at the bottom
-                    if lockButtonsOn && !unlockButtons { //but dont show the buttons if lock buttons is on
-                        Button(action: {
-                            if !canUseBiometrics() && !canUsePassword() {
-                                showCustomPassword = true
-                            } else {
-                                authenticateWithBiometrics()
-                            }
-                        }) {
-                            Image(systemName: "lock.square")
-                                .resizable()
-                                .padding()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                .foregroundColor(Color(.systemGray))
-                        }
-                        .padding()
-                    } else {
-                        VStack {
-                            HStack {
-                                
-                                Button(action: {
-                                    showAllSheets.toggle()
-                                    sheetArray = loadSheetArray()
-                                    unlockButtons = false
-                                }) {
-                                    VStack {
-                                        ZStack {
-                                            Image(systemName: "square.fill")
-                                                .resizable()
-                                                .frame(width: 50, height: 50)
-                                                .foregroundColor(.purple)
-                                            Image(systemName: "square.grid.2x2")
-                                                .resizable()
-                                                .frame(width: min(20, 60), height: min(20, 60))
-                                                .foregroundColor(Color(.systemBackground))
-                                        }
-                                        Text("All Sheets")
-                                            .font(.system(size: 15, weight: .semibold, design: .rounded))
-                                            .foregroundColor(.purple)
-                                    }
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                .padding(.leading)
-                                .padding(.trailing)
-                                
-                                Button(action: {
-                                    if sheetArray.count > 1 {
-                                        editMode.toggle()
-                                        currTitleText = currSheet.label
-                                        animate.toggle()
-                                    }
-                                    unlockButtons = false
-                                }) {
-                                    VStack {
-                                        ZStack {
-                                            Image(systemName: "square.fill")
-                                                .resizable()
-                                                .frame(width: 50, height: 50)
-                                                .foregroundColor(.blue)
-                                            Image(systemName: "pencil")
-                                                .resizable()
-                                                .frame(width: min(20, 60), height: min(20, 60))
-                                            //.fontWeight(.heavy)
-                                                .foregroundColor(Color(.systemBackground))
-                                        }
-                                        Text("Edit")
-                                            .font(.system(size: 15, weight: .semibold, design: .rounded))
-                                            .foregroundColor(.blue)
-                                    }
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                .padding()
-                                
-                                Button(action: {
-                                    showMore.toggle()
-                                    animate.toggle()
-                                }) {
-                                    VStack {
-                                        ZStack {
-                                            Image(systemName: "square")
-                                                .resizable()
-                                                .frame(width: 50, height: 50)
-                                            Image(systemName: "chevron.forward")
-                                                .resizable()
-                                                .frame(width: 15, height: 30)
-                                                .rotationEffect(showMore ? .degrees(90) : .degrees(-90))
-                                        }
-                                        Text(showMore ? "Less" : "More")
-                                            .font(.system(size: 15, weight: .semibold, design: .rounded))
-                                    }
-                                }
-                                .foregroundColor(Color(.systemGray2))
-                                .buttonStyle(PlainButtonStyle())
-                                .padding(.leading)
-                                .padding(.trailing)
-                                
-                            }
-                            if showMore {
-                                HStack {
-                                    Button(action: {
-                                        showRemoved.toggle()
-                                        unlockButtons = false
-                                    }) {
-                                        VStack {
-                                            ZStack {
-                                                Image(systemName: "folder.fill")
-                                                    .resizable()
-                                                    .frame(width: 50, height: 50)
-                                                    .foregroundColor(.red)
-                                                Image(systemName: "square.slash")
-                                                    .resizable()
-                                                    .frame(width: min(15, 25), height: min(15, 25))
-                                                    .padding(.top)
-                                                    .foregroundColor(Color(.systemBackground))
-                                            }
-                                            Text("Removed")
-                                                .font(.system(size: 15, weight: .semibold, design: .rounded))
-                                                .foregroundColor(.red)
-                                        }
-                                    }
-                                    .buttonStyle(PlainButtonStyle())
-                                    .padding(.leading)
-                                    .padding(.trailing)
-                                    
-                                    Button(action: {
-                                        showCompleted.toggle()
-                                        unlockButtons = false
-                                    }) {
-                                        VStack {
-                                            ZStack {
-                                                Image(systemName: "folder.fill")
-                                                    .resizable()
-                                                    .frame(width: 50, height: 50)
-                                                    .foregroundColor(.green)
-                                                Image(systemName: "checkmark")
-                                                    .resizable()
-                                                    .frame(width: min(15, 25), height: min(15, 25))
-                                                    .padding(.top)
-                                                    .foregroundColor(Color(.systemBackground))
-                                            }
-                                            Text("Completed")
-                                                .font(.system(size: 15, weight: .semibold, design: .rounded))
-                                                .foregroundColor(.green)
-                                        }
-                                    }
-                                    .buttonStyle(PlainButtonStyle())
+                                    .background(currGreenSlot == list && !editMode && showCurrentSlot ? .green : Color(.systemGray6))
+                                    .clipShape(RoundedRectangle(cornerRadius: 20))
                                     .padding()
                                     
-                                    Button(action: {
-                                        showSettings.toggle()
-                                    }) {
-                                        VStack {
-                                            ZStack {
-                                                Image(systemName: "square.fill")
-                                                    .resizable()
-                                                    .frame(width: 50, height: 50)
-                                                    .foregroundColor(Color(.systemGray))
-                                                Image(systemName: "gear")
-                                                    .resizable()
-                                                    .frame(width: min(20, 60), height: min(20, 60))
-                                                    .foregroundColor(Color(.systemBackground))
+                                }
+                            } else { //this is the main grid for iPad
+                                ZStack { //this is the left hand rectangle behind the labels
+                                    GeometryReader { geometry in
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .frame(width: editMode ? (geometry.size.width / 6) - 7 : (geometry.size.width / 5) - 7, height: geometry.size.height)
+                                            .foregroundColor(Color(.systemGray4))
+                                    }
+                                    VStack {
+                                        LazyVGrid(columns: Array(repeating: GridItem(), count: editMode ? 6 : 5)) { //this is the main grid for the app
+                                            ForEach(0..<currSheet.currGrid.count, id: \.self) { list in
+                                                if currSheet.gridType == "time" {
+                                                    ZStack {
+                                                        RoundedRectangle(cornerRadius: 20)
+                                                            .foregroundColor(currGreenSlot == list && !editMode && showCurrentSlot ? .green : .clear)
+                                                            .scaledToFill()
+                                                        Button(action: {
+                                                            if editMode {
+                                                                currListIndex = list
+                                                                selectedDate = currSheet.currGrid[list].currTime
+                                                                showTime.toggle()
+                                                            }
+                                                        }) {
+                                                            HStack {
+                                                                if editMode {
+                                                                    Image(systemName: "square.and.pencil")
+                                                                        .resizable()
+                                                                        .minimumScaleFactor(0.01)
+                                                                        .frame(width: 30, height: 30)
+                                                                        .foregroundColor(Color(.systemGray))
+                                                                }
+                                                                
+                                                                Text(getTime(date: currSheet.currGrid[list].currTime))
+                                                                    .lineLimit(1)
+                                                                    .minimumScaleFactor(0.01)
+                                                                    .font(.system(size: 100, weight: .bold, design: .rounded))
+                                                            }
+                                                        }
+                                                        .foregroundColor(.primary)
+                                                        .shadow(color: currGreenSlot == list && !editMode && showCurrentSlot ? Color(.systemBackground) : Color.clear, radius: 5)
+                                                        .padding()
+                                                        .contextMenu {
+                                                            if lockButtonsOn && !unlockButtons {
+                                                                Button {
+                                                                    if !canUseBiometrics() && !canUsePassword() {
+                                                                        showCustomPassword = true
+                                                                    } else {
+                                                                        authenticateWithBiometrics()
+                                                                    }
+                                                                } label: {
+                                                                    Label("Unlock Buttons", systemImage: "lock.open")
+                                                                }
+                                                            } else {
+                                                                Button {
+                                                                    currListIndex = list
+                                                                    selectedDate = currSheet.currGrid[list].currTime
+                                                                    showTime.toggle()
+                                                                } label: {
+                                                                    Label("Edit Time", systemImage: "square.and.pencil")
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                } else {
+                                                    Button(action: {
+                                                        if editMode {
+                                                            currListIndex = list
+                                                            showLabels.toggle()
+                                                            currText = currSheet.currGrid[list].currLabel
+                                                        }
+                                                    }) {
+                                                        HStack {
+                                                            if editMode {
+                                                                Image(systemName: "square.and.pencil")
+                                                                    .resizable()
+                                                                    .minimumScaleFactor(0.01)
+                                                                    .frame(width: 30, height: 30)
+                                                                    .foregroundColor(Color(.systemGray))
+                                                            }
+                                                            
+                                                            Text(currSheet.currGrid[list].currLabel)
+                                                                .lineLimit(1)
+                                                                .minimumScaleFactor(0.01)
+                                                                .font(.system(size: 100, weight: .bold, design: .rounded))
+                                                        }
+                                                    }
+                                                    .foregroundColor(.primary)
+                                                    .padding(horizontalSizeClass == .compact ? 3 : 10)
+                                                    .contextMenu {
+                                                        if lockButtonsOn && !unlockButtons {
+                                                            Button {
+                                                                if !canUseBiometrics() && !canUsePassword() {
+                                                                    showCustomPassword = true
+                                                                } else {
+                                                                    authenticateWithBiometrics()
+                                                                }
+                                                            } label: {
+                                                                Label("Unlock Buttons", systemImage: "lock.open")
+                                                            }
+                                                        } else {
+                                                            Button {
+                                                                currListIndex = list
+                                                                showLabels.toggle()
+                                                                currText = currSheet.currGrid[list].currLabel
+                                                            } label: {
+                                                                Label("Edit Label", systemImage: "square.and.pencil")
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                ForEach(0..<currSheet.currGrid[list].currIcons.count, id: \.self) { slot in //this loop displays the slots/images
+                                                    Button(action: {
+                                                        if editMode {
+                                                            currListIndex = list
+                                                            currSlotIndex = slot
+                                                            showIcons.toggle()
+                                                            searchText = ""
+                                                        } else if currSheet.currGrid[list].currIcons[slot].currIcon != "plus.viewfinder" {
+                                                            currListIndex = list
+                                                            currSlotIndex = slot
+                                                            showMod.toggle()
+                                                            tempDetails = []
+                                                            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
+                                                                tempDetails = currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? []
+                                                                checkDetails = currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? []
+                                                                animate.toggle()
+                                                            }
+                                                            unlockButtons = false
+                                                            if speakIcons { //speak the icon, handle below
+                                                                if currSheet.currGrid[list].currIcons[slot].currIcon.contains("customIconObject:") {
+                                                                    speechSynthesizer.speak(extractKey(from: currSheet.currGrid[list].currIcons[slot].currIcon))
+                                                                } else {
+                                                                    speechSynthesizer.speak(currSheet.currGrid[list].currIcons[slot].currIcon)
+                                                                }
+                                                            }
+                                                        }
+                                                    }) {
+                                                        if currSheet.currGrid[list].currIcons[slot].currIcon == "plus.viewfinder" { //if there isnt an icon
+                                                            if #available(iOS 15.0, *) {
+                                                                Image(systemName: "plus.viewfinder")
+                                                                    .resizable()
+                                                                    .scaledToFit()
+                                                                    .padding(10)
+                                                                    .symbolRenderingMode(.hierarchical)
+                                                                    .foregroundColor(editMode ? Color(.systemGray) : .clear)
+                                                            } else {
+                                                                Image(systemName: "plus.viewfinder")
+                                                                    .resizable()
+                                                                    .scaledToFit()
+                                                                    .padding(10)
+                                                                    .foregroundColor(editMode ? Color(.systemGray) : .clear)
+                                                            }
+                                                        } else {
+                                                            ZStack {
+                                                                if currSheet.currGrid[list].currIcons[slot].currIcon.contains("customIconObject:") {
+                                                                    //check if default icon or custom icon and handle
+                                                                    getCustomIconSmall(currSheet.currGrid[list].currIcons[slot].currIcon)
+                                                                        .scaledToFit()
+                                                                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                                        .overlay(
+                                                                            RoundedRectangle(cornerRadius: 16)
+                                                                                .stroke(currGreenSlot == list && !editMode && showCurrentSlot ? .green : .black, lineWidth: currGreenSlot == list && showCurrentSlot ? 10 : 6)
+                                                                        )
+                                                                        .padding(horizontalSizeClass == .compact ? 0 : 5)
+                                                                } else {
+                                                                    loadImage(named: currSheet.currGrid[list].currIcons[slot].currIcon)
+                                                                        .resizable()
+                                                                        .scaledToFit()
+                                                                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                                        .overlay(
+                                                                            RoundedRectangle(cornerRadius: 16)
+                                                                                .stroke(currGreenSlot == list && !editMode && showCurrentSlot ? .green : .black, lineWidth: currGreenSlot == list && showCurrentSlot ? 10 : 6)
+                                                                        )
+                                                                        .padding(horizontalSizeClass == .compact ? 0 : 5)
+                                                                }
+                                                                VStack {
+                                                                    HStack {
+                                                                        if (currSheet.currGrid[list].currIcons[slot].currDetails ?? []).count > 0 {
+                                                                            Image(systemName: "\((currSheet.currGrid[list].currIcons[slot].currDetails ?? []).count).circle.fill")
+                                                                                .resizable()
+                                                                                .frame(width: horizontalSizeClass == .compact ? 20 : 40, height: horizontalSizeClass == .compact ? 20 : 40)
+                                                                                .foregroundColor(Color(.systemGray2))
+                                                                                .padding(.trailing, horizontalSizeClass == .compact ? 5 : 10)
+                                                                                .padding(.bottom, horizontalSizeClass == .compact ? 5 : 10)
+                                                                        }
+                                                                        Spacer()
+                                                                    }
+                                                                    Spacer()
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    .contextMenu {
+                                                        if lockButtonsOn && !unlockButtons {
+                                                            Button {
+                                                                if !canUseBiometrics() && !canUsePassword() {
+                                                                    showCustomPassword = true
+                                                                } else {
+                                                                    authenticateWithBiometrics()
+                                                                }
+                                                            } label: {
+                                                                Label("Unlock Buttons", systemImage: "lock.open")
+                                                            }
+                                                        } else {
+                                                            if currSheet.currGrid[list].currIcons[slot].currIcon == "plus.viewfinder" {
+                                                                Button {
+                                                                    currListIndex = list
+                                                                    currSlotIndex = slot
+                                                                    showIcons.toggle()
+                                                                    searchText = ""
+                                                                } label: {
+                                                                    Label("Add Icon", systemImage: "plus.viewfinder")
+                                                                }
+                                                            } else {
+                                                                
+                                                                Button {
+                                                                    currListIndex = list
+                                                                    currSlotIndex = slot
+                                                                    showIcons.toggle()
+                                                                    searchText = ""
+                                                                } label: {
+                                                                    Label("Change Icon", systemImage: "arrow.2.squarepath")
+                                                                }
+                                                                
+                                                                Button {
+                                                                    tempDetails = [""] //hacky fix instead of binding, fixes not updating
+                                                                    animate.toggle()
+                                                                    Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
+                                                                        tempDetails = currSheet.currGrid[list].currIcons[slot].currDetails ?? []
+                                                                        checkDetails = currSheet.currGrid[list].currIcons[slot].currDetails ?? []
+                                                                    }
+                                                                    currListIndex = list
+                                                                    currSlotIndex = slot
+                                                                    if !editMode {editMode.toggle()} else {wasEditing.toggle()}
+                                                                    showMod.toggle()
+                                                                } label: {
+                                                                    Label("Add Details", systemImage: "plus.square.on.square")
+                                                                }
+                                                                
+                                                                Divider()
+                                                                
+                                                                if editMode {
+                                                                    
+                                                                    if #available(iOS 15.0, *) {
+                                                                        Button(role: .destructive) {
+                                                                            currSheet.currGrid[list].currIcons[slot].currIcon = "plus.viewfinder"
+                                                                            currSheet.currGrid[list].currIcons[slot].currDetails = []
+                                                                            animate.toggle()
+                                                                        } label: {
+                                                                            Label("Delete Icon", systemImage: "trash")
+                                                                        }
+                                                                    } else {
+                                                                        Button {
+                                                                            currSheet.currGrid[list].currIcons[slot].currIcon = "plus.viewfinder"
+                                                                            currSheet.currGrid[list].currIcons[slot].currDetails = []
+                                                                            animate.toggle()
+                                                                        } label: {
+                                                                            Label("Delete Icon", systemImage: "trash")
+                                                                        }
+                                                                    }
+                                                                    
+                                                                } else {
+                                                                    Button {
+                                                                        unlockButtons = false
+                                                                        animate.toggle()
+                                                                        removedIcons.append(currSheet.currGrid[list].currIcons[slot])
+                                                                        currSheet.currGrid[list].currIcons[slot].currIcon = "plus.viewfinder"
+                                                                        currSheet.currGrid[list].currIcons[slot].currDetails = []
+                                                                        currSheet.removedIcons = removedIcons
+                                                                        var newArray = loadSheetArray()
+                                                                        newArray[getCurrSheetIndex()] = currSheet
+                                                                        newArray[getCurrSheetIndex()] = autoRemoveSlots(newArray[getCurrSheetIndex()])
+                                                                        currSheet = newArray[getCurrSheetIndex()]
+                                                                        saveSheetArray(sheetObjects: newArray)
+                                                                    } label: {
+                                                                        Label("Remove Icon", systemImage: "square.slash")
+                                                                    }
+                                                                    
+                                                                    Button {
+                                                                        unlockButtons = false
+                                                                        animate.toggle()
+                                                                        completedIcons.append(currSheet.currGrid[list].currIcons[slot])
+                                                                        currSheet.currGrid[list].currIcons[slot].currIcon = "plus.viewfinder"
+                                                                        currSheet.currGrid[list].currIcons[slot].currDetails = []
+                                                                        currSheet.completedIcons = completedIcons
+                                                                        var newArray = loadSheetArray()
+                                                                        newArray[getCurrSheetIndex()] = currSheet
+                                                                        newArray[getCurrSheetIndex()] = autoRemoveSlots(newArray[getCurrSheetIndex()])
+                                                                        currSheet = newArray[getCurrSheetIndex()]
+                                                                        saveSheetArray(sheetObjects: newArray)
+                                                                    } label: {
+                                                                        Label("Complete Icon", systemImage: "checkmark")
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                if editMode {
+                                                    Button(action: {
+                                                        if !deleteAnimationFix {
+                                                            
+                                                            deleteAnimationFix = true //if you spam click delete on the last row on iPad, it will try to delete through the animation which results in a crash from attempting to delete an index that doesnt exist. This is just a hacky fix that doesnt let you delete things less than one second apart (which shouldnt be an issue anyways)
+                                                            Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
+                                                                deleteAnimationFix = false
+                                                            }
+                                                            
+                                                            if currSheet.currGrid.count > 1 {
+                                                                animate.toggle()
+                                                                currSheet.currGrid.remove(at: list)
+                                                            } else {
+                                                                currSheet.currGrid.removeAll()
+                                                                currSheet.currGrid.append(GridSlot(currLabel: currSheet.gridType))
+                                                            }
+                                                        }
+                                                    }) {
+                                                        if #available(iOS 15.0, *) {
+                                                            Image(systemName: "trash.square.fill")
+                                                                .resizable()
+                                                                .scaledToFit()
+                                                                .padding()
+                                                                .symbolRenderingMode(.hierarchical)
+                                                                .foregroundColor(.red)
+                                                        } else {
+                                                            Image(systemName: "trash.square.fill")
+                                                                .resizable()
+                                                                .scaledToFit()
+                                                                .padding()
+                                                                .foregroundColor(.red)
+                                                        }
+                                                    }
+                                                    .padding()
+                                                }
                                             }
-                                            Text("Settings")
-                                                .font(.system(size: 15, weight: .semibold, design: .rounded))
-                                                .foregroundColor(Color(.systemGray))
                                         }
                                     }
-                                    .buttonStyle(PlainButtonStyle())
-                                    .padding(.leading)
-                                    .padding(.trailing)
                                 }
                             }
                         }
+                        if editMode { //show the plus under the main grid while in edit mode
+                            Button(action: {
+                                currSheet.currGrid.append(GridSlot(currLabel: currSheet.currGrid.count < 1 ? "First" : "Then"))
+                                animate.toggle()
+                            }) {
+                                Image(systemName:"plus.square.fill")
+                                    .resizable()
+                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                //.fontWeight(.bold)
+                                    .foregroundColor(.green)
+                                    .padding()
+                            }
+                        }
+                        Rectangle() //this was originally when plus and minus were in bottom row, you can id this rectangle and use it to scroll to button
+                            .foregroundColor(.clear)
+                            .navigationBarHidden(true)
+                            .frame(width: 1, height: 1)
+                            .padding(.bottom, 150)
                     }
                 }
-                
-            } else { //bottom row o buttons for iPad
-                
-                if editMode { //show the bottom row of buttons for edit mode
-                    HStack {
-                        Button(action: {
-                            if sheetArray.count > 1 {
-                                presentAlert.toggle()
-                            }
-                        }) {
-                            Image(systemName:"trash.square.fill")
-                                .resizable()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            //.fontWeight(.bold)
-                                .foregroundColor(.red)
-                                .padding()
+                .navigationViewStyle(StackNavigationViewStyle())
+                .navigationBarHidden(true)
+                .onAppear{ //have to use timer because of a bug in NavigationView on ios 15 and older, displays too fast
+                    Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
+                        if currSheet.label == "Debug, ignore this page" || loadSheetArray().count < 2 {
+                            showAllSheets = true
+                            createNewSheet = true
                         }
+                    }
+                    updateUsage("action:open")
+                    if showCurrentSlot {
+                        let currentDate = Date()
+                        let secondsUntilNextMinute = 60 - Calendar.current.component(.second, from: currentDate)
+                        let delayInSeconds = TimeInterval(secondsUntilNextMinute)
                         
-                        Button(action: { //saves the array and disables edit mode
-                            if currSheet.gridType == "time" {
-                                currSheet.currGrid = sortSheet(currSheet.currGrid)
-                            }
-                            currSheet.label = currTitleText
-                            var newSheetArray = loadSheetArray()
-                            newSheetArray[getCurrSheetIndex()] = currSheet
-                            newSheetArray[getCurrSheetIndex()] = autoRemoveSlots(newSheetArray[getCurrSheetIndex()])
-                            currSheet = newSheetArray[getCurrSheetIndex()]
-                            saveSheetArray(sheetObjects: newSheetArray)
+                        Timer.scheduledTimer(withTimeInterval: delayInSeconds, repeats: true) { _ in
+                            currGreenSlot = loadSheetArray()[getCurrSheetIndex()].getCurrSlot()
                             animate.toggle()
-                            manageNotifications()
-                            editMode.toggle()
-                            
-                        }) { //sheetobject isnt equatable rn, this is the desired behavior:
-                            /*
-                             if currSheet == loadSheetArray()[getCurrSheetIndex()] {
-                             Image(systemName:"xmark.square.fill")
-                             .resizable()
-                             .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                             .foregroundColor(Color(.systemGray))
-                             .padding()
-                             } else { */
-                            Image(systemName:"checkmark.square.fill")
-                                .resizable()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                .foregroundColor(.green)
-                                .padding()
-                            //}
                         }
                     }
-                } else { //show the non edit mode buttons at the bottom
-                    if lockButtonsOn && !unlockButtons { //but dont show the buttons if lock buttons is on
-                        Button(action: {
-                            if !canUseBiometrics() && !canUsePassword() {
-                                showCustomPassword = true
-                            } else {
-                                authenticateWithBiometrics()
-                            }
-                        }) {
-                            Image(systemName: "lock.square")
-                                .resizable()
-                                .padding()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                .foregroundColor(Color(.systemGray))
-                        }
-                        .padding()
-                    } else {
-                        HStack {
-                            Button(action: {
-                                showRemoved.toggle()
-                                unlockButtons = false
-                            }) {
-                                VStack {
-                                    ZStack {
-                                        Image(systemName: "folder.fill")
-                                            .resizable()
-                                            .frame(width: 75, height: 75)
-                                            .foregroundColor(.red)
-                                        Image(systemName: "square.slash")
-                                            .resizable()
-                                            .frame(width: min(25, 35), height: min(25, 35))
-                                            .padding(.top)
-                                            .foregroundColor(Color(.systemBackground))
-                                    }
-                                    Text("Removed")
-                                        .font(.system(size: 20, weight: .semibold, design: .rounded))
-                                        .foregroundColor(.red)
-                                }
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .padding()
-                            
-                            Button(action: {
-                                showCompleted.toggle()
-                                unlockButtons = false
-                            }) {
-                                VStack {
-                                    ZStack {
-                                        Image(systemName: "folder.fill")
-                                            .resizable()
-                                            .frame(width: 75, height: 75)
-                                            .foregroundColor(.green)
-                                        Image(systemName: "checkmark")
-                                            .resizable()
-                                            .frame(width: min(25, 35), height: min(25, 35))
-                                            .padding(.top)
-                                            .foregroundColor(Color(.systemBackground))
-                                    }
-                                    Text("Completed")
-                                        .font(.system(size: 20, weight: .semibold, design: .rounded))
-                                        .foregroundColor(.green)
-                                }
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .padding()
-                            
-                            Button(action: {
-                                showAllSheets.toggle()
-                                sheetArray = loadSheetArray()
-                                unlockButtons = false
-                            }) {
-                                VStack {
-                                    ZStack {
-                                        Image(systemName: "square.fill")
-                                            .resizable()
-                                            .frame(width: 75, height: 75)
-                                            .foregroundColor(.purple)
-                                        Image(systemName: "square.grid.2x2")
-                                            .resizable()
-                                            .frame(width: min(40, 100), height: min(40, 100))
-                                            .foregroundColor(Color(.systemBackground))
-                                    }
-                                    Text("All Sheets")
-                                        .font(.system(size: 20, weight: .semibold, design: .rounded))
-                                        .foregroundColor(.purple)
-                                }
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .padding()
-                            
-                            Button(action: {
-                                showSettings.toggle()
-                            }) {
-                                VStack {
-                                    ZStack {
-                                        Image(systemName: "square.fill")
-                                            .resizable()
-                                            .frame(width: 75, height: 75)
-                                            .foregroundColor(Color(.systemGray))
-                                        Image(systemName: "gear")
-                                            .resizable()
-                                            .frame(width: min(40, 100), height: min(40, 100))
-                                            .foregroundColor(Color(.systemBackground))
-                                    }
-                                    Text("Settings")
-                                        .font(.system(size: 20, weight: .semibold, design: .rounded))
-                                        .foregroundColor(Color(.systemGray))
-                                }
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .padding()
-                            
-                            Button(action: {
-                                if sheetArray.count > 1 {
-                                    editMode.toggle()
-                                    currTitleText = currSheet.label
-                                    animate.toggle()
-                                }
-                                unlockButtons = false
-                            }) {
-                                VStack {
-                                    ZStack {
-                                        Image(systemName: "square.fill")
-                                            .resizable()
-                                            .frame(width: 75, height: 75)
-                                            .foregroundColor(.blue)
-                                        Image(systemName: "pencil")
-                                            .resizable()
-                                            .frame(width: min(40, 100), height: min(40, 100))
-                                        //.fontWeight(.heavy)
-                                            .foregroundColor(Color(.systemBackground))
-                                    }
-                                    Text("Edit")
-                                        .font(.system(size: 20, weight: .semibold, design: .rounded))
-                                        .foregroundColor(.blue)
-                                }
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .padding()
-                        }
-                    }
+                    defaults.set(false, forKey: "aiOn") //temporarily for now to make sure nobody can access prerelease features. removed the functions anyways but still
                 }
-            } //end of the main grid
+                //end of the main grid
+            }
+            //bottom row here
+             VStack {
+                 Spacer()
+                 HStack {
+                     Spacer()
+                     if horizontalSizeClass == .compact { //bottom row of buttons for iPhone
+                         if editMode { //show the bottom row of buttons for edit mode
+                             HStack {
+                                 Button(action: {
+                                     if sheetArray.count > 1 {
+                                         presentAlert.toggle()
+                                     }
+                                 }) {
+                                     Image(systemName:"trash.square.fill")
+                                         .resizable()
+                                         .frame(width: 75, height: 75)
+                                     //.fontWeight(.bold)
+                                         .foregroundColor(.red)
+                                         .padding()
+                                 }
+                                 
+                                 Button(action: { //saves the array and disables edit mode
+                                     if currSheet.gridType == "time" {
+                                         currSheet.currGrid = sortSheet(currSheet.currGrid)
+                                     }
+                                     currSheet.label = currTitleText
+                                     var newSheetArray = loadSheetArray()
+                                     newSheetArray[getCurrSheetIndex()] = currSheet
+                                     newSheetArray[getCurrSheetIndex()] = autoRemoveSlots(newSheetArray[getCurrSheetIndex()])
+                                     currSheet = newSheetArray[getCurrSheetIndex()]
+                                     saveSheetArray(sheetObjects: newSheetArray)
+                                     animate.toggle()
+                                     manageNotifications()
+                                     editMode.toggle()
+                                     
+                                 }) { //sheetobject isnt equatable rn, this is the desired behavior:
+                                     /*
+                                      if currSheet == loadSheetArray()[getCurrSheetIndex()] {
+                                      Image(systemName:"xmark.square.fill")
+                                      .resizable()
+                                      .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                      .foregroundColor(Color(.systemGray))
+                                      .padding()
+                                      } else { */
+                                     Image(systemName:"checkmark.square.fill")
+                                         .resizable()
+                                         .frame(width: 75, height: 75)
+                                         .foregroundColor(.green)
+                                         .padding()
+                                     //}
+                                 }
+                             }
+                         } else { //show the non edit mode buttons at the bottom
+                             if lockButtonsOn && !unlockButtons { //but dont show the buttons if lock buttons is on
+                                 Button(action: {
+                                     if !canUseBiometrics() && !canUsePassword() {
+                                         showCustomPassword = true
+                                     } else {
+                                         authenticateWithBiometrics()
+                                     }
+                                 }) {
+                                     Image(systemName: "lock.square")
+                                         .resizable()
+                                         .padding()
+                                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                         .foregroundColor(Color(.systemGray))
+                                 }
+                                 .padding()
+                             } else {
+                                 VStack {
+                                     HStack {
+                                         
+                                         Button(action: {
+                                             showAllSheets.toggle()
+                                             sheetArray = loadSheetArray()
+                                             unlockButtons = false
+                                         }) {
+                                             VStack {
+                                                 ZStack {
+                                                     Image(systemName: "square.fill")
+                                                         .resizable()
+                                                         .frame(width: 65, height: 65)
+                                                         .foregroundColor(.purple)
+                                                     Image(systemName: "square.grid.2x2")
+                                                         .resizable()
+                                                         .frame(width: min(30, 75), height: min(30, 75))
+                                                         .foregroundColor(Color(.systemBackground))
+                                                 }
+                                                 Text("All Sheets")
+                                                     .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                                     .foregroundColor(.purple)
+                                             }
+                                         }
+                                         .buttonStyle(PlainButtonStyle())
+                                         .padding(.leading)
+                                         .padding(.trailing)
+                                         
+                                         Button(action: {
+                                             if sheetArray.count > 1 {
+                                                 editMode.toggle()
+                                                 currTitleText = currSheet.label
+                                                 animate.toggle()
+                                             }
+                                             unlockButtons = false
+                                         }) {
+                                             VStack {
+                                                 ZStack {
+                                                     Image(systemName: "square.fill")
+                                                         .resizable()
+                                                         .frame(width: 65, height: 65)
+                                                         .foregroundColor(.blue)
+                                                     Image(systemName: "pencil")
+                                                         .resizable()
+                                                         .frame(width: min(30, 75), height: min(30, 75))
+                                                     //.fontWeight(.heavy)
+                                                         .foregroundColor(Color(.systemBackground))
+                                                 }
+                                                 Text("Edit")
+                                                     .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                                     .foregroundColor(.blue)
+                                             }
+                                         }
+                                         .buttonStyle(PlainButtonStyle())
+                                         .padding()
+                                         
+                                         Button(action: {
+                                             showMore.toggle()
+                                             animate.toggle()
+                                         }) {
+                                             VStack {
+                                                 ZStack {
+                                                     Image(systemName: "square")
+                                                         .resizable()
+                                                         .frame(width: 65, height: 65)
+                                                     Image(systemName: "chevron.forward")
+                                                         .resizable()
+                                                     //                                                .frame(width: 25, height: 50)
+                                                         .frame(width: 20, height: 40)
+                                                         .rotationEffect(showMore ? .degrees(90) : .degrees(-90))
+                                                 }
+                                                 Text(showMore ? "Less" : "More")
+                                                     .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                             }
+                                         }
+                                         .foregroundColor(Color(.systemGray2))
+                                         .buttonStyle(PlainButtonStyle())
+                                         .padding(.leading)
+                                         .padding(.trailing)
+                                         
+                                     }
+                                     if showMore {
+                                         HStack {
+                                             Button(action: {
+                                                 showRemoved.toggle()
+                                                 unlockButtons = false
+                                             }) {
+                                                 VStack {
+                                                     ZStack {
+                                                         Image(systemName: "folder.fill")
+                                                             .resizable()
+                                                             .frame(width: 65, height: 65)
+                                                             .foregroundColor(.red)
+                                                         Image(systemName: "square.slash")
+                                                             .resizable()
+                                                             .frame(width: min(20, 30), height: min(20, 30))
+                                                             .padding(.top)
+                                                             .foregroundColor(Color(.systemBackground))
+                                                     }
+                                                     Text("Removed")
+                                                         .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                                         .foregroundColor(.red)
+                                                 }
+                                             }
+                                             .buttonStyle(PlainButtonStyle())
+                                             .padding([.leading, .trailing])
+                                             
+                                             Button(action: {
+                                                 showCompleted.toggle()
+                                                 unlockButtons = false
+                                             }) {
+                                                 VStack {
+                                                     ZStack {
+                                                         Image(systemName: "folder.fill")
+                                                             .resizable()
+                                                             .frame(width: 65, height: 65)
+                                                             .foregroundColor(.green)
+                                                         Image(systemName: "checkmark")
+                                                             .resizable()
+                                                             .frame(width: min(20, 30), height: min(20, 30))
+                                                             .padding(.top)
+                                                             .foregroundColor(Color(.systemBackground))
+                                                     }
+                                                     Text("Completed")
+                                                         .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                                         .foregroundColor(.green)
+                                                 }
+                                             }
+                                             .buttonStyle(PlainButtonStyle())
+                                             .padding()
+                                             
+                                             Button(action: {
+                                                 showSettings.toggle()
+                                             }) {
+                                                 VStack {
+                                                     ZStack {
+                                                         Image(systemName: "square.fill")
+                                                             .resizable()
+                                                             .frame(width: 65, height: 65)
+                                                             .foregroundColor(Color(.systemGray))
+                                                         Image(systemName: "gear")
+                                                             .resizable()
+                                                             .frame(width: min(30, 75), height: min(30, 75))
+                                                             .foregroundColor(Color(.systemBackground))
+                                                     }
+                                                     Text("Settings")
+                                                         .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                                         .foregroundColor(Color(.systemGray))
+                                                 }
+                                             }
+                                             .buttonStyle(PlainButtonStyle())
+                                             .padding([.leading, .trailing])
+                                         }
+                                     }
+                                 }
+                             }
+                         }
+                     } else { //bottom row o buttons for iPad
+                         if editMode { //show the bottom row of buttons for edit mode
+                             HStack {
+                                 Button(action: {
+                                     if sheetArray.count > 1 {
+                                         presentAlert.toggle()
+                                     }
+                                 }) {
+                                     Image(systemName:"trash.square.fill")
+                                         .resizable()
+                                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                     //.fontWeight(.bold)
+                                         .foregroundColor(.red)
+                                         .padding()
+                                 }
+                                 
+                                 Button(action: { //saves the array and disables edit mode
+                                     if currSheet.gridType == "time" {
+                                         currSheet.currGrid = sortSheet(currSheet.currGrid)
+                                     }
+                                     currSheet.label = currTitleText
+                                     var newSheetArray = loadSheetArray()
+                                     newSheetArray[getCurrSheetIndex()] = currSheet
+                                     newSheetArray[getCurrSheetIndex()] = autoRemoveSlots(newSheetArray[getCurrSheetIndex()])
+                                     currSheet = newSheetArray[getCurrSheetIndex()]
+                                     saveSheetArray(sheetObjects: newSheetArray)
+                                     animate.toggle()
+                                     manageNotifications()
+                                     editMode.toggle()
+                                     
+                                 }) { //sheetobject isnt equatable rn, this is the desired behavior:
+                                     /*
+                                      if currSheet == loadSheetArray()[getCurrSheetIndex()] {
+                                      Image(systemName:"xmark.square.fill")
+                                      .resizable()
+                                      .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                      .foregroundColor(Color(.systemGray))
+                                      .padding()
+                                      } else { */
+                                     Image(systemName:"checkmark.square.fill")
+                                         .resizable()
+                                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                         .foregroundColor(.green)
+                                         .padding()
+                                     //}
+                                 }
+                             }
+                         } else { //show the non edit mode buttons at the bottom
+                             if lockButtonsOn && !unlockButtons { //but dont show the buttons if lock buttons is on
+                                 Button(action: {
+                                     if !canUseBiometrics() && !canUsePassword() {
+                                         showCustomPassword = true
+                                     } else {
+                                         authenticateWithBiometrics()
+                                     }
+                                 }) {
+                                     Image(systemName: "lock.square")
+                                         .resizable()
+                                         .padding()
+                                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                         .foregroundColor(Color(.systemGray))
+                                 }
+                                 .padding()
+                             } else {
+                                 HStack {
+                                     Button(action: {
+                                         showRemoved.toggle()
+                                         unlockButtons = false
+                                     }) {
+                                         VStack {
+                                             ZStack {
+                                                 Image(systemName: "folder.fill")
+                                                     .resizable()
+                                                     .frame(width: 75, height: 75)
+                                                     .foregroundColor(.red)
+                                                 Image(systemName: "square.slash")
+                                                     .resizable()
+                                                     .frame(width: min(25, 35), height: min(25, 35))
+                                                     .padding(.top)
+                                                     .foregroundColor(Color(.systemBackground))
+                                             }
+                                             Text("Removed")
+                                                 .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                                 .foregroundColor(.red)
+                                         }
+                                     }
+                                     .buttonStyle(PlainButtonStyle())
+                                     .padding()
+                                     
+                                     Button(action: {
+                                         showCompleted.toggle()
+                                         unlockButtons = false
+                                     }) {
+                                         VStack {
+                                             ZStack {
+                                                 Image(systemName: "folder.fill")
+                                                     .resizable()
+                                                     .frame(width: 75, height: 75)
+                                                     .foregroundColor(.green)
+                                                 Image(systemName: "checkmark")
+                                                     .resizable()
+                                                     .frame(width: min(25, 35), height: min(25, 35))
+                                                     .padding(.top)
+                                                     .foregroundColor(Color(.systemBackground))
+                                             }
+                                             Text("Completed")
+                                                 .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                                 .foregroundColor(.green)
+                                         }
+                                     }
+                                     .buttonStyle(PlainButtonStyle())
+                                     .padding()
+                                     
+                                     Button(action: {
+                                         showAllSheets.toggle()
+                                         sheetArray = loadSheetArray()
+                                         unlockButtons = false
+                                     }) {
+                                         VStack {
+                                             ZStack {
+                                                 Image(systemName: "square.fill")
+                                                     .resizable()
+                                                     .frame(width: 75, height: 75)
+                                                     .foregroundColor(.purple)
+                                                 Image(systemName: "square.grid.2x2")
+                                                     .resizable()
+                                                     .frame(width: min(40, 100), height: min(40, 100))
+                                                     .foregroundColor(Color(.systemBackground))
+                                             }
+                                             Text("All Sheets")
+                                                 .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                                 .foregroundColor(.purple)
+                                         }
+                                     }
+                                     .buttonStyle(PlainButtonStyle())
+                                     .padding()
+                                     
+                                     Button(action: {
+                                         showSettings.toggle()
+                                     }) {
+                                         VStack {
+                                             ZStack {
+                                                 Image(systemName: "square.fill")
+                                                     .resizable()
+                                                     .frame(width: 75, height: 75)
+                                                     .foregroundColor(Color(.systemGray))
+                                                 Image(systemName: "gear")
+                                                     .resizable()
+                                                     .frame(width: min(40, 100), height: min(40, 100))
+                                                     .foregroundColor(Color(.systemBackground))
+                                             }
+                                             Text("Settings")
+                                                 .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                                 .foregroundColor(Color(.systemGray))
+                                         }
+                                     }
+                                     .buttonStyle(PlainButtonStyle())
+                                     .padding()
+                                     
+                                     /*
+                                     Button(action: {
+                                         showCommunication.toggle()
+                                         unlockButtons = false
+                                     }) {
+                                         VStack {
+                                             ZStack {
+                                                 Image(systemName: "square.fill")
+                                                     .resizable()
+                                                     .frame(width: 75, height: 75)
+                                                     .foregroundColor(.orange)
+                                                 Image(systemName: "message.badge.waveform.fill")
+                                                     .resizable()
+                                                     .frame(width: min(50, 100), height: min(40, 100))
+                                                     .foregroundColor(Color(.systemBackground))
+                                             }
+                                             Text("Communicate")
+                                                 .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                                 .foregroundColor(.orange)
+                                         }
+                                     }
+                                     .buttonStyle(PlainButtonStyle())
+                                     .padding()
+                                     */
+                                     Button(action: {
+                                         if sheetArray.count > 1 {
+                                             editMode.toggle()
+                                             currTitleText = currSheet.label
+                                             animate.toggle()
+                                         }
+                                         unlockButtons = false
+                                     }) {
+                                         VStack {
+                                             ZStack {
+                                                 Image(systemName: "square.fill")
+                                                     .resizable()
+                                                     .frame(width: 75, height: 75)
+                                                     .foregroundColor(.blue)
+                                                 Image(systemName: "pencil")
+                                                     .resizable()
+                                                     .frame(width: min(40, 100), height: min(40, 100))
+                                                 //.fontWeight(.heavy)
+                                                     .foregroundColor(Color(.systemBackground))
+                                             }
+                                             Text("Edit")
+                                                 .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                                 .foregroundColor(.blue)
+                                         }
+                                     }
+                                     .buttonStyle(PlainButtonStyle())
+                                     .padding()
+                                 }
+                             }
+                         }
+                     }
+                     Spacer()
+                 }
+                 .background(
+                     LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                         .ignoresSafeArea()
+                 )
+             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .navigationBarHidden(true)
-        .onRotate { newOrientation in
-            orientation = newOrientation
-            if !newOrientation.isFlat {
-                lastOrientation = newOrientation
-            }
-        }
         .sheet(isPresented: $pickIcon) {
-            var filteredCustomData: [String] { //search results for custom icons
-                if searchText.isEmpty {
-                    return []
-                } else {
-                    let matchingKeys = getCustomPECSAddresses().keys.filter { $0.localizedCaseInsensitiveContains(searchText) }
-                    
-                    let sortedKeys = matchingKeys.sorted { (key1, key2) -> Bool in
-                        let startsWithSearchText1 = key1.lowercased().hasPrefix(searchText.lowercased())
-                        let startsWithSearchText2 = key2.lowercased().hasPrefix(searchText.lowercased())
-                        
-                        // Prioritize keys that start with searchText
-                        if startsWithSearchText1 && !startsWithSearchText2 {
-                            return true
-                        } else if !startsWithSearchText1 && startsWithSearchText2 {
-                            return false
-                        } else {
-                            // For keys starting with searchText or having searchText as prefix, sort them alphabetically
-                            return key1.localizedCaseInsensitiveCompare(key2) == .orderedAscending
-                        }
-                    }
-                    
-                    return sortedKeys
-                }
-            }
-            
-            var filteredData: [String] { //contains search results for default icons
-                if searchText.isEmpty {
-                    return []
-                } else {
-                    let matchingItems = allPECS.filter { $0.localizedCaseInsensitiveContains(searchText) }
-                    
-                    let sortedItems = matchingItems.sorted { (item1, item2) -> Bool in
-                        let startsWithSearchText1 = item1.lowercased().hasPrefix(searchText.lowercased())
-                        let startsWithSearchText2 = item2.lowercased().hasPrefix(searchText.lowercased())
-                        
-                        // Prioritize items that start with searchText
-                        if startsWithSearchText1 && !startsWithSearchText2 {
-                            return true
-                        } else if !startsWithSearchText1 && startsWithSearchText2 {
-                            return false
-                        } else {
-                            // For items starting with searchText or having searchText as prefix, sort them alphabetically
-                            return item1.localizedCaseInsensitiveCompare(item2) == .orderedAscending
-                        }
-                    }
-                    
-                    return sortedItems
-                }
-            }
-            
-            VStack { //main list of all the icons
-                ScrollView {
-                    TextField("\(Image(systemName: "magnifyingglass")) Search", text: $searchText)
-                        .multilineTextAlignment(.center)
-                        .font(.system(size: horizontalSizeClass == .compact ? 35 : 65, weight: .semibold, design: .rounded))
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color(.systemGray4))
-                        )
-                        .padding()
-                    
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
-                        ForEach(0..<filteredCustomData.count, id: \.self) { key in //first display custom icon results
-                            Button(action: {
-                                currSheet.currLabelIcon = "customIconObject:\(filteredCustomData[key])"
-                                updateUsage("customIconObject:\(filteredCustomData[key])")
-                                searchText = ""
-                                //save array aka "autosave"
-                                var newSheetArray = loadSheetArray()
-                                newSheetArray[getCurrSheetIndex()] = currSheet
-                                currSheet = newSheetArray[getCurrSheetIndex()]
-                                saveSheetArray(sheetObjects: newSheetArray)
-                                animate.toggle()
-                                pickIcon.toggle()
-                            }) {
-                                getCustomIconSmall(filteredCustomData[key])
-                                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(lineWidth: 3)
-                                    )
-                                //}
-                                
-                            }
-                            .foregroundColor(.primary)
-                            .padding()
-                        }
-                        ForEach(0..<filteredData.count, id: \.self) { pecsIcon in //next display default icon results
-                            Button(action: {
-                                currSheet.currLabelIcon = filteredData[pecsIcon]
-                                updateUsage(filteredData[pecsIcon])
-                                searchText = ""
-                                //save array aka "autosave"
-                                var newSheetArray = loadSheetArray()
-                                newSheetArray[getCurrSheetIndex()] = currSheet
-                                currSheet = newSheetArray[getCurrSheetIndex()]
-                                saveSheetArray(sheetObjects: newSheetArray)
-                                animate.toggle()
-                                pickIcon.toggle()
-                            }) {
-                                loadImage(named: filteredData[pecsIcon])
-                                    .resizable()
-                                    .scaledToFill()
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(.black, lineWidth: 3)
-                                    )
-                            }
-                            .foregroundColor(.primary)
-                            .padding()
-                        }
-                    }
-                    
-                    if filteredData.count + filteredCustomData.count > 0 {
-                        Divider()
-                            .padding()
-                            .padding(.bottom, 50)
-                    }
-                    
-                    if getCustomPECSAddresses().count > 0 {
-                        Text("My Icons")
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.01)
-                            .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) { //grid of custom icons
-                            ForEach(getCustomPECSAddresses().sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
-                                Button(action: {
-                                    currSheet.currLabelIcon = "customIconObject:\(key)"
-                                    updateUsage("customIconObject:\(key)")
-                                    searchText = ""
-                                    //save array aka "autosave"
-                                    var newSheetArray = loadSheetArray()
-                                    newSheetArray[getCurrSheetIndex()] = currSheet
-                                    currSheet = newSheetArray[getCurrSheetIndex()]
-                                    saveSheetArray(sheetObjects: newSheetArray)
-                                    animate.toggle()
-                                    pickIcon.toggle()
-                                }) {
-                                    getCustomIconSmall(key)
-                                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .stroke(lineWidth: 3)
-                                        )
-                                    //}
-                                    
-                                }
-                                .foregroundColor(.black)
-                                .padding()
-                            }
-                        }
-                    }
-                    ForEach(pecsCategories, id: \.self) { icon in //grid of default icons, also displays categories
-                        VStack(alignment: .center) {
-                            Text(icon[0])
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
-                                ForEach(1..<icon.count, id: \.self) { sheeticonobject in
-                                    Button(action: {
-                                        currSheet.currLabelIcon = String(icon[sheeticonobject])
-                                        updateUsage(String(icon[sheeticonobject]))
-                                        searchText = ""
-                                        //save array aka "autosave"
-                                        var newSheetArray = loadSheetArray()
-                                        newSheetArray[getCurrSheetIndex()] = currSheet
-                                        currSheet = newSheetArray[getCurrSheetIndex()]
-                                        saveSheetArray(sheetObjects: newSheetArray)
-                                        animate.toggle()
-                                        pickIcon.toggle()
-                                    }) {
-                                        loadImage(named: String(icon[sheeticonobject]))
-                                            .resizable()
-                                            .scaledToFill()
-                                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .stroke(lineWidth: 3)
-                                            )
-                                    }
-                                    .foregroundColor(.black)
-                                    .padding()
-                                }
-                            }
-                        }
-                        .padding()
-                    }
-                    Text(verbatim: "Daysy Icons provided by www.mypecs.com")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.01)
-                        .font(.system(size: 25, weight: .medium, design: .rounded))
-                        .foregroundColor(Color(.systemGray2))
-                }
-                Button(action: {
-                    currSheet.currLabelIcon = ""
-                    searchText = ""
-                    //save array aka "autosave"
-                    var newSheetArray = loadSheetArray()
-                    newSheetArray[getCurrSheetIndex()] = currSheet
-                    currSheet = newSheetArray[getCurrSheetIndex()]
-                    saveSheetArray(sheetObjects: newSheetArray)
-                    animate.toggle()
-                    pickIcon.toggle()
-                }) {
-                    Image(systemName: "trash.square.fill")
-                        .resizable()
-                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                        .padding()
-                        .foregroundColor(.red)
-                }
-            }
-            .ignoresSafeArea(.keyboard)
+            AllIconsPickerView(currSheet: currSheet,
+                               currImage: currSheet.currLabelIcon ?? "plus.viewfinder",
+                               modifyIcon: { newIcon in
+                currSheet.currLabelIcon = newIcon
+                
+                //save array aka "autosave"
+                var newSheetArray = loadSheetArray()
+                newSheetArray[getCurrSheetIndex()] = currSheet
+                currSheet = newSheetArray[getCurrSheetIndex()]
+                saveSheetArray(sheetObjects: newSheetArray)
+                
+                animate.toggle()
+            }, modifyDetails: { newDetails in
+                //no need to modify details here
+            }, modifySheet: {newSheet in
+                currSheet = newSheet
+            }, showCreateCustom: false)
         }
         .sheet(isPresented: $showTime) { //fullscreencover for setting times on a sheet
             Spacer()
@@ -1617,1080 +1454,20 @@ struct ContentView: View {
             .ignoresSafeArea(.keyboard)
             .padding()
         }
-        .fullScreenCover(isPresented: $showIcons) { //fullscreencover that has all the icons in it, used to set icons on a sheet
-            
-            var filteredCustomData: [String] { //search results for custom icons
-                if searchText.isEmpty {
-                    return []
-                } else {
-                    let matchingKeys = customPECSAddresses.keys.filter { $0.localizedCaseInsensitiveContains(searchText) }
-                    
-                    let sortedKeys = matchingKeys.sorted { (key1, key2) -> Bool in
-                        let startsWithSearchText1 = key1.lowercased().hasPrefix(searchText.lowercased())
-                        let startsWithSearchText2 = key2.lowercased().hasPrefix(searchText.lowercased())
-                        
-                        // Prioritize keys that start with searchText
-                        if startsWithSearchText1 && !startsWithSearchText2 {
-                            return true
-                        } else if !startsWithSearchText1 && startsWithSearchText2 {
-                            return false
-                        } else {
-                            // For keys starting with searchText or having searchText as prefix, sort them alphabetically
-                            return key1.localizedCaseInsensitiveCompare(key2) == .orderedAscending
-                        }
-                    }
-                    
-                    return sortedKeys
-                }
-            }
-            
-            var filteredData: [String] { //contains search results for default icons
-                if searchText.isEmpty {
-                    return []
-                } else {
-                    let matchingItems = allPECS.filter { $0.localizedCaseInsensitiveContains(searchText) }
-                    
-                    let sortedItems = matchingItems.sorted { (item1, item2) -> Bool in
-                        let startsWithSearchText1 = item1.lowercased().hasPrefix(searchText.lowercased())
-                        let startsWithSearchText2 = item2.lowercased().hasPrefix(searchText.lowercased())
-                        
-                        // Prioritize items that start with searchText
-                        if startsWithSearchText1 && !startsWithSearchText2 {
-                            return true
-                        } else if !startsWithSearchText1 && startsWithSearchText2 {
-                            return false
-                        } else {
-                            // For items starting with searchText or having searchText as prefix, sort them alphabetically
-                            return item1.localizedCaseInsensitiveCompare(item2) == .orderedAscending
-                        }
-                    }
-                    
-                    return sortedItems
-                }
-            }
-            
-            VStack { //main list of all the icons
-                ScrollView {
-                    HStack(alignment: .top) {
-                        if horizontalSizeClass == .compact {
-                            VStack(alignment: .leading) {
-                                Text("\(Image(systemName: "square.grid.3x3")) All Icons")
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.01)
-                                    .font(.system(size: 30, weight: .bold, design: .rounded))
-                                    .padding(.top)
-                                    .padding(.bottom, 5)
-                            }
-                            .padding(.leading, horizontalSizeClass == .compact ? 20 : 0)
-                            if horizontalSizeClass == .compact {
-                                Spacer()
-                                Button(action: {
-                                    showIcons.toggle()
-                                }) {
-                                    Text("\(Image(systemName: "xmark.circle.fill"))")
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.5)
-                                        .font(.system(size: 30, weight: .bold, design: .rounded))
-                                        .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray3): Color(.systemGray6))
-                                        .padding([.top, .trailing])
-                                }
-                            }
-                        }
-                    }
-                    TextField("\(Image(systemName: "magnifyingglass")) Search", text: $searchText)
-                        .multilineTextAlignment(.center)
-                        .font(.system(size: horizontalSizeClass == .compact ? 35 : 65, weight: .bold, design: .rounded))
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color(.systemGray4))
-                        )
-                        .padding()
-                    
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
-                        ForEach(0..<filteredCustomData.count, id: \.self) { key in //first display custom icon results
-                            Button(action: {
-                                currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = "customIconObject:\(filteredCustomData[key])"
-                                currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = []
-                                updateUsage("customIconObject:\(filteredCustomData[key])")
-                                animate.toggle()
-                                showIcons.toggle()
-                                
-                                //save array aka "autosave"
-                                var newSheetArray = loadSheetArray()
-                                newSheetArray[getCurrSheetIndex()] = currSheet
-                                currSheet = newSheetArray[getCurrSheetIndex()]
-                                saveSheetArray(sheetObjects: newSheetArray)
-                                
-                            }) {
-                                getCustomIconSmall(filteredCustomData[key])
-                                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(lineWidth: 3)
-                                    )
-                            }
-                            .foregroundColor(.primary)
-                            .padding(horizontalSizeClass == .compact ? 3 : 10)
-                            .overlay(
-                                VStack {
-                                    HStack {
-                                        Menu {
-                                            Button {
-                                                oldEditingIcon = ""
-                                                currCustomIconText = ""
-                                                selectedCustomImage = UIImage(systemName: "square.fill")
-                                                animate.toggle()
-                                                Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
-                                                    oldEditingIcon = filteredCustomData[key]
-                                                    currCustomIconText = extractKey(from: filteredCustomData[key])
-                                                    if getNoImageIcons().contains(filteredCustomData[key]) {
-                                                        selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                                                    } else {
-                                                        selectedCustomImage = loadImageFromLocalURL(filteredCustomData[key])
-                                                    }
-                                                }
-                                                editCustom.toggle()
-                                            } label: {
-                                                Label("Edit", systemImage: "square.and.pencil")
-                                            }
-                                            
-                                            Divider()
-                                            
-                                            if #available(iOS 15.0, *) {
-                                                Button(role: .destructive) {
-                                                    let newSheetArray = deleteCustomIcons(currIcon: filteredCustomData[key])
-                                                    currSheet = newSheetArray[getCurrSheetIndex()]
-                                                    saveSheetArray(sheetObjects: newSheetArray)
-                                                    customPECSAddresses = getCustomPECSAddresses()
-                                                    removedIcons = currSheet.removedIcons
-                                                    completedIcons = currSheet.completedIcons
-                                                    animate.toggle()
-                                                    //then update custom pecs addresses and the current vgrid
-                                                } label: {
-                                                    Label("Delete", systemImage: "trash")
-                                                }
-                                            } else {
-                                                Button {
-                                                    let newSheetArray = deleteCustomIcons(currIcon: filteredCustomData[key])
-                                                    currSheet = newSheetArray[getCurrSheetIndex()]
-                                                    saveSheetArray(sheetObjects: newSheetArray)
-                                                    customPECSAddresses = getCustomPECSAddresses()
-                                                    removedIcons = currSheet.removedIcons
-                                                    completedIcons = currSheet.completedIcons
-                                                    animate.toggle()
-                                                    //then update custom pecs addresses and the current vgrid
-                                                } label: {
-                                                    Label("Delete", systemImage: "trash")
-                                                }
-                                            }
-                                        } label: {
-                                            Image(systemName: "pencil.circle.fill")
-                                                .resizable()
-                                                .frame(width: horizontalSizeClass == .compact ? 20 : 40, height: horizontalSizeClass == .compact ? 20 : 40)
-                                                .foregroundColor(Color(.systemGray))
-                                        }
-                                        Spacer()
-                                    }
-                                    Spacer()
-                                }
-                            )
-                        }
-                        ForEach(0..<filteredData.count, id: \.self) { pecsIcon in //next display default icon results
-                            Button(action: {
-                                currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = filteredData[pecsIcon]
-                                currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = []
-                                updateUsage(filteredData[pecsIcon])
-                                showIcons.toggle()
-                                
-                                //save array aka "autosave"
-                                var newSheetArray = loadSheetArray()
-                                newSheetArray[getCurrSheetIndex()] = currSheet
-                                currSheet = newSheetArray[getCurrSheetIndex()]
-                                saveSheetArray(sheetObjects: newSheetArray)
-                                animate.toggle()
-                                
-                            }) {
-                                loadImage(named: filteredData[pecsIcon])
-                                    .resizable()
-                                    .scaledToFill()
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(.black, lineWidth: 3)
-                                    )
-                            }
-                            .foregroundColor(.primary)
-                            .padding(horizontalSizeClass == .compact ? 3 : 10)
-                        }
-                    }
-                    
-                    if filteredData.count + filteredCustomData.count > 0 {
-                        Divider()
-                            .padding()
-                            .padding(.bottom, 50)
-                    }
-                    
-                    Text("My Icons")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.01)
-                        .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
-                        Button(action: {
-                            showCustom.toggle()
-                        }) {
-                            if #available(iOS 15.0, *) {
-                                Image(systemName: "plus.viewfinder")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .symbolRenderingMode(.hierarchical)
-                            } else {
-                                Image(systemName: "plus.viewfinder")
-                                    .resizable()
-                                    .scaledToFill()
-                            }
-                        }
-                        .foregroundColor(Color(.systemGray))
-                        .padding(horizontalSizeClass == .compact ? 3 : 10)
-                        ForEach(customPECSAddresses.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
-                            Button(action: {
-                                currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = "customIconObject:\(key)"
-                                currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = []
-                                updateUsage("customIconObject:\(key)")
-                                animate.toggle()
-                                showIcons.toggle()
-                                
-                                //save array aka "autosave"
-                                var newSheetArray = loadSheetArray()
-                                newSheetArray[getCurrSheetIndex()] = currSheet
-                                currSheet = newSheetArray[getCurrSheetIndex()]
-                                saveSheetArray(sheetObjects: newSheetArray)
-                                
-                            }) {
-                                getCustomIconSmall(key)
-                                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(lineWidth: 3)
-                                    )
-                                //}
-                                
-                            }
-                            .foregroundColor(.black)
-                            .padding()
-                            .overlay(
-                                VStack {
-                                    HStack {
-                                        Menu {
-                                            Button {
-                                                //hacky fix instead of binding, fixes not updating
-                                                oldEditingIcon = ""
-                                                currCustomIconText = ""
-                                                selectedCustomImage = UIImage(systemName: "square.fill")
-                                                animate.toggle()
-                                                Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
-                                                    oldEditingIcon = key
-                                                    currCustomIconText = extractKey(from: key)
-                                                    if getNoImageIcons().contains(customPECSAddresses[key]!) {
-                                                        selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                                                    } else {
-                                                        selectedCustomImage = loadImageFromLocalURL(customPECSAddresses[key]!)
-                                                    }
-                                                }
-                                                editCustom.toggle()
-                                            } label: {
-                                                Label("Edit", systemImage: "square.and.pencil")
-                                            }
-                                            
-                                            Divider()
-                                            
-                                            if #available(iOS 15.0, *) {
-                                                Button(role: .destructive) {
-                                                    let newSheetArray = deleteCustomIcons(currIcon: key)
-                                                    currSheet = newSheetArray[getCurrSheetIndex()]
-                                                    saveSheetArray(sheetObjects: newSheetArray)
-                                                    customPECSAddresses = getCustomPECSAddresses()
-                                                    removedIcons = currSheet.removedIcons
-                                                    completedIcons = currSheet.completedIcons
-                                                    animate.toggle()
-                                                    //then update custom pecs addresses and the current vgrid
-                                                } label: {
-                                                    Label("Delete", systemImage: "trash")
-                                                }
-                                            } else {
-                                                Button {
-                                                    let newSheetArray = deleteCustomIcons(currIcon: key)
-                                                    currSheet = newSheetArray[getCurrSheetIndex()]
-                                                    saveSheetArray(sheetObjects: newSheetArray)
-                                                    customPECSAddresses = getCustomPECSAddresses()
-                                                    removedIcons = currSheet.removedIcons
-                                                    completedIcons = currSheet.completedIcons
-                                                    animate.toggle()
-                                                    //then update custom pecs addresses and the current vgrid
-                                                } label: {
-                                                    Label("Delete", systemImage: "trash")
-                                                }
-                                            }
-                                        } label: {
-                                            Image(systemName: "pencil.circle.fill")
-                                                .resizable()
-                                                .frame(width: horizontalSizeClass == .compact ? 20 : 40, height: horizontalSizeClass == .compact ? 20 : 40)
-                                                .foregroundColor(Color(.systemGray))
-                                        }
-                                        Spacer()
-                                    }
-                                    Spacer()
-                                }
-                            )
-                        }
-                    }
-                    ForEach(pecsCategories, id: \.self) { icon in //grid of default icons, also displays categories
-                        VStack(alignment: .center) {
-                            Text(icon[0])
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
-                                ForEach(1..<icon.count, id: \.self) { sheeticonobject in
-                                    Button(action: {
-                                        currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = icon[sheeticonobject]
-                                        currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = []
-                                        updateUsage(icon[sheeticonobject])
-                                        showIcons.toggle()
-                                        
-                                        //save array aka "autosave"
-                                        var newSheetArray = loadSheetArray()
-                                        newSheetArray[getCurrSheetIndex()] = currSheet
-                                        currSheet = newSheetArray[getCurrSheetIndex()]
-                                        saveSheetArray(sheetObjects: newSheetArray)
-                                        animate.toggle()
-                                        
-                                    }) {
-                                        loadImage(named: String(icon[sheeticonobject]))
-                                            .resizable()
-                                            .scaledToFill()
-                                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .stroke(lineWidth: 3)
-                                            )
-                                    }
-                                    .foregroundColor(.black)
-                                    .padding(horizontalSizeClass == .compact ? 3 : 10)
-                                }
-                            }
-                        }
-                        .padding()
-                    }
-                    Text(verbatim: "Daysy Icons provided by www.mypecs.com")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.01)
-                        .font(.system(size: 25, weight: .medium, design: .rounded))
-                        .foregroundColor(Color(.systemGray2))
-                }
-                HStack { //bottom button row
-                    if horizontalSizeClass != .compact {
-                        Button(action: {
-                            showIcons.toggle()
-                        }) {
-                            Image(systemName: "xmark.square.fill")
-                                .resizable()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            //.fontWeight(.bold)
-                        }
-                        .padding()
-                        .foregroundColor(Color(.systemGray))
-                    }
-                    
-                    if currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon != "plus.viewfinder" {
-                        Button(action: {
-                            showIcons.toggle()
-                            currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = "plus.viewfinder"
-                            currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = []
-                            
-                            //save array aka "autosave"
-                            var newSheetArray = loadSheetArray()
-                            newSheetArray[getCurrSheetIndex()] = currSheet
-                            newSheetArray[getCurrSheetIndex()] = autoRemoveSlots(newSheetArray[getCurrSheetIndex()])
-                            currSheet = newSheetArray[getCurrSheetIndex()]
-                            saveSheetArray(sheetObjects: newSheetArray)
-                            animate.toggle()
-                            
-                        }) {
-                            ZStack {
-                                if currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon.contains("customIconObject:") {
-                                    getCustomIconSmall(currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon)
-                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                        .opacity(0.25)
-                                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .stroke(lineWidth: 3)
-                                        )
-                                } else {
-                                    loadImage(named: currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon)
-                                        .resizable()
-                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                        .opacity(0.25)
-                                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .stroke(lineWidth: 3)
-                                        )
-                                }
-                                
-                                if #available(iOS 15.0, *) {
-                                    Image(systemName: "trash.square.fill")
-                                        .resizable()
-                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                        .symbolRenderingMode(.hierarchical)
-                                } else {
-                                    Image(systemName: "trash.square.fill")
-                                        .resizable()
-                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                }
-                                //.fontWeight(.bold)
-                            }
-                        }
-                        .padding()
-                        .foregroundColor(.red)
-                    }
-                }
-            }
-            .ignoresSafeArea(.keyboard)
-            .fullScreenCover(isPresented: $showCustom) { //fullscreencover for creating a custom icon
-                VStack {
-                    RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50)
-                        .stroke(Color.black, lineWidth: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 12 : 25) : 25)
-                        .background(
-                            RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50)
-                                .fill(Color.white)
-                        )
-                        .aspectRatio(lastOrientation.isLandscape ? (isCustomTextFieldActive ? 4 : 1) : 1, contentMode: .fill)
-//                        .clipShape(RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50))
-                        .overlay(
-                            VStack {
-                                Spacer()
-                                if !isCustomTextFieldActive {
-                                    if showImageMenu {
-                                        HStack {
-                                            Button(action: {
-                                                isImagePickerPresented.toggle()
-                                                showImageMenu.toggle()
-                                                customAnimate.toggle()
-                                            }) {
-                                                Image(systemName:"photo.on.rectangle")
-                                                    .resizable()
-                                                    .aspectRatio(1.25, contentMode: .fit)
-                                                    .padding()
-                                            }
-                                            .padding()
-                                            
-                                            Button(action: {
-                                                if hasCameraPermission() {
-                                                    showCamera.toggle()
-                                                    showImageMenu.toggle()
-                                                    defaults.set(true, forKey: "checkedCameraPermission")
-                                                } else {
-                                                    if defaults.bool(forKey: "checkedCameraPermission") {
-                                                        if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                            UIApplication.shared.open(appSettings)
-                                                        }
-                                                    }
-                                                }
-                                            }) {
-                                                Image(systemName:"camera.on.rectangle")
-                                                    .resizable()
-                                                    .aspectRatio(1.25, contentMode: .fit)
-                                                    .padding()
-                                            }
-                                            .padding()
-                                        }
-                                        .padding()
-                                        
-                                        Divider()
-                                        
-                                        HStack {
-                                            Button(action: {
-                                                showImageMenu.toggle()
-                                                customAnimate.toggle()
-                                            }) {
-                                                Image(systemName:"arrow.uturn.backward")
-                                                    .resizable()
-                                                    .aspectRatio(1, contentMode: .fit)
-                                                    .foregroundColor(Color(.systemGray))
-                                                    .padding()
-                                            }
-                                            .padding()
-                                            
-                                            Button(action: {
-                                                showImageMenu.toggle()
-                                                selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                                                customAnimate.toggle()
-                                            }) {
-                                                if selectedCustomImage != UIImage(systemName: "plus.viewfinder") {
-                                                    ZStack {
-                                                        selectedCustomImage?.asImage
-                                                            .resizable()
-                                                            .aspectRatio(1, contentMode: .fit)
-                                                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                                                            .opacity(0.25)
-                                                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                                                            .overlay(
-                                                                RoundedRectangle(cornerRadius: 16)
-                                                                    .stroke(lineWidth: 7)
-                                                            )
-                                                            .padding()
-                                                        
-                                                        if #available(iOS 15.0, *) {
-                                                            Image(systemName: "trash.square.fill")
-                                                                .resizable()
-                                                                .aspectRatio(1, contentMode: .fit)
-                                                                .padding()
-                                                                .symbolRenderingMode(.hierarchical)
-                                                                .foregroundColor(.red)
-                                                        } else {
-                                                            Image(systemName:"trash.square.fill")
-                                                                .resizable()
-                                                                .aspectRatio(1, contentMode: .fit)
-                                                                .foregroundColor(.red)
-                                                                .padding()
-                                                        }
-                                                    }
-                                                    .foregroundColor(.red)
-                                                } else {
-                                                    Image(systemName:"trash.square.fill")
-                                                        .resizable()
-                                                        .aspectRatio(1, contentMode: .fit)
-                                                        .foregroundColor(.red)
-                                                        .padding()
-                                                }
-                                            }
-                                            .padding()
-                                        }
-                                        .padding()
-                                        
-                                        Spacer()
-                                    } else {
-                                        HStack {
-                                            Button(action: {
-                                                if selectedCustomImage != UIImage(systemName: "plus.viewfinder") {
-                                                    showImageMenu.toggle()
-                                                    customAnimate.toggle()
-                                                } else {
-                                                    isImagePickerPresented.toggle()
-                                                    lastSelected = 0
-                                                }
-                                            }) {
-                                                if selectedCustomImage == UIImage(systemName: "square.fill") {
-                                                    ZStack {
-                                                        Image(systemName: "square.fill")
-                                                            .resizable()
-                                                            .aspectRatio(1, contentMode: .fit)
-                                                            .foregroundColor(.gray)
-                                                            .padding()
-                                                        ProgressView()
-                                                            .progressViewStyle(CircularProgressViewStyle())
-                                                            .scaleEffect(2.0)
-                                                            .foregroundColor(.black)
-                                                            .padding(.bottom)
-                                                    }
-                                                } else {
-                                                    if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                                        if #available(iOS 15.0, *) {
-                                                            Image(systemName: "photo.on.rectangle")
-                                                                .resizable()
-                                                                .scaledToFit()
-                                                                .symbolRenderingMode(.hierarchical)
-                                                                .padding()
-                                                        } else {
-                                                            Image(systemName: "photo.on.rectangle")
-                                                                .resizable()
-                                                                .scaledToFit()
-                                                                .padding()
-                                                        }
-                                                    } else {
-                                                        selectedCustomImage?.asImage
-                                                            .resizable()
-                                                            .aspectRatio(1, contentMode: .fit)
-                                                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                                                            .padding()
-                                                    }
-                                                }
-                                            }
-                                            if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                                Divider().padding()
-                                                Button(action: {
-                                                    if hasCameraPermission() {
-                                                        showCamera.toggle()
-                                                        defaults.set(true, forKey: "checkedCameraPermission")
-                                                    } else {
-                                                        if defaults.bool(forKey: "checkedCameraPermission") {
-                                                            if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                                UIApplication.shared.open(appSettings)
-                                                            }
-                                                        }
-                                                    }
-                                                }) {
-                                                    if #available(iOS 15.0, *) {
-                                                        Image(systemName: "camera.on.rectangle")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .symbolRenderingMode(.hierarchical)
-                                                            .padding()
-                                                    } else {
-                                                        Image(systemName: "camera.on.rectangle")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .padding()
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                ZStack { //zstack with gray is to workaround low contrast on dark mode despite white background
-                                    Text("Label")
-                                        .minimumScaleFactor(0.1)
-                                        .multilineTextAlignment(.center)
-                                        .font(.system(size: horizontalSizeClass == .compact ? (lastOrientation.isLandscape ? 30 : 50) : (lastOrientation.isLandscape ? 75 : 135), weight: .semibold,  design: .rounded))
-                                        .foregroundColor(currCustomIconText.isEmpty ? Color(.systemGray) : .clear)
-                                        .padding()
-                                    //SuperTextField(placeholder: Text("Label"), text: $currCustomIconText, editingChanged: { editing in
-                                    TextField("Label", text: $currCustomIconText, onEditingChanged: { editing in
-                                        isCustomTextFieldActive = editing
-                                        customAnimate.toggle()
-                                    }, onCommit: {
-                                        customAnimate.toggle()
-                                        showImageMenu = false
-                                    })
-                                    .minimumScaleFactor(0.1)
-                                    .multilineTextAlignment(.center)
-                                    .font(.system(size: horizontalSizeClass == .compact ? (lastOrientation.isLandscape ? 30 : 50) : (lastOrientation.isLandscape ? 75 : 135), weight: .semibold,  design: .rounded))
-                                    .foregroundColor(.black)
-                                    .padding()
-                                    //Spacer()
-                                }
-                                if isCustomTextFieldActive {
-                                    Spacer()
-                                }
-                            }
-                        )
-                        .scaledToFit()
-                        .padding()
-                    HStack { //bottom row of buttons
-                        Button(action: {
-                            showCustom.toggle()
-                            currCustomIconText = ""
-                            selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                            showImageMenu = false
-                            
-                        }) {
-                            Image(systemName:"xmark.square.fill")
-                                .resizable()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            //.fontWeight(.bold)
-                                .foregroundColor(Color(.systemGray))
-                                .padding()
-                        }
-                        if selectedCustomImage != UIImage(systemName: "square.fill") {
-                            if !(selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty) {
-                                Button(action: { //perform checks for no image, no label, or no either and possibly save the icon
-                                    if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
-                                        showCustom.toggle()
-                                        currCustomIconText = ""
-                                        selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                                        showImageMenu = false
-                                    } else {
-                                        if customPECSAddresses[currCustomIconText] != nil {
-                                            var i = 1
-                                            while customPECSAddresses[String("\(i)#id\(currCustomIconText)")] != nil {
-                                                i += 1
-                                            }
-                                            currCustomIconText = String("\(i)#id\(currCustomIconText)")
-                                        }
-                                        
-                                        customPECSAddresses[currCustomIconText] = saveImageToDocumentsDirectory(selectedCustomImage!)
-                                        saveCustomPECSAddresses(customPECSAddresses)
-                                        
-                                        if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                            saveNoImageIcons(customPECSAddresses[currCustomIconText]!)
-                                        }
-                                        
-                                        showCustom.toggle()
-                                        currCustomIconText = ""
-                                        selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                                    }
-                                    updateUsage("action:createIcon")
-                                }) {
-                                    if selectedCustomImage != UIImage(systemName: "square.fill") {
-                                        Image(systemName:"checkmark.square.fill")
-                                            .resizable()
-                                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                            .foregroundColor(.green)
-                                            .padding()
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                .animation(.spring, value: customAnimate)
-                .sheet(isPresented: $isImagePickerPresented) {
-                    UIImagePicker(selectedImage: $selectedCustomImage)
-                }
-                .fullScreenCover(isPresented: $showCamera, content: {
-                    CameraPickerView(selectedImage: $selectedCustomImage)
-                })
-            }
-            .fullScreenCover(isPresented: $editCustom) { //fullscreencover for editing a custom icon
-                VStack {
-                    RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50)
-                        .stroke(Color.black, lineWidth: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 12 : 25) : 25)
-                        .background(
-                            RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50)
-                                .fill(Color.white)
-                        )
-                        .aspectRatio(lastOrientation.isLandscape ? (isCustomTextFieldActive ? 4 : 1) : 1, contentMode: .fill)
-//                        .clipShape(RoundedRectangle(cornerRadius: lastOrientation.isLandscape ? (isCustomTextFieldActive ? 25 : 50) : 50))
-                        .overlay(
-                            VStack {
-                                Spacer()
-                                //new stuff start here
-                                if !isCustomTextFieldActive {
-                                    
-                                    if showImageMenu {
-                                        HStack {
-                                            Button(action: {
-                                                isImagePickerPresented.toggle()
-                                                if selectedCustomImage != UIImage(systemName: "plus.viewfinder") { showImageMenu.toggle() }
-                                                customAnimate.toggle()
-                                            }) {
-                                                Image(systemName:"photo.on.rectangle")
-                                                    .resizable()
-                                                    .aspectRatio(1.25, contentMode: .fit)
-                                                    .padding()
-                                            }
-                                            .padding()
-                                            
-                                            Button(action: {
-                                                if hasCameraPermission() {
-                                                    showCamera.toggle()
-                                                    if selectedCustomImage != UIImage(systemName: "plus.viewfinder") { showImageMenu.toggle() }
-                                                    defaults.set(true, forKey: "checkedCameraPermission")
-                                                } else {
-                                                    if defaults.bool(forKey: "checkedCameraPermission") {
-                                                        if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                            UIApplication.shared.open(appSettings)
-                                                        }
-                                                    }
-                                                }
-                                            }) {
-                                                Image(systemName:"camera.on.rectangle")
-                                                    .resizable()
-                                                    .aspectRatio(1.25, contentMode: .fit)
-                                                    .padding()
-                                            }
-                                            .padding()
-                                        }
-                                        .padding()
-                                        
-                                        Divider()
-                                        
-                                        HStack {
-                                            Button(action: {
-                                                showImageMenu.toggle()
-                                                customAnimate.toggle()
-                                            }) {
-                                                Image(systemName:"arrow.uturn.backward")
-                                                    .resizable()
-                                                    .aspectRatio(1, contentMode: .fit)
-                                                    .foregroundColor(Color(.systemGray))
-                                                    .padding()
-                                            }
-                                            .padding()
-                                            
-                                            Button(action: {
-                                                showImageMenu.toggle()
-                                                selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                                                customAnimate.toggle()
-                                            }) {
-                                                if selectedCustomImage != UIImage(systemName: "plus.viewfinder") {
-                                                    ZStack {
-                                                        selectedCustomImage?.asImage
-                                                            .resizable()
-                                                            .aspectRatio(1, contentMode: .fit)
-                                                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                                                            .opacity(0.25)
-                                                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                                                            .overlay(
-                                                                RoundedRectangle(cornerRadius: 16)
-                                                                    .stroke(lineWidth: 7)
-                                                            )
-                                                            .padding()
-                                                        
-                                                        if #available(iOS 15.0, *) {
-                                                            Image(systemName: "trash.square.fill")
-                                                                .resizable()
-                                                                .aspectRatio(1, contentMode: .fit)
-                                                                .padding()
-                                                                .symbolRenderingMode(.hierarchical)
-                                                                .foregroundColor(.red)
-                                                        } else {
-                                                            Image(systemName:"trash.square.fill")
-                                                                .resizable()
-                                                                .aspectRatio(1, contentMode: .fit)
-                                                                .foregroundColor(.red)
-                                                                .padding()
-                                                        }
-                                                    }
-                                                    .foregroundColor(.red)
-                                                } else {
-                                                    Image(systemName:"trash.square.fill")
-                                                        .resizable()
-                                                        .aspectRatio(1, contentMode: .fit)
-                                                        .foregroundColor(.red)
-                                                        .padding()
-                                                }
-                                                
-                                            }
-                                            .padding()
-                                        }
-                                        .padding()
-                                        Spacer()
-                                    } else {
-                                        HStack {
-                                            Button(action: {
-                                                if selectedCustomImage != UIImage(systemName: "plus.viewfinder") {
-                                                    showImageMenu.toggle()
-                                                    customAnimate.toggle()
-                                                } else {
-                                                    isImagePickerPresented.toggle()
-                                                    lastSelected = 0
-                                                }
-                                            }) {
-                                                if selectedCustomImage == UIImage(systemName: "square.fill") {
-                                                    ZStack {
-                                                        Image(systemName: "square.fill")
-                                                            .resizable()
-                                                            .aspectRatio(1, contentMode: .fit)
-                                                            .foregroundColor(.gray)
-                                                            .padding()
-                                                        ProgressView()
-                                                            .progressViewStyle(CircularProgressViewStyle())
-                                                            .scaleEffect(2.0)
-                                                            .foregroundColor(.black)
-                                                            .padding(.bottom)
-                                                    }
-                                                } else {
-                                                    if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                                        if #available(iOS 15.0, *) {
-                                                            Image(systemName: "photo.on.rectangle")
-                                                                .resizable()
-                                                                .scaledToFit()
-                                                                .symbolRenderingMode(.hierarchical)
-                                                                .padding()
-                                                        } else {
-                                                            Image(systemName: "photo.on.rectangle")
-                                                                .resizable()
-                                                                .scaledToFit()
-                                                                .padding()
-                                                        }
-                                                    } else {
-                                                        selectedCustomImage?.asImage
-                                                            .resizable()
-                                                            .aspectRatio(1, contentMode: .fit)
-                                                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                                                            .padding()
-                                                    }
-                                                }
-                                            }
-                                            if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                                Divider().padding()
-                                                Button(action: {
-                                                    if hasCameraPermission() {
-                                                        showCamera.toggle()
-                                                        defaults.set(true, forKey: "checkedCameraPermission")
-                                                    } else {
-                                                        if defaults.bool(forKey: "checkedCameraPermission") {
-                                                            if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                                                                UIApplication.shared.open(appSettings)
-                                                            }
-                                                        }
-                                                    }
-                                                }) {
-                                                    if #available(iOS 15.0, *) {
-                                                        Image(systemName: "camera.on.rectangle")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .symbolRenderingMode(.hierarchical)
-                                                            .padding()
-                                                    } else {
-                                                        Image(systemName: "camera.on.rectangle")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .padding()
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                ZStack { //zstack with gray is to workaround low contrast on dark mode despite white background
-                                    Text("Label")
-                                        .minimumScaleFactor(0.1)
-                                        .multilineTextAlignment(.center)
-                                        .font(.system(size: horizontalSizeClass == .compact ? (lastOrientation.isLandscape ? 30 : 50) : (lastOrientation.isLandscape ? 75 : 135), weight: .semibold,  design: .rounded))
-                                        .foregroundColor(currCustomIconText.isEmpty ? Color(.systemGray) : .clear)
-                                        .padding()
-                                    //SuperTextField(placeholder: Text("Label"), text: $currCustomIconText, editingChanged: { editing in
-                                    TextField("Label", text: $currCustomIconText, onEditingChanged: { editing in
-                                        isCustomTextFieldActive = editing
-                                        customAnimate.toggle()
-                                    }, onCommit: {
-                                        customAnimate.toggle()
-                                        showImageMenu = false
-                                    })
-                                    .minimumScaleFactor(0.1)
-                                    .multilineTextAlignment(.center)
-                                    .font(.system(size: horizontalSizeClass == .compact ? (lastOrientation.isLandscape ? 30 : 50) : (lastOrientation.isLandscape ? 75 : 135), weight: .semibold,  design: .rounded))
-                                    .foregroundColor(.black)
-                                    .padding()
-                                    //Spacer()
-                                }
-                                if isCustomTextFieldActive {
-                                    Spacer()
-                                }
-                            }
-                        )
-                        .scaledToFit()
-                        .padding()
-                    HStack { //bottom row of buttons
-                        Button(action: {
-                            editCustom.toggle()
-                            currCustomIconText = ""
-                            selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                            showImageMenu = false
-                        }) {
-                            Image(systemName:"xmark.square.fill")
-                                .resizable()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            //.fontWeight(.bold)
-                                .foregroundColor(Color(.systemGray))
-                                .padding()
-                        }
-                        .ignoresSafeArea(.keyboard)
-                        if selectedCustomImage != UIImage(systemName: "square.fill") {
-                            Button(action: { //perform checks for no image, no label, or no either and possibly save the icon
-                                //update and save completed icon
-                                //check to see if image and label are both blank, if so either delete or dont save?
-                                //possible change the nesting of the code so that it performs all the check to do nothing first before proceeding to others
-                                
-                                if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
-                                    
-                                    let newSheetArray = deleteCustomIcons(currIcon: oldEditingIcon)
-                                    currSheet = newSheetArray[getCurrSheetIndex()]
-                                    saveSheetArray(sheetObjects: newSheetArray)
-                                    customPECSAddresses = getCustomPECSAddresses()
-                                    removedIcons = currSheet.removedIcons
-                                    completedIcons = currSheet.completedIcons
-                                    
-                                } else {
-                                    if oldEditingIcon == currCustomIconText && selectedCustomImage == UIImage(systemName: "plus.viewfinder") && getNoImageIcons().contains(oldEditingIcon) {
-                                        
-                                        //it is an icon with no image that hasnt changed
-                                        
-                                    } else if oldEditingIcon == currCustomIconText && selectedCustomImage == loadImageFromLocalURL(customPECSAddresses[oldEditingIcon]!) {
-                                        
-                                        //it is an image with an icon that hasnt changed
-                                        
-                                    } else if oldEditingIcon == currCustomIconText && selectedCustomImage != loadImageFromLocalURL(customPECSAddresses[oldEditingIcon]!) {
-                                        
-                                        deleteFile(at: customPECSAddresses[oldEditingIcon]!)
-                                        customPECSAddresses[oldEditingIcon] = saveImageToDocumentsDirectory(selectedCustomImage!)
-                                        saveCustomPECSAddresses(customPECSAddresses)
-                                        if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                            saveNoImageIcons(customPECSAddresses[currCustomIconText]!)
-                                        }
-                                        //icon with image, only the image changed
-                                        
-                                    }
-                                    
-                                    if oldEditingIcon != currCustomIconText {
-                                        
-                                        currSessionLog.append("old editing icon: \(oldEditingIcon), curr custom icon: \(currCustomIconText)")
-                                        
-                                        //perform checks for no image, no label, or no either and possibly save the icon
-                                        if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
-                                            //nothing to do
-                                        } else {
-                                            if customPECSAddresses[currCustomIconText] != nil {
-                                                var i = 1
-                                                while customPECSAddresses[String("\(i)#id\(currCustomIconText)")] != nil {
-                                                    i += 1
-                                                }
-                                                currCustomIconText = String("\(i)#id\(currCustomIconText)")
-                                            }
-                                            
-                                            deleteFile(at: customPECSAddresses[oldEditingIcon] ?? "")
-                                            customPECSAddresses[currCustomIconText] = saveImageToDocumentsDirectory(selectedCustomImage!)
-                                            customPECSAddresses.removeValue(forKey: oldEditingIcon)
-                                            saveCustomPECSAddresses(customPECSAddresses)
-                                            
-                                            if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                                saveNoImageIcons(customPECSAddresses[currCustomIconText]!)
-                                            }
-                                            
-                                            let newArray = updateCustomIcons(oldKey: oldEditingIcon, newKey: currCustomIconText)
-                                            saveSheetArray(sheetObjects: newArray)
-                                            currSheet = newArray[getCurrSheetIndex()]
-                                            removedIcons = currSheet.removedIcons
-                                            completedIcons = currSheet.completedIcons
-                                            
-                                            
-                                            if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
-                                                saveNoImageIcons(customPECSAddresses[currCustomIconText]!)
-                                            }
-                                        }
-                                    }
-                                }
-                                
-                                currCustomIconText = ""
-                                oldEditingIcon = ""
-                                selectedCustomImage = UIImage(systemName: "plus.viewfinder")
-                                editCustom.toggle()
-                                updateUsage("action:editIcon")
-                                showImageMenu = false
-                                
-                            }) {
-                                if selectedCustomImage == UIImage(systemName: "plus.viewfinder") && currCustomIconText.isEmpty {
-                                    Image(systemName:"trash.square.fill")
-                                        .resizable()
-                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                        .foregroundColor(.red)
-                                        .padding()
-                                } else {
-                                    Image(systemName:"checkmark.square.fill")
-                                        .resizable()
-                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                    //.fontWeight(.bold)
-                                        .foregroundColor(.green)
-                                        .padding()
-                                }
-                            }
-                            .ignoresSafeArea(.keyboard)
-                        }
-                    }
-                    .ignoresSafeArea(.keyboard)
-                }
-                .animation(.spring, value: customAnimate)
-                .sheet(isPresented: $isImagePickerPresented) {
-                    UIImagePicker(selectedImage: $selectedCustomImage)
-                }
-                .fullScreenCover(isPresented: $showCamera, content: {
-                    CameraPickerView(selectedImage: $selectedCustomImage)
-                })
-            }
+        .fullScreenCover(isPresented: $showCommunication) {
+            CommunicationBoardView()
+        }
+        .fullScreenCover(isPresented: $showIcons) {
+            AllIconsPickerView(currSheet: currSheet,
+                               currImage: currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon,
+                               modifyIcon: { newIcon in
+                currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = newIcon
+                animate.toggle()
+            }, modifyDetails: { newDetails in
+                currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = newDetails
+            }, modifySheet: {newSheet in
+                currSheet = newSheet
+            })
         }
         .fullScreenCover(isPresented: $showMod) { //the fullscreencover that enlarges the icon and lets you remove or complete it
             
@@ -2729,7 +1506,7 @@ struct ContentView: View {
                                                     RoundedRectangle(cornerRadius: 15)
                                                         .stroke(.black, lineWidth: 6)
                                                 )
-                                                .padding()
+                                                .padding(3)
                                         } else {
                                             getCustomIcon(tempDetails[detail])
                                                 .scaledToFit()
@@ -2738,7 +1515,7 @@ struct ContentView: View {
                                                     RoundedRectangle(cornerRadius: 15)
                                                         .stroke(.black, lineWidth: 10)
                                                 )
-                                                .padding()
+                                                .padding(7)
                                         }
                                     } else {
                                         loadImage(named: tempDetails[detail])
@@ -2749,7 +1526,7 @@ struct ContentView: View {
                                                 RoundedRectangle(cornerRadius: 15)
                                                     .stroke(.black, lineWidth: (horizontalSizeClass == .compact ? 6 : 10))
                                             )
-                                            .padding()
+                                            .padding(horizontalSizeClass == .compact ? 3 : 7)
                                     }
                                 }
                             }
@@ -2778,256 +1555,30 @@ struct ContentView: View {
                         }
                     }
                     .sheet(isPresented: $showDetailsIcons) {
-                        var filteredCustomData: [String] { //search results for custom icons
-                            if searchText.isEmpty {
-                                return []
-                            } else {
-                                let matchingKeys = getCustomPECSAddresses().keys.filter { $0.localizedCaseInsensitiveContains(searchText) }
-                                
-                                let sortedKeys = matchingKeys.sorted { (key1, key2) -> Bool in
-                                    let startsWithSearchText1 = key1.lowercased().hasPrefix(searchText.lowercased())
-                                    let startsWithSearchText2 = key2.lowercased().hasPrefix(searchText.lowercased())
-                                    
-                                    // Prioritize keys that start with searchText
-                                    if startsWithSearchText1 && !startsWithSearchText2 {
-                                        return true
-                                    } else if !startsWithSearchText1 && startsWithSearchText2 {
-                                        return false
-                                    } else {
-                                        // For keys starting with searchText or having searchText as prefix, sort them alphabetically
-                                        return key1.localizedCaseInsensitiveCompare(key2) == .orderedAscending
-                                    }
-                                }
-                                
-                                return sortedKeys
-                            }
-                        }
                         
-                        var filteredData: [String] { //contains search results for default icons
-                            if searchText.isEmpty {
-                                return []
+                        AllIconsPickerView(currSheet: currSheet,
+                                           currImage: detailIconIndex != -1 ? tempDetails[detailIconIndex] : "plus.viewfinder",
+                                           modifyIcon: { newIcon in
+                            if detailIconIndex != -1 {
+                                tempDetails[detailIconIndex] = newIcon
                             } else {
-                                let matchingItems = allPECS.filter { $0.localizedCaseInsensitiveContains(searchText) }
-                                
-                                let sortedItems = matchingItems.sorted { (item1, item2) -> Bool in
-                                    let startsWithSearchText1 = item1.lowercased().hasPrefix(searchText.lowercased())
-                                    let startsWithSearchText2 = item2.lowercased().hasPrefix(searchText.lowercased())
-                                    
-                                    // Prioritize items that start with searchText
-                                    if startsWithSearchText1 && !startsWithSearchText2 {
-                                        return true
-                                    } else if !startsWithSearchText1 && startsWithSearchText2 {
-                                        return false
-                                    } else {
-                                        // For items starting with searchText or having searchText as prefix, sort them alphabetically
-                                        return item1.localizedCaseInsensitiveCompare(item2) == .orderedAscending
-                                    }
-                                }
-                                
-                                return sortedItems
+                                tempDetails.append(newIcon)
                             }
-                        }
+                            //autosave
+                            currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = tempDetails
+                            var newArray = loadSheetArray()
+                            newArray[getCurrSheetIndex()] = currSheet
+                            newArray[getCurrSheetIndex()] = autoRemoveSlots(newArray[getCurrSheetIndex()])
+                            currSheet = newArray[getCurrSheetIndex()]
+                            saveSheetArray(sheetObjects: newArray)
+                            
+                            animate.toggle()
+                        }, modifyDetails: { newDetails in
+                            //no need to modify details here
+                        }, modifySheet: {newSheet in
+                            currSheet = newSheet
+                        }, showCreateCustom: false)
                         
-                        VStack { //main list of all the icons
-                            ScrollView {
-                                TextField("\(Image(systemName: "magnifyingglass")) Search", text: $searchText)
-                                    .multilineTextAlignment(.center)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 35 : 65, weight: .semibold, design: .rounded))
-                                    .padding()
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .fill(Color(.systemGray4))
-                                    )
-                                    .padding()
-                                
-                                LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
-                                    ForEach(0..<filteredCustomData.count, id: \.self) { key in //first display custom icon results
-                                        Button(action: {
-                                            //select the custom icon and close the popover
-                                            if detailIconIndex != -1 {
-                                                tempDetails[detailIconIndex] = "customIconObject:\(filteredCustomData[key])"
-                                            } else {
-                                                tempDetails.append("customIconObject:\(filteredCustomData[key])")
-                                            }
-                                            animate.toggle()
-                                            searchText = ""
-                                            showDetailsIcons.toggle()
-                                            
-                                            //"autosave"
-                                            currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = tempDetails
-                                            var newArray = loadSheetArray()
-                                            newArray[getCurrSheetIndex()] = currSheet
-                                            newArray[getCurrSheetIndex()] = autoRemoveSlots(newArray[getCurrSheetIndex()])
-                                            currSheet = newArray[getCurrSheetIndex()]
-                                            saveSheetArray(sheetObjects: newArray)
-                                        }) {
-                                            getCustomIconSmall(filteredCustomData[key])
-                                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 16)
-                                                        .stroke(lineWidth: 3)
-                                                )
-                                            //}
-                                            
-                                        }
-                                        .foregroundColor(.primary)
-                                        .padding()
-                                    }
-                                    ForEach(0..<filteredData.count, id: \.self) { pecsIcon in //next display default icon results
-                                        Button(action: {
-                                            //select the icon and close the popover
-                                            if detailIconIndex != -1 {
-                                                tempDetails[detailIconIndex] = filteredData[pecsIcon]
-                                            } else {
-                                                tempDetails.append(filteredData[pecsIcon])
-                                            }
-                                            animate.toggle()
-                                            searchText = ""
-                                            showDetailsIcons.toggle()
-                                            
-                                            //"autosave"
-                                            currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = tempDetails
-                                            var newArray = loadSheetArray()
-                                            newArray[getCurrSheetIndex()] = currSheet
-                                            newArray[getCurrSheetIndex()] = autoRemoveSlots(newArray[getCurrSheetIndex()])
-                                            currSheet = newArray[getCurrSheetIndex()]
-                                            saveSheetArray(sheetObjects: newArray)
-                                        }) {
-                                            loadImage(named: filteredData[pecsIcon])
-                                                .resizable()
-                                                .scaledToFill()
-                                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 16)
-                                                        .stroke(.black, lineWidth: 3)
-                                                )
-                                        }
-                                        .foregroundColor(.primary)
-                                        .padding()
-                                    }
-                                }
-                                
-                                if filteredData.count + filteredCustomData.count > 0 {
-                                    Divider()
-                                        .padding()
-                                        .padding(.bottom, 50)
-                                }
-                                
-                                if getCustomPECSAddresses().count > 0 {
-                                    Text("My Icons")
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.01)
-                                        .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) { //grid of custom icons
-                                        ForEach(getCustomPECSAddresses().sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
-                                            Button(action: {
-                                                //select the custom icon for the detail and close the popover
-                                                if detailIconIndex != -1 {
-                                                    tempDetails[detailIconIndex] = "customIconObject:\(key)"
-                                                } else {
-                                                    tempDetails.append("customIconObject:\(key)")
-                                                }
-                                                animate.toggle()
-                                                searchText = ""
-                                                showDetailsIcons.toggle()
-                                                
-                                                //"autosave"
-                                                currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = tempDetails
-                                                var newArray = loadSheetArray()
-                                                newArray[getCurrSheetIndex()] = currSheet
-                                                newArray[getCurrSheetIndex()] = autoRemoveSlots(newArray[getCurrSheetIndex()])
-                                                currSheet = newArray[getCurrSheetIndex()]
-                                                saveSheetArray(sheetObjects: newArray)
-                                            }) {
-                                                getCustomIconSmall(key)
-                                                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                                                    .overlay(
-                                                        RoundedRectangle(cornerRadius: 16)
-                                                            .stroke(lineWidth: 3)
-                                                    )
-                                                //}
-                                                
-                                            }
-                                            .foregroundColor(.black)
-                                            .padding()
-                                        }
-                                    }
-                                }
-                                ForEach(pecsCategories, id: \.self) { icon in //grid of default icons, also displays categories
-                                    VStack(alignment: .center) {
-                                        Text(icon[0])
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.01)
-                                            .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                        LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
-                                            ForEach(1..<icon.count, id: \.self) { sheeticonobject in
-                                                Button(action: {
-                                                    //assign the icon
-                                                    if detailIconIndex != -1 {
-                                                        tempDetails[detailIconIndex] = String(icon[sheeticonobject])
-                                                    } else {
-                                                        tempDetails.append(String(icon[sheeticonobject]))
-                                                    }
-                                                    animate.toggle()
-                                                    searchText = ""
-                                                    showDetailsIcons.toggle()
-                                                    
-                                                    //"autosave"
-                                                    currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = tempDetails
-                                                    var newArray = loadSheetArray()
-                                                    newArray[getCurrSheetIndex()] = currSheet
-                                                    newArray[getCurrSheetIndex()] = autoRemoveSlots(newArray[getCurrSheetIndex()])
-                                                    currSheet = newArray[getCurrSheetIndex()]
-                                                    saveSheetArray(sheetObjects: newArray)
-                                                }) {
-                                                    loadImage(named: String(icon[sheeticonobject]))
-                                                        .resizable()
-                                                        .scaledToFill()
-                                                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                                                        .overlay(
-                                                            RoundedRectangle(cornerRadius: 16)
-                                                                .stroke(lineWidth: 3)
-                                                        )
-                                                }
-                                                .foregroundColor(.black)
-                                                .padding()
-                                            }
-                                        }
-                                    }
-                                    .padding()
-                                }
-                                Text(verbatim: "Daysy Icons provided by www.mypecs.com")
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.01)
-                                    .font(.system(size: 25, weight: .medium, design: .rounded))
-                                    .foregroundColor(Color(.systemGray2))
-                            }
-                            Button(action: {
-                                if tempDetails.count == 1 {
-                                    tempDetails.removeAll()
-                                } else {
-                                    tempDetails.remove(at: detailIconIndex)
-                                }
-                                animate.toggle()
-                                searchText = ""
-                                showDetailsIcons.toggle()
-                                
-                                //"autosave"
-                                currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = tempDetails
-                                var newArray = loadSheetArray()
-                                newArray[getCurrSheetIndex()] = currSheet
-                                newArray[getCurrSheetIndex()] = autoRemoveSlots(newArray[getCurrSheetIndex()])
-                                currSheet = newArray[getCurrSheetIndex()]
-                                saveSheetArray(sheetObjects: newArray)
-                            }) {
-                                Image(systemName: "trash.square.fill")
-                                    .resizable()
-                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                    .padding()
-                                    .foregroundColor(.red)
-                            }
-                        }
-                        .ignoresSafeArea(.keyboard)
                     }
                 } else {
                     if !tempDetails.isEmpty {
@@ -3265,213 +1816,232 @@ struct ContentView: View {
             }
         }
         .fullScreenCover(isPresented: $showCompleted) { //fullscreencover that shows completed icons
-            VStack {
-                HStack {
-                Text("\(Image(systemName: "checkmark")) Completed Icons")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.01)
-                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                    .padding()
-                    if horizontalSizeClass == .compact {
-                        Spacer()
-                        Button(action: {
-                            showCompleted.toggle()
-                        }) {
-                            Text("\(Image(systemName: "xmark.circle.fill"))")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.5)
-                                .font(.system(size: 30, weight: .bold, design: .rounded))
-                                .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray3): Color(.systemGray6))
-                                .padding(.trailing)
-                        }
-                    }
-                }
-                LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
-                    ForEach(0..<completedIcons.count, id: \.self) { index in
-                        ZStack {
-                            if completedIcons[index].currIcon.contains("customIconObject:") {
-                                getCustomIconSmall(completedIcons[index].currIcon)
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(.black, lineWidth: 6)
-                                    )
-                                    .padding(5)
-                                //}
-                                
-                            } else {
-                                loadImage(named: completedIcons[index].currIcon)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(.black, lineWidth: 6)
-                                    )
-                                    .padding(5)
-                            }
-                        }
-                        .contextMenu {
-                            if #available(iOS 15.0, *) {
-                                Button(role: .destructive) {
-                                    completedIcons = completedIcons.filter { $0.currIcon != completedIcons[index].currIcon }
-                                    currSheet.completedIcons = completedIcons
-                                    var newArray = loadSheetArray()
-                                    newArray[getCurrSheetIndex()] = currSheet
-                                    currSheet = newArray[getCurrSheetIndex()]
-                                    saveSheetArray(sheetObjects: newArray)
-                                    animate.toggle()
-                                } label: {
-                                    Label("Delete from 'Completed Icons'", systemImage: "trash")
-                                }
-                            } else {
-                                Button {
-                                    completedIcons = completedIcons.filter { $0.currIcon != completedIcons[index].currIcon }
-                                    currSheet.completedIcons = completedIcons
-                                    var newArray = loadSheetArray()
-                                    newArray[getCurrSheetIndex()] = currSheet
-                                    currSheet = newArray[getCurrSheetIndex()]
-                                    saveSheetArray(sheetObjects: newArray)
-                                    animate.toggle()
-                                } label: {
-                                    Label("Delete from 'Completed Icons'", systemImage: "trash")
-                                }
-                            }
-                        }
-                    }
-                }
-                Spacer()
-                if completedIcons.isEmpty {
-                    Text("You don't have any completed icons yet. Once you complete an icon from \(currSheet.label.isEmpty ? "the current sheet" : currSheet.label), it will appear here.")
-                        .minimumScaleFactor(0.01)
-                        .multilineTextAlignment(.center)
-                        .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .bold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
-                        .padding()
-                        .padding()
-                    Spacer()
-                }
-                
-                if horizontalSizeClass != .compact {
-                    Button(action: {
-                        showCompleted.toggle()
-                    }) {
-                        Image(systemName:"xmark.square.fill")
-                            .resizable()
-                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            .foregroundColor(Color(.systemGray))
-                        //.fontWeight(.bold)
+            ZStack {
+                ScrollView {
+                    HStack {
+                        Text("\(Image(systemName: "checkmark")) Completed Icons")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.01)
+                            .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
                             .padding()
+                        if horizontalSizeClass == .compact {
+                            Spacer()
+                            Button(action: {
+                                showCompleted.toggle()
+                            }) {
+                                Text("\(Image(systemName: "xmark.circle.fill"))")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.5)
+                                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                                    .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray3): Color(.systemGray6))
+                                    .padding(.trailing)
+                            }
+                        }
                     }
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
+                        ForEach(0..<completedIcons.count, id: \.self) { index in
+                            ZStack {
+                                if completedIcons[index].currIcon.contains("customIconObject:") {
+                                    getCustomIconSmall(completedIcons[index].currIcon)
+                                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(lineWidth: 3)
+                                        )
+                                        .scaledToFit()
+                                } else {
+                                    loadImage(named: completedIcons[index].currIcon)
+                                        .resizable()
+                                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(lineWidth: 3)
+                                        )
+                                        .scaledToFit()
+                                }
+                            }
+                            .contextMenu {
+                                if #available(iOS 15.0, *) {
+                                    Button(role: .destructive) {
+                                        completedIcons = completedIcons.filter { $0.currIcon != completedIcons[index].currIcon }
+                                        currSheet.completedIcons = completedIcons
+                                        var newArray = loadSheetArray()
+                                        newArray[getCurrSheetIndex()] = currSheet
+                                        currSheet = newArray[getCurrSheetIndex()]
+                                        saveSheetArray(sheetObjects: newArray)
+                                        animate.toggle()
+                                    } label: {
+                                        Label("Delete from 'Completed Icons'", systemImage: "trash")
+                                    }
+                                } else {
+                                    Button {
+                                        completedIcons = completedIcons.filter { $0.currIcon != completedIcons[index].currIcon }
+                                        currSheet.completedIcons = completedIcons
+                                        var newArray = loadSheetArray()
+                                        newArray[getCurrSheetIndex()] = currSheet
+                                        currSheet = newArray[getCurrSheetIndex()]
+                                        saveSheetArray(sheetObjects: newArray)
+                                        animate.toggle()
+                                    } label: {
+                                        Label("Delete from 'Completed Icons'", systemImage: "trash")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.bottom, 150)
+                    Spacer()
+                    if completedIcons.isEmpty {
+                        Text("You don't have any completed icons yet. Once you complete an icon from \(currSheet.label.isEmpty ? "the current sheet" : currSheet.label), it will appear here.")
+                            .minimumScaleFactor(0.01)
+                            .multilineTextAlignment(.center)
+                            .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .bold, design: .rounded))
+                            .foregroundColor(Color(.systemGray))
+                            .padding()
+                            .padding()
+                        Spacer()
+                    }
+                }
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        if horizontalSizeClass != .compact {
+                            Button(action: {
+                                showCompleted.toggle()
+                            }) {
+                                Image(systemName:"xmark.square.fill")
+                                    .resizable()
+                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                    .foregroundColor(Color(.systemGray))
+                                //.fontWeight(.bold)
+                                    .padding()
+                            }
+                        }
+                        Spacer()
+                    }
+                    .background(
+                        LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                            .ignoresSafeArea()
+                    )
                 }
             }
         }
         .fullScreenCover(isPresented: $showRemoved) { //fullscreencover for removed icons
-            VStack {
-                HStack {
-                Text("\(Image(systemName: "square.slash")) Removed Icons")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.01)
-                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                    .padding()
-                    if horizontalSizeClass == .compact {
-                        Spacer()
-                        Button(action: {
-                            showRemoved.toggle()
-                        }) {
-                            Text("\(Image(systemName: "xmark.circle.fill"))")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.5)
-                                .font(.system(size: 30, weight: .bold, design: .rounded))
-                                .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray3): Color(.systemGray6))
-                                .padding(.trailing)
-                        }
-                    }
-                }
-                LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
-                    ForEach(0..<removedIcons.count, id: \.self) { index in
-                        ZStack {
-                            if removedIcons[index].currIcon.contains("customIconObject:") {
-                                getCustomIconSmall(removedIcons[index].currIcon)
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(.black, lineWidth: 6)
-                                    )
-                                    .padding(5)
-                                //}
-                                
-                            } else {
-                                loadImage(named: removedIcons[index].currIcon)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(.black, lineWidth: 6)
-                                    )
-                                    .padding(5)
-                            }
-                        }
-                        .contextMenu {
-                            if #available(iOS 15.0, *) {
-                                Button(role: .destructive) {
-                                    removedIcons = removedIcons.filter { $0.currIcon != removedIcons[index].currIcon }
-                                    currSheet.removedIcons = removedIcons
-                                    var newArray = loadSheetArray()
-                                    newArray[getCurrSheetIndex()] = currSheet
-                                    currSheet = newArray[getCurrSheetIndex()]
-                                    saveSheetArray(sheetObjects: newArray)
-                                    animate.toggle()
-                                } label: {
-                                    Label("Delete from 'Removed Icons'", systemImage: "trash")
-                                }
-                            } else {
-                                Button {
-                                    removedIcons = removedIcons.filter { $0.currIcon != removedIcons[index].currIcon }
-                                    currSheet.removedIcons = removedIcons
-                                    var newArray = loadSheetArray()
-                                    newArray[getCurrSheetIndex()] = currSheet
-                                    currSheet = newArray[getCurrSheetIndex()]
-                                    saveSheetArray(sheetObjects: newArray)
-                                    animate.toggle()
-                                } label: {
-                                    Label("Delete from 'Removed Icons'", systemImage: "trash")
-                                }
-                            }
-                        }
-                    }
-                }
-                Spacer()
-                if removedIcons.isEmpty {
-                    Text("You don't have any removed icons yet. Once you remove an icon from \(currSheet.label.isEmpty ? "the current sheet" : currSheet.label), it will appear here.")
-                        .minimumScaleFactor(0.01)
-                        .multilineTextAlignment(.center)
-                        .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .bold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
-                        .padding()
-                        .padding()
-                    Spacer()
-                }
-                
-                if horizontalSizeClass != .compact {
-                    Button(action: {
-                        showRemoved.toggle()
-                    }) {
-                        Image(systemName:"xmark.square.fill")
-                            .resizable()
-                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            .foregroundColor(Color(.systemGray))
-                        //.fontWeight(.bold)
+            ZStack {
+                ScrollView {
+                    HStack {
+                        Text("\(Image(systemName: "square.slash")) Removed Icons")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.01)
+                            .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
                             .padding()
+                        if horizontalSizeClass == .compact {
+                            Spacer()
+                            Button(action: {
+                                showRemoved.toggle()
+                            }) {
+                                Text("\(Image(systemName: "xmark.circle.fill"))")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.5)
+                                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                                    .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray3): Color(.systemGray6))
+                                    .padding(.trailing)
+                            }
+                        }
                     }
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
+                        ForEach(0..<removedIcons.count, id: \.self) { index in
+                            ZStack {
+                                if removedIcons[index].currIcon.contains("customIconObject:") {
+                                    getCustomIconSmall(removedIcons[index].currIcon)
+                                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(lineWidth: 3)
+                                        )
+                                        .scaledToFit()
+                                } else {
+                                    loadImage(named: removedIcons[index].currIcon)
+                                        .resizable()
+                                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(lineWidth: 3)
+                                        )
+                                        .scaledToFit()
+                                }
+                            }
+                            .contextMenu {
+                                if #available(iOS 15.0, *) {
+                                    Button(role: .destructive) {
+                                        removedIcons = removedIcons.filter { $0.currIcon != removedIcons[index].currIcon }
+                                        currSheet.removedIcons = removedIcons
+                                        var newArray = loadSheetArray()
+                                        newArray[getCurrSheetIndex()] = currSheet
+                                        currSheet = newArray[getCurrSheetIndex()]
+                                        saveSheetArray(sheetObjects: newArray)
+                                        animate.toggle()
+                                    } label: {
+                                        Label("Delete from 'Removed Icons'", systemImage: "trash")
+                                    }
+                                } else {
+                                    Button {
+                                        removedIcons = removedIcons.filter { $0.currIcon != removedIcons[index].currIcon }
+                                        currSheet.removedIcons = removedIcons
+                                        var newArray = loadSheetArray()
+                                        newArray[getCurrSheetIndex()] = currSheet
+                                        currSheet = newArray[getCurrSheetIndex()]
+                                        saveSheetArray(sheetObjects: newArray)
+                                        animate.toggle()
+                                    } label: {
+                                        Label("Delete from 'Removed Icons'", systemImage: "trash")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Spacer()
+                    if removedIcons.isEmpty {
+                        Text("You don't have any removed icons yet. Once you remove an icon from \(currSheet.label.isEmpty ? "the current sheet" : currSheet.label), it will appear here.")
+                            .minimumScaleFactor(0.01)
+                            .multilineTextAlignment(.center)
+                            .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .bold, design: .rounded))
+                            .foregroundColor(Color(.systemGray))
+                            .padding()
+                            .padding()
+                        Spacer()
+                    }
+                }
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        if horizontalSizeClass != .compact {
+                            Button(action: {
+                                showRemoved.toggle()
+                            }) {
+                                Image(systemName:"xmark.square.fill")
+                                    .resizable()
+                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                    .foregroundColor(Color(.systemGray))
+                                //.fontWeight(.bold)
+                                    .padding()
+                            }
+                        }
+                        Spacer()
+                    }
+                    .background(
+                        LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                            .ignoresSafeArea()
+                    )
                 }
             }
         }
+        
+        
         .fullScreenCover(isPresented: $showAllSheets) { //fullscreencover that shows all the sheets created
-            VStack {
+            ZStack {
                 ScrollView {
                     HStack(alignment: .top) {
                         VStack(alignment: horizontalSizeClass == .compact ? .leading : .center) {
@@ -3505,7 +2075,7 @@ struct ContentView: View {
                             }
                         }
                     }
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 175))], spacing: horizontalSizeClass == .compact ? 1 : 10) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 175))], spacing: horizontalSizeClass == .compact ? 5 : 10) {
                         ForEach(0..<sheetArray.count, id: \.self) { sheet in
                             if sheetArray[sheet].label != "Debug, ignore this page" {
                                 Button(action: {
@@ -3523,14 +2093,14 @@ struct ContentView: View {
                                             .scaledToFit()
                                         Image(systemName: "square.fill")
                                             .resizable()
-                                            .foregroundColor(getCurrSheetIndex() == sheet ? .blue : Color(.systemGray5))
+                                            .foregroundColor(getCurrSheetIndex() == sheet ? .purple : Color(.systemGray5))
                                             .scaledToFit()
                                             .opacity(0.5)
                                         VStack {
                                             
                                             //check to see if there is a curc LabelIcon
                                             //if sheetArray[sheet].currLabelIcon.isEmpty {
-                                            if sheetArray[sheet].currLabelIcon != nil {
+                                            if sheetArray[sheet].currLabelIcon != nil && sheetArray[sheet].currLabelIcon != "plus.viewfinder" {
                                                 if sheetArray[sheet].currLabelIcon!.contains("customIconObject:") {
                                                     getCustomIconSmall(sheetArray[sheet].currLabelIcon!)
                                                         .scaledToFit()
@@ -3541,7 +2111,7 @@ struct ContentView: View {
                                                                 .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
                                                         )
                                                         .padding(.top)
-                                                } else if !sheetArray[sheet].currLabelIcon!.isEmpty {
+                                                } else if !sheetArray[sheet].currLabelIcon!.isEmpty && sheetArray[sheet].currLabelIcon! != "plus.viewfinder" {
                                                     loadImage(named: sheetArray[sheet].currLabelIcon!)
                                                         .scaledToFit()
                                                         .frame(width: horizontalSizeClass == .compact ? 65: 105, height: horizontalSizeClass == .compact ? 65: 105)
@@ -3557,13 +2127,13 @@ struct ContentView: View {
                                                         Image(systemName: "timer")
                                                             .resizable()
                                                             .frame(width: horizontalSizeClass == .compact ? 65: 105, height: horizontalSizeClass == .compact ? 65: 105)
-                                                            .foregroundColor(.primary)
+                                                            .foregroundColor(Color(.systemGray))
                                                             .padding(.top, sheetArray[sheet].label.isEmpty ? 0 : 15)
                                                     } else {
                                                         Image(systemName: "tag")
                                                             .resizable()
                                                             .frame(width: horizontalSizeClass == .compact ? 65: 105, height: horizontalSizeClass == .compact ? 65: 105)
-                                                            .foregroundColor(.primary)
+                                                            .foregroundColor(Color(.systemGray))
                                                             .padding(.top, sheetArray[sheet].label.isEmpty ? 0 : 15)
                                                     }
                                                 }
@@ -3571,20 +2141,20 @@ struct ContentView: View {
                                                 if sheetArray[sheet].gridType == "time" {
                                                     Image(systemName: "timer")
                                                         .resizable()
-                                                        .scaledToFit()
-                                                        .foregroundColor(.primary)
-                                                        .padding(sheetArray[sheet].label.isEmpty ? 5 : 0)
+                                                        .frame(width: horizontalSizeClass == .compact ? 65: 105, height: horizontalSizeClass == .compact ? 65: 105)
+                                                        .foregroundColor(Color(.systemGray))
+                                                        .padding(.top, sheetArray[sheet].label.isEmpty ? 0 : 15)
                                                 } else {
                                                     Image(systemName: "tag")
                                                         .resizable()
-                                                        .scaledToFit()
-                                                        .foregroundColor(.primary)
-                                                        .padding(sheetArray[sheet].label.isEmpty ? 5 : 0)
+                                                        .frame(width: horizontalSizeClass == .compact ? 65: 105, height: horizontalSizeClass == .compact ? 65: 105)
+                                                        .foregroundColor(Color(.systemGray))
+                                                        .padding(.top, sheetArray[sheet].label.isEmpty ? 0 : 15)
                                                 }
                                             }
                                             if sheetArray[sheet].label.isEmpty {
-                                                if sheetArray[sheet].currLabelIcon != nil {
-                                                    if !sheetArray[sheet].currLabelIcon!.isEmpty {
+                                                if sheetArray[sheet].currLabelIcon != nil && sheetArray[sheet].currLabelIcon != "plus.viewfinder" {
+                                                    if !sheetArray[sheet].currLabelIcon!.isEmpty && sheetArray[sheet].currLabelIcon! != "plus.viewfinder" {
                                                         Spacer()
                                                     }
                                                 } else {
@@ -3593,8 +2163,8 @@ struct ContentView: View {
                                             }
                                             if !sheetArray[sheet].label.isEmpty {
                                                 HStack {
-                                                    if sheetArray[sheet].currLabelIcon != nil {
-                                                        if !sheetArray[sheet].currLabelIcon!.isEmpty {
+                                                    if sheetArray[sheet].currLabelIcon != nil && sheetArray[sheet].currLabelIcon != "plus.viewfinder" {
+                                                        if !sheetArray[sheet].currLabelIcon!.isEmpty && sheetArray[sheet].currLabelIcon! != "plus.viewfinder" {
                                                             Text("\(Image(systemName: sheetArray[sheet].gridType == "time" ? "timer" : "tag" )) \(sheetArray[sheet].label)")
                                                                 .lineLimit(1)
                                                                 .font(.system(size: horizontalSizeClass == .compact ? 17 : 30, weight: .semibold, design: .rounded))
@@ -3622,8 +2192,8 @@ struct ContentView: View {
                                                 .padding(.leading, 2)
                                                 .padding(.trailing, 2)
                                             } else {
-                                                if sheetArray[sheet].currLabelIcon != nil {
-                                                    if !sheetArray[sheet].currLabelIcon!.isEmpty {
+                                                if sheetArray[sheet].currLabelIcon != nil && sheetArray[sheet].currLabelIcon != "plus.viewfinder" {
+                                                    if !sheetArray[sheet].currLabelIcon!.isEmpty && sheetArray[sheet].currLabelIcon! != "plus.viewfinder" {
                                                         Text("\(Image(systemName: sheetArray[sheet].gridType == "time" ? "timer" : "tag" ))")
                                                             .lineLimit(1)
                                                             .font(.system(size: horizontalSizeClass == .compact ? 17 : 30, weight: .semibold, design: .rounded))
@@ -3649,7 +2219,7 @@ struct ContentView: View {
                                             addSheetIcon.toggle()
                                             currSheetIndex = sheet
                                         } label: {
-                                            if sheetArray[sheet].currLabelIcon != nil {
+                                            if sheetArray[sheet].currLabelIcon != nil && sheetArray[sheet].currLabelIcon != "plus.viewfinder" {
                                                 Label(sheetArray[sheet].currLabelIcon!.isEmpty ? "Add Icon" : "Change Icon", systemImage: sheetArray[sheet].currLabelIcon!.isEmpty ? "plus.square.dashed" : "arrow.2.squarepath")
                                             } else {
                                                 Label("Add Icon", systemImage: "plus.viewfinder")
@@ -3699,41 +2269,102 @@ struct ContentView: View {
                             }
                         }
                     }
+                    .padding()
                 }
-                HStack {
-                    if horizontalSizeClass != .compact {
-                        Button(action: {
-                            if sheetArray.count > 1 {
-                                showAllSheets.toggle()
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        HStack {
+                            if horizontalSizeClass != .compact {
+                                Button(action: {
+                                    if sheetArray.count > 1 {
+                                        showAllSheets.toggle()
+                                    }
+                                }) {
+                                    Image(systemName:"xmark.square.fill")
+                                        .resizable()
+                                        .frame(width:100, height: 100)
+                                    //.fontWeight(.bold)
+                                        .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray): Color(.systemGray6))
+                                        .padding()
+                                }
                             }
-                        }) {
-                            Image(systemName:"xmark.square.fill")
-                                .resizable()
-                                .frame(width:100, height: 100)
-                            //.fontWeight(.bold)
-                                .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray): Color(.systemGray6))
-                                .padding()
+                            Button(action: {
+                                createNewSheet.toggle()
+                            }) {
+                                Image(systemName: "plus.square.fill.on.square.fill")
+                                    .resizable()
+                                    .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                //.fontWeight(.bold)
+                                    .foregroundColor(.green)
+                                    .padding()
+                            }
                         }
+                        Spacer()
                     }
-                    Button(action: {
-                        createNewSheet.toggle()
-                    }) {
-                        Image(systemName: "plus.square.fill.on.square.fill")
-                            .resizable()
-                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                        //.fontWeight(.bold)
-                            .foregroundColor(.green)
-                            .padding()
-                    }
+                    .background(
+                        LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                            .ignoresSafeArea()
+                    )
                 }
             }
             .fullScreenCover(isPresented: $createNewSheet) { //this is the fullscreencover to create a new sheet
                 VStack {
-                    Text("\(Image(systemName: "plus.square")) Create a New Sheet")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.01)
-                        .font(.system(size: 40,  weight: .bold, design: .rounded))
-                        .padding()
+                    HStack(alignment: .top) {
+                        Text(horizontalSizeClass == .compact ? "\(Image(systemName: "plus.square")) New Sheet" : "\(Image(systemName: "plus.square")) Create New Sheet")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.01)
+                            .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
+                            .padding(.top)
+                            .padding(.bottom, horizontalSizeClass == .compact ? 5 : 0)
+                            .padding(.leading, horizontalSizeClass == .compact ? 20 : 0)
+                        
+                        if horizontalSizeClass == .compact {
+                            Spacer()
+                            Spacer()
+                            Button(action: {
+                                if defaults.bool(forKey: "completedTutorial") { //if they havent actually done anything take them back to the welcome screen
+                                    if loadSheetArray().count > 1 { //cant go back to a sheet if there is none
+                                        createNewSheet.toggle()
+                                        if !showAllSheets {
+                                            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
+                                                if loadSheetArray().count < 2 {
+                                                    showAllSheets.toggle()
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false) { timer in
+                                        createNewSheet.toggle()
+                                        Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false) { timer in
+                                            showAllSheets.toggle()
+                                            Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false) { timer in
+                                                self.presentation.wrappedValue.dismiss()
+                                            }
+                                        }
+                                    }
+                                }
+                            }) {
+                                if defaults.bool(forKey: "completedTutorial") {
+                                    Text("\(Image(systemName: "xmark.circle.fill"))")
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.5)
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray3): Color(.systemGray6))
+                                        .padding([.top, .trailing])
+                                } else {
+                                    Text("\(Image(systemName: "xmark.circle.fill"))")
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.5)
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .foregroundColor(Color(.systemGray3))
+                                        .padding([.top, .trailing])
+                                }
+                            }
+                        }
+                    }
                     Spacer()
                     ZStack {
                         TextField("Name Sheet", text: $currSheetText, onEditingChanged: { editing in
@@ -3753,7 +2384,7 @@ struct ContentView: View {
                     .padding()
                     Spacer()
                     if !isTextFieldActive { //just to handle the content getting pushed off screen by the keybpoard on smaller devices
-                        if horizontalSizeClass == .compact {
+                        if horizontalSizeClass == .compact { //TODO: Go in and make this work, strange animation right now because of multiple different checks for size class
                             VStack {
                                 VStack {
                                     Button(action: {
@@ -3782,27 +2413,43 @@ struct ContentView: View {
                                         }
                                         updateUsage("action:create")
                                     }) {
-                                        ZStack {
-                                            Image(systemName: "square.fill")
-                                                .resizable()
-                                                .padding()
-                                                .foregroundColor(newSheetTime ? .blue : Color(.systemGray))
-                                                .scaledToFill()
-                                                .padding(newSheetTime ? 0 : 10)
-                                                .padding(newSheetTime ? 0 : 10)
-                                                .padding(newSheetTime ? 0 : 10)
-                                            Image(systemName: "timer")
-                                                .resizable()
-                                                .foregroundColor(newSheetTime ? .white : Color(.systemBackground))
-                                                .scaledToFit()
-                                                .padding(newSheetTime ? 0 : 85)
+                                        if horizontalSizeClass == .compact {
+                                            ZStack {
+                                                Image(systemName: "square.fill")
+                                                    .resizable()
+                                                    .padding()
+                                                    .foregroundColor(newSheetTime ? .blue : Color(.systemGray))
+                                                    .scaledToFill()
+                                                Image(systemName: "timer")
+                                                    .resizable()
+                                                    .foregroundColor(newSheetTime ? .white : Color(.systemBackground))
+                                                    .scaledToFit()
+                                                    .padding(newSheetTime ? 0 : 45)
+                                            }
+                                            .scaledToFit()
+                                        } else {
+                                            ZStack {
+                                                Image(systemName: "square.fill")
+                                                    .resizable()
+                                                    .padding()
+                                                    .foregroundColor(newSheetTime ? .blue : Color(.systemGray))
+                                                    .scaledToFill()
+                                                    .padding(newSheetTime ? 0 : 10)
+                                                    .padding(newSheetTime ? 0 : 10)
+                                                    .padding(newSheetTime ? 0 : 10)
+                                                Image(systemName: "timer")
+                                                    .resizable()
+                                                    .foregroundColor(newSheetTime ? .white : Color(.systemBackground))
+                                                    .scaledToFit()
+                                                    .padding(newSheetTime ? 0 : 85)
+                                            }
+                                            .scaledToFit()
                                         }
-                                        .scaledToFit()
                                     }
                                     Text("Timeslot Sheet")
                                         .minimumScaleFactor(0.01)
                                         .multilineTextAlignment(.center)
-                                        .font(.system(size: 30, weight: .semibold, design: .rounded))
+                                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .semibold, design: .rounded))
                                 }
                                 .padding()
                                 VStack {
@@ -3832,27 +2479,43 @@ struct ContentView: View {
                                         }
                                         updateUsage("action:create")
                                     }) {
-                                        ZStack {
-                                            Image(systemName: "square.fill")
-                                                .resizable()
-                                                .padding()
-                                                .foregroundColor(newSheetLabel ? .blue : Color(.systemGray))
-                                                .scaledToFill()
-                                                .padding(newSheetLabel ? 0 : 10)
-                                                .padding(newSheetLabel ? 0 : 10)
-                                                .padding(newSheetLabel ? 0 : 10)
-                                            Image(systemName: "tag")
-                                                .resizable()
-                                                .foregroundColor(newSheetLabel ? .white : Color(.systemBackground))
-                                                .scaledToFit()
-                                                .padding(newSheetTime ? 0 : 85)
+                                        if horizontalSizeClass == .compact {
+                                            ZStack {
+                                                Image(systemName: "square.fill")
+                                                    .resizable()
+                                                    .padding()
+                                                    .foregroundColor(newSheetLabel ? .blue : Color(.systemGray))
+                                                    .scaledToFill()
+                                                Image(systemName: "tag")
+                                                    .resizable()
+                                                    .foregroundColor(newSheetLabel ? .white : Color(.systemBackground))
+                                                    .scaledToFit()
+                                                    .padding(newSheetTime ? 0 : 45)
+                                            }
+                                            .scaledToFit()
+                                        } else {
+                                            ZStack {
+                                                Image(systemName: "square.fill")
+                                                    .resizable()
+                                                    .padding()
+                                                    .foregroundColor(newSheetLabel ? .blue : Color(.systemGray))
+                                                    .scaledToFill()
+                                                    .padding(newSheetLabel ? 0 : 10)
+                                                    .padding(newSheetLabel ? 0 : 10)
+                                                    .padding(newSheetLabel ? 0 : 10)
+                                                Image(systemName: "tag")
+                                                    .resizable()
+                                                    .foregroundColor(newSheetLabel ? .white : Color(.systemBackground))
+                                                    .scaledToFit()
+                                                    .padding(newSheetLabel ? 0 : 85)
+                                            }
+                                            .scaledToFit()
                                         }
-                                        .scaledToFit()
                                     }
                                     Text("Custom Labels Sheet")
                                         .minimumScaleFactor(0.01)
                                         .multilineTextAlignment(.center)
-                                        .font(.system(size: 30, weight: .semibold, design: .rounded))
+                                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .semibold, design: .rounded))
                                 }
                                 .padding()
                             }
@@ -3886,22 +2549,38 @@ struct ContentView: View {
                                         }
                                         updateUsage("action:create")
                                     }) {
-                                        ZStack {
-                                            Image(systemName: "square.fill")
-                                                .resizable()
-                                                .padding()
-                                                .foregroundColor(newSheetTime ? .blue : Color(.systemGray))
-                                                .scaledToFill()
-                                                .padding(newSheetTime ? 0 : 10)
-                                                .padding(newSheetTime ? 0 : 10)
-                                                .padding(newSheetTime ? 0 : 10)
-                                            Image(systemName: "timer")
-                                                .resizable()
-                                                .foregroundColor(newSheetTime ? .white : Color(.systemBackground))
-                                                .scaledToFit()
-                                                .padding(newSheetTime ? 0 : 85)
+                                        if horizontalSizeClass == .compact {
+                                            ZStack {
+                                                Image(systemName: "square.fill")
+                                                    .resizable()
+                                                    .padding()
+                                                    .foregroundColor(newSheetTime ? .blue : Color(.systemGray))
+                                                    .scaledToFill()
+                                                Image(systemName: "timer")
+                                                    .resizable()
+                                                    .foregroundColor(newSheetTime ? .white : Color(.systemBackground))
+                                                    .scaledToFit()
+                                                    .padding(newSheetTime ? 0 : 85)
+                                            }
+                                            .scaledToFit()
+                                        } else {
+                                            ZStack {
+                                                Image(systemName: "square.fill")
+                                                    .resizable()
+                                                    .padding()
+                                                    .foregroundColor(newSheetTime ? .blue : Color(.systemGray))
+                                                    .scaledToFill()
+                                                    .padding(newSheetTime ? 0 : 10)
+                                                    .padding(newSheetTime ? 0 : 10)
+                                                    .padding(newSheetTime ? 0 : 10)
+                                                Image(systemName: "timer")
+                                                    .resizable()
+                                                    .foregroundColor(newSheetTime ? .white : Color(.systemBackground))
+                                                    .scaledToFit()
+                                                    .padding(newSheetTime ? 0 : 85)
+                                            }
+                                            .scaledToFit()
                                         }
-                                        .scaledToFit()
                                     }
                                     Text("Timeslot Sheet")
                                         .minimumScaleFactor(0.01)
@@ -3963,44 +2642,46 @@ struct ContentView: View {
                             .scaledToFit()
                         }
                         Spacer()
-                        HStack {
-                            if defaults.bool(forKey: "completedTutorial") { //if they havent actually done anything take them back to the welcome screen
-                                Button(action: {
-                                    if loadSheetArray().count > 1 { //cant go back to a sheet if there is none
-                                        createNewSheet.toggle()
-                                        if !showAllSheets {
-                                            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
-                                                if loadSheetArray().count < 2 {
-                                                    showAllSheets.toggle()
+                        if horizontalSizeClass != .compact {
+                            HStack {
+                                if defaults.bool(forKey: "completedTutorial") { //if they havent actually done anything take them back to the welcome screen
+                                    Button(action: {
+                                        if loadSheetArray().count > 1 { //cant go back to a sheet if there is none
+                                            createNewSheet.toggle()
+                                            if !showAllSheets {
+                                                Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
+                                                    if loadSheetArray().count < 2 {
+                                                        showAllSheets.toggle()
+                                                    }
                                                 }
                                             }
                                         }
+                                    }) {
+                                        Image(systemName:"xmark.square.fill")
+                                            .resizable()
+                                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                        //.fontWeight(.bold)
+                                            .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray): Color(.systemGray6))
+                                            .padding()
                                     }
-                                }) {
-                                    Image(systemName:"xmark.square.fill")
-                                        .resizable()
-                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                    //.fontWeight(.bold)
-                                        .foregroundColor(loadSheetArray().count > 1 ? Color(.systemGray): Color(.systemGray6))
-                                        .padding()
-                                }
-                            } else {
-                                Button(action: {
-                                    Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false) { timer in
-                                        createNewSheet.toggle()
+                                } else {
+                                    Button(action: {
                                         Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false) { timer in
-                                            showAllSheets.toggle()
+                                            createNewSheet.toggle()
                                             Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false) { timer in
-                                                self.presentation.wrappedValue.dismiss()
+                                                showAllSheets.toggle()
+                                                Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false) { timer in
+                                                    self.presentation.wrappedValue.dismiss()
+                                                }
                                             }
                                         }
+                                    }) {
+                                        Image(systemName:"xmark.square.fill")
+                                            .resizable()
+                                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                            .foregroundColor(Color(.systemGray))
+                                            .padding()
                                     }
-                                }) {
-                                    Image(systemName:"xmark.square.fill")
-                                        .resizable()
-                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                        .foregroundColor(Color(.systemGray))
-                                        .padding()
                                 }
                             }
                         }
@@ -4010,6 +2691,7 @@ struct ContentView: View {
             }
             .navigationBarHidden(true)
             .sheet(isPresented: $renameSheet) {
+                
                 VStack {
                     Text("\(Image(systemName: "pencil")) Rename Sheet")
                         .lineLimit(1)
@@ -4073,211 +2755,18 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $addSheetIcon) {
-                var filteredCustomData: [String] { //search results for custom icons
-                    if searchText.isEmpty {
-                        return []
-                    } else {
-                        let matchingKeys = getCustomPECSAddresses().keys.filter { $0.localizedCaseInsensitiveContains(searchText) }
-                        
-                        let sortedKeys = matchingKeys.sorted { (key1, key2) -> Bool in
-                            let startsWithSearchText1 = key1.lowercased().hasPrefix(searchText.lowercased())
-                            let startsWithSearchText2 = key2.lowercased().hasPrefix(searchText.lowercased())
-                            
-                            // Prioritize keys that start with searchText
-                            if startsWithSearchText1 && !startsWithSearchText2 {
-                                return true
-                            } else if !startsWithSearchText1 && startsWithSearchText2 {
-                                return false
-                            } else {
-                                // For keys starting with searchText or having searchText as prefix, sort them alphabetically
-                                return key1.localizedCaseInsensitiveCompare(key2) == .orderedAscending
-                            }
-                        }
-                        
-                        return sortedKeys
-                    }
-                }
                 
-                var filteredData: [String] { //contains search results for default icons
-                    if searchText.isEmpty {
-                        return []
-                    } else {
-                        let matchingItems = allPECS.filter { $0.localizedCaseInsensitiveContains(searchText) }
-                        
-                        let sortedItems = matchingItems.sorted { (item1, item2) -> Bool in
-                            let startsWithSearchText1 = item1.lowercased().hasPrefix(searchText.lowercased())
-                            let startsWithSearchText2 = item2.lowercased().hasPrefix(searchText.lowercased())
-                            
-                            // Prioritize items that start with searchText
-                            if startsWithSearchText1 && !startsWithSearchText2 {
-                                return true
-                            } else if !startsWithSearchText1 && startsWithSearchText2 {
-                                return false
-                            } else {
-                                // For items starting with searchText or having searchText as prefix, sort them alphabetically
-                                return item1.localizedCaseInsensitiveCompare(item2) == .orderedAscending
-                            }
-                        }
-                        
-                        return sortedItems
-                    }
-                }
-                
-                VStack { //main list of all the icons
-                    ScrollView {
-                        TextField("\(Image(systemName: "magnifyingglass")) Search", text: $searchText)
-                            .multilineTextAlignment(.center)
-                            .font(.system(size: horizontalSizeClass == .compact ? 35 : 65, weight: .semibold, design: .rounded))
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color(.systemGray4))
-                            )
-                            .padding()
-                        
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
-                            ForEach(0..<filteredCustomData.count, id: \.self) { key in //first display custom icon results
-                                Button(action: {
-                                    sheetArray[currSheetIndex].currLabelIcon = "customIconObject:\(filteredCustomData[key])"
-                                    updateUsage("customIconObject:\(filteredCustomData[key])")
-                                    if currSheetIndex == getCurrSheetIndex() {
-                                        currSheet.currLabelIcon = "customIconObject:\(filteredCustomData[key])"
-                                    }
-                                    addSheetIcon.toggle()
-                                    animate.toggle()
-                                    saveSheetArray(sheetObjects: sheetArray)
-                                }) {
-                                    getCustomIconSmall(filteredCustomData[key])
-                                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .stroke(lineWidth: 3)
-                                        )
-                                    //}
-                                    
-                                }
-                                .foregroundColor(.primary)
-                                .padding()
-                            }
-                            ForEach(0..<filteredData.count, id: \.self) { pecsIcon in //next display default icon results
-                                Button(action: {
-                                    sheetArray[currSheetIndex].currLabelIcon = filteredData[pecsIcon]
-                                    updateUsage(filteredData[pecsIcon])
-                                    if currSheetIndex == getCurrSheetIndex() {
-                                        currSheet.currLabelIcon = filteredData[pecsIcon]
-                                    }
-                                    addSheetIcon.toggle()
-                                    animate.toggle()
-                                    saveSheetArray(sheetObjects: sheetArray)
-                                }) {
-                                    loadImage(named: filteredData[pecsIcon])
-                                        .resizable()
-                                        .scaledToFill()
-                                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .stroke(.black, lineWidth: 3)
-                                        )
-                                }
-                                .foregroundColor(.primary)
-                                .padding()
-                            }
-                        }
-                        
-                        if filteredData.count + filteredCustomData.count > 0 {
-                            Divider()
-                                .padding()
-                                .padding(.bottom, 50)
-                        }
-                        
-                        if getCustomPECSAddresses().count > 0 {
-                            Text("My Icons")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) { //grid of custom icons
-                                ForEach(getCustomPECSAddresses().sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
-                                    Button(action: {
-                                        sheetArray[currSheetIndex].currLabelIcon = "customIconObject:\(key)"
-                                        updateUsage("customIconObject:\(key)")
-                                        if currSheetIndex == getCurrSheetIndex() {
-                                            currSheet.currLabelIcon = "customIconObject:\(key)"
-                                        }
-                                        addSheetIcon.toggle()
-                                        animate.toggle()
-                                        saveSheetArray(sheetObjects: sheetArray)
-                                    }) {
-                                        getCustomIconSmall(key)
-                                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .stroke(lineWidth: 3)
-                                            )
-                                        //}
-                                        
-                                    }
-                                    .foregroundColor(.black)
-                                    .padding()
-                                }
-                            }
-                        }
-                        ForEach(pecsCategories, id: \.self) { icon in //grid of default icons, also displays categories
-                            VStack(alignment: .center) {
-                                Text(icon[0])
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.01)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 150))], spacing: horizontalSizeClass == .compact ? 0 : 20) {
-                                    ForEach(1..<icon.count, id: \.self) { sheeticonobject in
-                                        Button(action: {
-                                            sheetArray[currSheetIndex].currLabelIcon = String(icon[sheeticonobject])
-                                            updateUsage(String(icon[sheeticonobject]))
-                                            if currSheetIndex == getCurrSheetIndex() {
-                                                currSheet.currLabelIcon = String(icon[sheeticonobject])
-                                            }
-                                            addSheetIcon.toggle()
-                                            animate.toggle()
-                                            saveSheetArray(sheetObjects: sheetArray)
-                                        }) {
-                                            loadImage(named: String(icon[sheeticonobject]))
-                                                .resizable()
-                                                .scaledToFill()
-                                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 16)
-                                                        .stroke(lineWidth: 3)
-                                                )
-                                        }
-                                        .foregroundColor(.black)
-                                        .padding()
-                                    }
-                                }
-                            }
-                            .padding()
-                        }
-                        Text(verbatim: "Daysy Icons provided by www.mypecs.com")
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.01)
-                            .font(.system(size: 25, weight: .medium, design: .rounded))
-                            .foregroundColor(Color(.systemGray2))
-                    }
-                    Button(action: {
-                        sheetArray[currSheetIndex].currLabelIcon = ""
-                        if currSheetIndex == getCurrSheetIndex() {
-                            currSheet.currLabelIcon = ""
-                        }
-                        animate.toggle()
-                        addSheetIcon.toggle()
-                        saveSheetArray(sheetObjects: sheetArray)
-                    }) {
-                        Image(systemName: "trash.square.fill")
-                            .resizable()
-                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            .padding()
-                            .foregroundColor(.red)
-                    }
-                }
-                .ignoresSafeArea(.keyboard)
+                AllIconsPickerView(currSheet: currSheet,
+                                   currImage: sheetArray[currSheetIndex].currLabelIcon ?? "plus.viewfinder",
+                                   modifyIcon: { newIcon in
+                    sheetArray[currSheetIndex].currLabelIcon = newIcon
+                    saveSheetArray(sheetObjects: sheetArray)
+                    animate.toggle()
+                }, modifyDetails: { newDetails in
+                    //no need to modify details here
+                }, modifySheet: {newSheet in
+                    currSheet = newSheet
+                }, showCreateCustom: false)
             }
         }
         .animation(.spring, value: animate)

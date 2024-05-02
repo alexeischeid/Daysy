@@ -176,7 +176,6 @@ struct UsageData: Codable, Identifiable {
 
 //viewcontrollers and representables below
 
-
 struct UIImagePicker: View {
     @Binding var selectedImage: UIImage?
 
@@ -290,3 +289,4 @@ extension View {
         self.modifier(DeviceRotationViewModifier(action: action))
     }
 }
+

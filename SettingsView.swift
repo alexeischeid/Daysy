@@ -16,7 +16,8 @@ struct SettingsView: View {
     @Environment(\.presentationMode) var presentation
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
-    
+    @State var showAI = false
+    @State var aiOn = defaults.bool(forKey: "aiOn")
     @State var showNotifs = false
     @State var notifsOn = defaults.bool(forKey: "notifsOn")
     @State var notifsAllowed = defaults.bool(forKey: "notificationsAllowed")
@@ -58,14 +59,13 @@ struct SettingsView: View {
         let offSet: CGFloat = horizontalSizeClass == .compact ? 18 : 36
         
         NavigationView {
-            VStack {
+            ZStack {
                 ScrollView { //title
                     HStack {
                         Text("\(Image(systemName: "gear")) Settings")
                             .lineLimit(1)
                             .minimumScaleFactor(0.01)
                             .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                            .padding()
                         if horizontalSizeClass == .compact {
                             Spacer()
                             Button(action: {
@@ -80,22 +80,28 @@ struct SettingsView: View {
                             }
                         }
                     }
-                    .padding(.top, horizontalSizeClass == .compact ? 20 : 0)
-                    
-                    HStack { //speak icons setting, same format as the rest below here
+                     /*
+                    HStack {
                         Button(action: {
-                            showSpeak.toggle()
+                            showAI.toggle()
                         }) {
                             HStack {
-                                Text("\(Image(systemName: "info.circle")) ")
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.5)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
-                                    .foregroundColor(.blue)
-                                Text("Speak Icons")
+                                if #available(iOS 15.0, *) {
+                                    Image(systemName: "brain.filled.head.profile")
+                                        .minimumScaleFactor(0.5)
+                                        .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                        .foregroundColor(.purple)
+                                        .symbolRenderingMode(.hierarchical)
+                                } else {
+                                    Image(systemName: "brain.filled.head.profile")
+                                        .minimumScaleFactor(0.5)
+                                        .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                        .foregroundColor(.purple)
+                                }
+                                Text(" OpenAI Features")
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.01)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
                             }
                         }
                         .foregroundColor(.primary)
@@ -104,7 +110,53 @@ struct SettingsView: View {
                         ZStack {
                             Capsule()
                                 .frame(width: horizontalSizeClass == .compact ? 80 : 160,height: horizontalSizeClass == .compact ? 44 : 88)
-                                .foregroundColor(Color(speakOn ? .green : (.systemGray3)))
+                                .foregroundColor(aiOn ? .purple : Color(.systemGray3))
+                            ZStack{
+                                Circle()
+                                    .frame(width: horizontalSizeClass == .compact ? 40 : 80, height: horizontalSizeClass == .compact ? 40 : 80)
+                                    .foregroundColor(.white)
+                                Image(systemName: aiOn ? "poweron" : "poweroff")
+                                    .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
+                                    .foregroundColor(Color(.systemGray))
+                            }
+                            .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
+                            //.offset(x:exampleEmptyOn ? (horizontalSizeClass == .compact ? 18 : -18) : (horizontalSizeClass == .compact ? offSet : -offSet))
+                            .offset(x:aiOn ? offSet : -offSet)
+                            .padding(horizontalSizeClass == .compact ? 0 : 24)
+                            .animation(.spring, value: animate)
+                        }
+                        .padding()
+                        .onTapGesture {
+                            aiOn.toggle()
+                            defaults.set(aiOn, forKey: "aiOn")
+                            animate.toggle()
+                        }
+                    }
+                    .background(Color(.systemGray5))
+                    .cornerRadius(horizontalSizeClass == .compact ? 20 : 30) */
+                    
+                    HStack { //speak icons setting, same format as the rest below here
+                        Button(action: {
+                            showSpeak.toggle()
+                        }) {
+                            HStack {
+                                Image(systemName: "info.circle")
+                                    .minimumScaleFactor(0.5)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                    .foregroundColor(.blue)
+                                Text(" Speak Icons")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                            }
+                        }
+                        .foregroundColor(.primary)
+                        .padding()
+                        Spacer()
+                        ZStack {
+                            Capsule()
+                                .frame(width: horizontalSizeClass == .compact ? 80 : 160,height: horizontalSizeClass == .compact ? 44 : 88)
+                                .foregroundColor(speakOn ? .green : Color(.systemGray3))
                             ZStack{
                                 Circle()
                                     .frame(width: horizontalSizeClass == .compact ? 40 : 80, height: horizontalSizeClass == .compact ? 40 : 80)
@@ -135,15 +187,15 @@ struct SettingsView: View {
                             showCurrSlot.toggle()
                         }) {
                             HStack {
-                                Text("\(Image(systemName: "info.circle")) ")
+                                Image(systemName: "info.circle")
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.5)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
                                     .foregroundColor(.blue)
-                                Text("Show Current Timeslot")
+                                Text(horizontalSizeClass == .compact ? "Highlight Time" : " Show Current Timeslot")
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.5)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
                             }
                         }
                         .foregroundColor(.primary)
@@ -152,7 +204,7 @@ struct SettingsView: View {
                         ZStack {
                             Capsule()
                                 .frame(width: horizontalSizeClass == .compact ? 80 : 160,height: horizontalSizeClass == .compact ? 44 : 88)
-                                .foregroundColor(Color(currSlotOn ? .green : .systemGray3))
+                                .foregroundColor(currSlotOn ? .green : Color(.systemGray3))
                             ZStack{
                                 Circle()
                                     .frame(width: horizontalSizeClass == .compact ? 40 : 80, height: horizontalSizeClass == .compact ? 40 : 80)
@@ -181,15 +233,15 @@ struct SettingsView: View {
                             showButtons.toggle()
                         }) {
                             HStack {
-                                Text("\(Image(systemName: "info.circle")) ")
+                                Image(systemName: "info.circle")
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.5)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
                                     .foregroundColor(.blue)
-                                Text("Lock Buttons")
+                                Text(" Lock Buttons")
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.01)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
                             }
                         }
                         .foregroundColor(.primary)
@@ -198,7 +250,7 @@ struct SettingsView: View {
                         ZStack {
                             Capsule()
                                 .frame(width: horizontalSizeClass == .compact ? 80 : 160,height: horizontalSizeClass == .compact ? 44 : 88)
-                                .foregroundColor(Color(buttonsOn ? .green : (.systemGray3)))
+                                .foregroundColor(buttonsOn ? .green : Color(.systemGray3))
                             ZStack{
                                 Circle()
                                     .frame(width: horizontalSizeClass == .compact ? 40 : 80, height: horizontalSizeClass == .compact ? 40 : 80)
@@ -231,15 +283,15 @@ struct SettingsView: View {
                             showNotifs.toggle()
                         }) {
                             HStack {
-                                Text("\(Image(systemName: "info.circle")) ")
+                                Image(systemName: "info.circle")
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.5)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
                                     .foregroundColor(.blue)
-                                Text("Notifications")
+                                Text(" Notifications")
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.5)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
                             }
                         }
                         .foregroundColor(.primary)
@@ -248,7 +300,7 @@ struct SettingsView: View {
                         ZStack { //custom toggle
                             Capsule()
                                 .frame(width: horizontalSizeClass == .compact ? 80 : 160,height: horizontalSizeClass == .compact ? 44 : 88)
-                                .foregroundColor(Color(notifsOn ? .green : .systemGray3))
+                                .foregroundColor(notifsOn ? .green : Color(.systemGray3))
                             ZStack{
                                 Circle()
                                     .frame(width: horizontalSizeClass == .compact ? 40 : 80, height: horizontalSizeClass == .compact ? 40 : 80)
@@ -299,15 +351,15 @@ struct SettingsView: View {
                             showEmpty.toggle()
                         }) {
                             HStack {
-                                Text("\(Image(systemName: "info.circle")) ")
+                                Image(systemName: "info.circle")
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.5)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
                                     .foregroundColor(.blue)
-                                Text("Organize Empty Slots")
+                                Text(" Organize Slots")
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.5)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
                             }
                         }
                         .foregroundColor(.primary)
@@ -316,7 +368,7 @@ struct SettingsView: View {
                         ZStack {
                             Capsule()
                                 .frame(width: horizontalSizeClass == .compact ? 80 : 160,height: horizontalSizeClass == .compact ? 44 : 88)
-                                .foregroundColor(Color(emptyOn ? .green : (.systemGray3)))
+                                .foregroundColor(emptyOn ? .green : Color(.systemGray3))
                             ZStack{
                                 Circle()
                                     .frame(width: horizontalSizeClass == .compact ? 40 : 80, height: horizontalSizeClass == .compact ? 40 : 80)
@@ -342,15 +394,22 @@ struct SettingsView: View {
                     
                     .sheet(isPresented: $showNotifs) { //notifs details sheet
                         VStack {
-                            Text("\(Image(systemName: "bell")) Notifications")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
-                                .padding()
+                            HStack {
+                                Image(systemName: "bell")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                    .foregroundColor(Color(.systemGray))
+                                Text("Notifications")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                    .padding()
+                            }
                             Text("When using Timeslots, Daysy will send you a notification if you have uncompleted icons, when when your next timeslot starts.")
                                 .minimumScaleFactor(0.01)
                                 .multilineTextAlignment(.center)
-                                .font(.system(size: horizontalSizeClass == .compact ? 10 : 25, weight: .bold, design: .rounded))
+                                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                                 .foregroundColor(Color(.systemGray))
                             Spacer()
                             Button(action: {
@@ -361,7 +420,7 @@ struct SettingsView: View {
                                 Text("\(Image(systemName: "gear")) Open Settings App")
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.1)
-                                    .font(.system(size: horizontalSizeClass == .compact ? 10 : 25, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                                     .foregroundColor(.primary)
                                     .padding()
                                     .padding()
@@ -374,13 +433,13 @@ struct SettingsView: View {
                                 Text("\(Image(systemName: "moon"))\nIf you are not seeing notifications, check Do Not Disturb or enable notifications in settings.")
                                     .minimumScaleFactor(0.01)
                                     .multilineTextAlignment(.center)
-                                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
                                     .foregroundColor(.orange)
                             } else {
                                 Text("\(Image(systemName: "bell.slash"))\nDaysy notifications have been disabled, please change this in your iPad Settings")
                                     .minimumScaleFactor(0.01)
                                     .multilineTextAlignment(.center)
-                                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
                                     .foregroundColor(.pink)
                             }
                             Spacer()
@@ -395,15 +454,22 @@ struct SettingsView: View {
                     }
                     .sheet(isPresented: $showButtons) { //lock buttons details sheet
                         VStack {
-                            Text("\(Image(systemName: "lock")) Lock Buttons")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
-                                .padding()
+                            HStack {
+                                Image(systemName: "lock")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                    .foregroundColor(Color(.systemGray))
+                                Text("Lock Buttons")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                    .padding()
+                            }
                             Text("The buttons to complete or remove an icon, and the bottom buttons on a Sheet will be locked.")
                                 .minimumScaleFactor(0.01)
                                 .multilineTextAlignment(.center)
-                                .font(.system(size: horizontalSizeClass == .compact ? 10 : 25, weight: .bold, design: .rounded))
+                                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                                 .foregroundColor(Color(.systemGray))
                             Spacer()
                             HStack {
@@ -415,7 +481,7 @@ struct SettingsView: View {
                                 ZStack {
                                     Capsule()
                                         .frame(width: horizontalSizeClass == .compact ? 80 : 160,height: horizontalSizeClass == .compact ? 44 : 88)
-                                        .foregroundColor(Color(exampleButtonsOn ? .green : (.systemGray)))
+                                        .foregroundColor(exampleButtonsOn ? .green : Color(.systemGray3))
                                     ZStack{
                                         Circle()
                                             .frame(width: horizontalSizeClass == .compact ? 40 : 80, height: horizontalSizeClass == .compact ? 40 : 80)
@@ -425,65 +491,65 @@ struct SettingsView: View {
                                             .foregroundColor(Color(.systemGray))
                                     }
                                     .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
+                                    //.offset(x:exampleEmptyOn ? (horizontalSizeClass == .compact ? 18 : -18) : (horizontalSizeClass == .compact ? offSet : -offSet))
                                     .offset(x:exampleButtonsOn ? offSet : -offSet)
                                     .padding(horizontalSizeClass == .compact ? 0 : 24)
+                                    .animation(.spring, value: animate)
                                 }
+                                .padding()
                                 .onTapGesture {
                                     exampleButtonsOn.toggle()
                                     animate.toggle()
-                                }
-                            }
+                                }                            }
                             Spacer()
-                            Divider()
                             VStack {
-                                Image("hello")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(lineWidth: 5)
-                                    )
-                                    .padding()
+                                if horizontalSizeClass != .compact {
+                                    Image("hello")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(lineWidth: 5)
+                                        )
+                                        .padding()
+                                }
                                 if exampleButtonsOn {
                                     HStack {
                                         Button(action: {}) {
                                             Image(systemName:"xmark.square.fill")
                                                 .resizable()
-                                                .frame(width: min(100, 500), height: min(100, 500))
-                                            //.fontWeight(.bold)
+                                                .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
+                                                .foregroundColor(Color(.systemGray))
                                         }
                                         .padding()
-                                        .foregroundColor(Color(.systemGray))
                                         
                                         Button(action: {}) {
                                             Image(systemName: "lock.square")
                                                 .resizable()
-                                                .frame(width: min(100, 500), height: min(100, 500))
+                                                .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                                 .foregroundColor(Color(.systemGray))
                                         }
                                         .padding()
-                                        .foregroundColor(.red)
                                     }
                                 } else {
                                     HStack {
                                         Button(action: {}) {
                                             Image(systemName:"xmark.square.fill")
                                                 .resizable()
-                                                .frame(width: min(100, 500), height: min(100, 500))
-                                            //.fontWeight(.bold)
+                                                .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
+                                                .foregroundColor(Color(.systemGray))
                                         }
                                         .padding()
-                                        .foregroundColor(Color(.systemGray))
                                         
                                         Button(action: {}) {
                                             ZStack {
                                                 Image(systemName: "square.fill")
                                                     .resizable()
-                                                    .frame(width: min(100, 500), height: min(100, 500))
+                                                    .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                                 Image(systemName: "square.slash")
                                                     .resizable()
-                                                    .frame(width: min(75, 250), height: min(75, 250))
+                                                    .frame(width: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250), height: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250))
                                                     .foregroundColor(Color(.systemBackground))
                                             }
                                         }
@@ -493,8 +559,7 @@ struct SettingsView: View {
                                         Button(action: {}) {
                                             Image(systemName: "checkmark.square.fill")
                                                 .resizable()
-                                                .frame(width: min(100, 500), height: min(100, 500))
-                                            //.fontWeight(.bold)
+                                                .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
                                         }
                                         .padding()
                                         .foregroundColor(.green)
@@ -514,105 +579,236 @@ struct SettingsView: View {
                                 }
                                 .padding()
                             } else {
-                                HStack {
-                                    Button(action: {}) {
-                                        ZStack {
-                                            Image(systemName: "folder.fill")
-                                                .resizable()
-                                                .padding()
-                                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                                .foregroundColor(.red)
-                                            Image(systemName: "square.slash")
-                                                .resizable()
-                                                .frame(width: min(25, 35), height: min(25, 35))
-                                                .padding()
-                                                .padding(.top)
-                                            //.fontWeight(.heavy)
-                                                .foregroundColor(Color(.systemBackground))
+                                if horizontalSizeClass == .compact {
+                                    VStack {
+                                        HStack {
+                                            Button(action: {}) {
+                                                ZStack {
+                                                    Image(systemName: "square.fill")
+                                                        .resizable()
+                                                        .frame(width: 65, height: 65)
+                                                        .foregroundColor(.purple)
+                                                    Image(systemName: "square.grid.2x2")
+                                                        .resizable()
+                                                        .frame(width: min(30, 75), height: min(30, 75))
+                                                        .foregroundColor(Color(.systemBackground))
+                                                }
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                            .padding(.leading)
+                                            .padding(.trailing)
+                                            
+                                            Button(action: {}) {
+                                                ZStack {
+                                                    Image(systemName: "square.fill")
+                                                        .resizable()
+                                                        .frame(width: 65, height: 65)
+                                                        .foregroundColor(.blue)
+                                                    Image(systemName: "pencil")
+                                                        .resizable()
+                                                        .frame(width: min(30, 75), height: min(30, 75))
+                                                    //.fontWeight(.heavy)
+                                                        .foregroundColor(Color(.systemBackground))
+                                                }
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                            .padding()
+                                            
+                                            Button(action: {}) {
+                                                ZStack {
+                                                    Image(systemName: "square")
+                                                        .resizable()
+                                                        .frame(width: 65, height: 65)
+                                                    Image(systemName: "chevron.forward")
+                                                        .resizable()
+                                                        .frame(width: 20, height: 40)
+                                                        .rotationEffect(.degrees(90))
+                                                }
+                                            }
+                                            .foregroundColor(Color(.systemGray2))
+                                            .buttonStyle(PlainButtonStyle())
+                                            .padding(.leading)
+                                            .padding(.trailing)
+                                            
+                                        }
+                                        HStack {
+                                            Button(action: {}) {
+                                                ZStack {
+                                                    Image(systemName: "folder.fill")
+                                                        .resizable()
+                                                        .frame(width: 65, height: 65)
+                                                        .foregroundColor(.red)
+                                                    Image(systemName: "square.slash")
+                                                        .resizable()
+                                                        .frame(width: min(20, 30), height: min(20, 30))
+                                                        .padding(.top)
+                                                        .foregroundColor(Color(.systemBackground))
+                                                }
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                            .padding([.leading, .trailing])
+                                            
+                                            Button(action: {}) {
+                                                ZStack {
+                                                    Image(systemName: "folder.fill")
+                                                        .resizable()
+                                                        .frame(width: 65, height: 65)
+                                                        .foregroundColor(.green)
+                                                    Image(systemName: "checkmark")
+                                                        .resizable()
+                                                        .frame(width: min(20, 30), height: min(20, 30))
+                                                        .padding(.top)
+                                                        .foregroundColor(Color(.systemBackground))
+                                                }
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                            .padding()
+                                            
+                                            Button(action: {}) {
+                                                ZStack {
+                                                    Image(systemName: "square.fill")
+                                                        .resizable()
+                                                        .frame(width: 65, height: 65)
+                                                        .foregroundColor(Color(.systemGray))
+                                                    Image(systemName: "gear")
+                                                        .resizable()
+                                                        .frame(width: min(30, 75), height: min(30, 75))
+                                                        .foregroundColor(Color(.systemBackground))
+                                                }
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                            .padding([.leading, .trailing])
                                         }
                                     }
-                                    
-                                    Button(action: {}) {
-                                        ZStack {
-                                            Image(systemName: "folder.fill")
-                                                .resizable()
-                                                .padding()
-                                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                                .foregroundColor(.green)
-                                            Image(systemName: "checkmark")
-                                                .resizable()
-                                                .frame(width: min(25, 35), height: min(25, 35))
-                                                .padding()
-                                                .padding(.top)
-                                            //.fontWeight(.heavy)
-                                                .foregroundColor(Color(.systemBackground))
+                                } else {
+                                    HStack {
+                                        Button(action: {}) {
+                                            ZStack {
+                                                Image(systemName: "folder.fill")
+                                                    .resizable()
+                                                    .frame(width: 75, height: 75)
+                                                    .foregroundColor(.red)
+                                                Image(systemName: "square.slash")
+                                                    .resizable()
+                                                    .frame(width: min(25, 35), height: min(25, 35))
+                                                    .padding(.top)
+                                                    .foregroundColor(Color(.systemBackground))
+                                            }
                                         }
-                                    }
-                                    
-                                    Button(action: {}) {
-                                        ZStack {
-                                            Image(systemName: "square.fill")
-                                                .resizable()
-                                                .padding()
-                                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                                .foregroundColor(.purple)
-                                            Image(systemName: "square.grid.2x2")
-                                                .resizable()
-                                                .frame(width: min(40, 100), height: min(40, 100))
-                                                .padding()
-                                            //.fontWeight(.heavy)
-                                                .foregroundColor(Color(.systemBackground))
+                                        .buttonStyle(PlainButtonStyle())
+                                        .padding()
+                                        
+                                        Button(action: {}) {
+                                            ZStack {
+                                                Image(systemName: "folder.fill")
+                                                    .resizable()
+                                                    .frame(width: 75, height: 75)
+                                                    .foregroundColor(.green)
+                                                Image(systemName: "checkmark")
+                                                    .resizable()
+                                                    .frame(width: min(25, 35), height: min(25, 35))
+                                                    .padding(.top)
+                                                    .foregroundColor(Color(.systemBackground))
+                                            }
                                         }
-                                    }
-                                    
-                                    Button(action: {}) {
-                                        ZStack {
-                                            Image(systemName: "square.fill")
-                                                .resizable()
-                                                .padding()
-                                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                                .foregroundColor(Color(.systemGray))
-                                            Image(systemName: "gear")
-                                                .resizable()
-                                                .frame(width: min(40, 100), height: min(40, 100))
-                                                .padding()
-                                            //.fontWeight(.heavy)
-                                                .foregroundColor(Color(.systemBackground))
+                                        .buttonStyle(PlainButtonStyle())
+                                        .padding()
+                                        
+                                        Button(action: {}) {
+                                            ZStack {
+                                                Image(systemName: "square.fill")
+                                                    .resizable()
+                                                    .frame(width: 75, height: 75)
+                                                    .foregroundColor(.purple)
+                                                Image(systemName: "square.grid.2x2")
+                                                    .resizable()
+                                                    .frame(width: min(40, 100), height: min(40, 100))
+                                                    .foregroundColor(Color(.systemBackground))
+                                            }
                                         }
-                                    }
-                                    
-                                    Button(action: {}) {
-                                        ZStack {
-                                            Image(systemName: "square.fill")
-                                                .resizable()
-                                                .padding()
-                                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                                .foregroundColor(.blue)
-                                            Image(systemName: "pencil")
-                                                .resizable()
-                                                .frame(width: min(40, 100), height: min(40, 100))
-                                                .padding()
-                                            //.fontWeight(.heavy)
-                                                .foregroundColor(Color(.systemBackground))
+                                        .buttonStyle(PlainButtonStyle())
+                                        .padding()
+                                        
+                                        Button(action: {}) {
+                                            ZStack {
+                                                Image(systemName: "square.fill")
+                                                    .resizable()
+                                                    .frame(width: 75, height: 75)
+                                                    .foregroundColor(Color(.systemGray))
+                                                Image(systemName: "gear")
+                                                    .resizable()
+                                                    .frame(width: min(40, 100), height: min(40, 100))
+                                                    .foregroundColor(Color(.systemBackground))
+                                            }
                                         }
+                                        .buttonStyle(PlainButtonStyle())
+                                        .padding()
+                                        
+                                        /*
+                                         Button(action: {
+                                         showCommunication.toggle()
+                                         unlockButtons = false
+                                         }) {
+                                         VStack {
+                                         ZStack {
+                                         Image(systemName: "square.fill")
+                                         .resizable()
+                                         .frame(width: 75, height: 75)
+                                         .foregroundColor(.orange)
+                                         Image(systemName: "message.badge.waveform.fill")
+                                         .resizable()
+                                         .frame(width: min(50, 100), height: min(40, 100))
+                                         .foregroundColor(Color(.systemBackground))
+                                         }
+                                         Text("Communicate")
+                                         .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                         .foregroundColor(.orange)
+                                         }
+                                         }
+                                         .buttonStyle(PlainButtonStyle())
+                                         .padding()
+                                         */
+                                        Button(action: {}) {
+                                            ZStack {
+                                                Image(systemName: "square.fill")
+                                                    .resizable()
+                                                    .frame(width: 75, height: 75)
+                                                    .foregroundColor(.blue)
+                                                Image(systemName: "pencil")
+                                                    .resizable()
+                                                    .frame(width: min(40, 100), height: min(40, 100))
+                                                //.fontWeight(.heavy)
+                                                    .foregroundColor(Color(.systemBackground))
+                                            }
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                        .padding()
                                     }
+                                    .padding()
                                 }
-                                .padding()
                             }
                         }
+                        .padding()
                         .animation(.spring, value: animate)
                     }
                     .sheet(isPresented: $showSpeak) { //speak icons details sheet
                         VStack {
-                            Text("\(Image(systemName: "waveform")) Speak Icons")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
-                                .padding()
+                            HStack {
+                                Image(systemName: "waveform")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                    .foregroundColor(Color(.systemGray))
+                                Text("Speak Icons")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                    .padding()
+                            }
                             Text("When you tap an icon that is on your Sheet, Daysy will speak the name of the icon out loud. Try it below!")
                                 .minimumScaleFactor(0.01)
                                 .multilineTextAlignment(.center)
-                                .font(.system(size: horizontalSizeClass == .compact ? 10 : 25, weight: .bold, design: .rounded))
+                                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                                 .foregroundColor(Color(.systemGray))
                             Spacer()
                             Button(action:{
@@ -633,7 +829,7 @@ struct SettingsView: View {
                             Text("\(Image(systemName: "speaker.wave.3")) Make sure your volume is up!")
                                 .minimumScaleFactor(0.01)
                                 .multilineTextAlignment(.center)
-                                .font(.system(size: 30, weight: .bold, design: .rounded))
+                                .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
                                 .foregroundColor(.orange)
                             Spacer()
                         }
@@ -641,263 +837,282 @@ struct SettingsView: View {
                     }
                     .sheet(isPresented: $showEmpty) { //empty slots detail view
                         VStack {
-                            Text("\(Image(systemName: "rectangle.stack")) Organize Empty Spots")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
-                                .padding()
+                            HStack {
+                                Image(systemName: "rectangle.stack")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                    .foregroundColor(Color(.systemGray))
+                                Text("Organize Slots")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                    .padding()
+                            }
+                            if horizontalSizeClass == .compact {
+                                Spacer()
+                            }
                             Text("Daysy will automatically remove empty Slots from your Sheet, and organize the remaining icons.")
                                 .minimumScaleFactor(0.01)
                                 .multilineTextAlignment(.center)
-                                .font(.system(size: horizontalSizeClass == .compact ? 10 : 25, weight: .bold, design: .rounded))
+                                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                                 .foregroundColor(Color(.systemGray))
                             Spacer()
-                            HStack {
-                                Text("Try it: ")
-                                    .minimumScaleFactor(0.01)
-                                    .multilineTextAlignment(.center)
-                                    .font(.system(size: 40, weight: .bold, design: .rounded))
-                                    .padding()
-                                ZStack {
-                                    Capsule()
-                                        .frame(width: horizontalSizeClass == .compact ? 80 : 160,height: horizontalSizeClass == .compact ? 44 : 88)
-                                        .foregroundColor(Color(exampleEmptyOn ? .green : (.systemGray)))
-                                    ZStack{
-                                        Circle()
-                                            .frame(width: horizontalSizeClass == .compact ? 40 : 80, height: horizontalSizeClass == .compact ? 40 : 80)
-                                            .foregroundColor(.white)
-                                        Image(systemName: exampleEmptyOn ? "poweron" : "poweroff")
-                                            .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
-                                            .foregroundColor(Color(.systemGray))
+                            if horizontalSizeClass != .compact {
+                                HStack {
+                                    Text("Try it: ")
+                                        .minimumScaleFactor(0.01)
+                                        .multilineTextAlignment(.center)
+                                        .font(.system(size: 40, weight: .bold, design: .rounded))
+                                        .padding()
+                                    ZStack {
+                                        Capsule()
+                                            .frame(width: horizontalSizeClass == .compact ? 80 : 160,height: horizontalSizeClass == .compact ? 44 : 88)
+                                            .foregroundColor(exampleEmptyOn ? .green : Color(.systemGray))
+                                        ZStack{
+                                            Circle()
+                                                .frame(width: horizontalSizeClass == .compact ? 40 : 80, height: horizontalSizeClass == .compact ? 40 : 80)
+                                                .foregroundColor(.white)
+                                            Image(systemName: exampleEmptyOn ? "poweron" : "poweroff")
+                                                .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
+                                                .foregroundColor(Color(.systemGray))
+                                        }
+                                        .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
+                                        .offset(x:exampleEmptyOn ? offSet : -offSet)
+                                        .padding(horizontalSizeClass == .compact ? 0 : 24)
                                     }
-                                    .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
-                                    .offset(x:exampleEmptyOn ? offSet : -offSet)
-                                    .padding(horizontalSizeClass == .compact ? 0 : 24)
+                                    .onTapGesture {
+                                        exampleEmptyOn.toggle()
+                                        animate.toggle()
+                                    }
                                 }
-                                .onTapGesture {
-                                    exampleEmptyOn.toggle()
-                                    animate.toggle()
+                                Spacer()
+                                if exampleEmptyOn {
+                                    LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(Color(.systemGray5))
+                                                .scaledToFit()
+                                            Text("Recess")
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.01)
+                                                .font(.system(size: 300, weight: .bold, design: .rounded))
+                                                .padding()
+                                                .foregroundColor(.primary)
+                                        }
+                                        Image("putsockson")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(.black, lineWidth: 4)
+                                            )
+                                        Image("dog")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(.black, lineWidth: 4)
+                                            )
+                                        Image("cleanup")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(.black, lineWidth: 4)
+                                            )
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(exampleSlotOn ? .green : Color(.systemGray5))
+                                                .scaledToFit()
+                                            Text("Home")
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.01)
+                                                .font(.system(size: 300, weight: .bold, design: .rounded))
+                                                .padding()
+                                                .foregroundColor(.primary)
+                                        }
+                                        Image("brownie")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
+                                            )
+                                        Image("eatlunch")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
+                                            )
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        ZStack {
+                                            Text("")
+                                        }
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                    }
+                                } else {
+                                    LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(Color(.systemGray5))
+                                                .scaledToFit()
+                                            Text("Recess")
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.01)
+                                                .font(.system(size: 300, weight: .bold, design: .rounded))
+                                                .padding()
+                                                .foregroundColor(.primary)
+                                        }
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        Image("putsockson")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(.black, lineWidth: 4)
+                                            )
+                                        Image("dog")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(.black, lineWidth: 4)
+                                            )
+                                        Image("cleanup")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(.black, lineWidth: 4)
+                                            )
+                                        
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(Color(.systemGray5))
+                                                .scaledToFit()
+                                            Text("Afternoon")
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.01)
+                                                .font(.system(size: 300, weight: .bold, design: .rounded))
+                                                .padding()
+                                                .foregroundColor(.primary)
+                                        }
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(exampleSlotOn ? .green : Color(.systemGray5))
+                                                .scaledToFit()
+                                            Text("Home")
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.01)
+                                                .font(.system(size: 300, weight: .bold, design: .rounded))
+                                                .padding()
+                                                .foregroundColor(.primary)
+                                        }
+                                        Image("brownie")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
+                                            )
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                        Image("eatlunch")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
+                                            )
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color(.clear))
+                                    }
                                 }
+                                Spacer()
                             }
-                            Spacer()
-                            if exampleEmptyOn {
-                                LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color(.systemGray5))
-                                            .scaledToFit()
-                                        Text("Recess")
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.01)
-                                            .font(.system(size: 300, weight: .bold, design: .rounded))
-                                            .padding()
-                                            .foregroundColor(.primary)
-                                    }
-                                    Image("putsockson")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(.black, lineWidth: 4)
-                                        )
-                                    Image("dog")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(.black, lineWidth: 4)
-                                        )
-                                    Image("cleanup")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(.black, lineWidth: 4)
-                                        )
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(exampleSlotOn ? .green : Color(.systemGray5))
-                                            .scaledToFit()
-                                        Text("Home")
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.01)
-                                            .font(.system(size: 300, weight: .bold, design: .rounded))
-                                            .padding()
-                                            .foregroundColor(.primary)
-                                    }
-                                    Image("brownie")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
-                                        )
-                                    Image("eatlunch")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
-                                        )
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    ZStack {
-                                        Text("")
-                                    }
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                }
-                            } else {
-                                LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color(.systemGray5))
-                                            .scaledToFit()
-                                        Text("Recess")
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.01)
-                                            .font(.system(size: 300, weight: .bold, design: .rounded))
-                                            .padding()
-                                            .foregroundColor(.primary)
-                                    }
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    Image("putsockson")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(.black, lineWidth: 4)
-                                        )
-                                    Image("dog")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(.black, lineWidth: 4)
-                                        )
-                                    Image("cleanup")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(.black, lineWidth: 4)
-                                        )
-                                    
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color(.systemGray5))
-                                            .scaledToFit()
-                                        Text("Afternoon")
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.01)
-                                            .font(.system(size: 300, weight: .bold, design: .rounded))
-                                            .padding()
-                                            .foregroundColor(.primary)
-                                    }
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(exampleSlotOn ? .green : Color(.systemGray5))
-                                            .scaledToFit()
-                                        Text("Home")
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.01)
-                                            .font(.system(size: 300, weight: .bold, design: .rounded))
-                                            .padding()
-                                            .foregroundColor(.primary)
-                                    }
-                                    Image("brownie")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
-                                        )
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                    Image("eatlunch")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
-                                        )
-                                    Image(systemName: "square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color(.clear))
-                                }
-                            }
-                            Spacer()
                         }
                         .padding()
                     }
                     .sheet(isPresented: $showCurrSlot) { //show curr timeslot detail view
                         VStack {
-                            Text("\(Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left")) Show Current Timeslot")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: horizontalSizeClass == .compact ? 15 : 40, weight: .bold, design: .rounded))
-                                .padding()
+                            HStack {
+                                Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                    .foregroundColor(Color(.systemGray))
+                                Text("Show Current Timeslot")
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.01)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                                    .padding()
+                            }
                             Text("When viewing a sheet with Timeslots, Daysy will highlight the currently active Timeslot in green, making it easier to identify.")
                                 .minimumScaleFactor(0.01)
                                 .multilineTextAlignment(.center)
-                                .font(.system(size: horizontalSizeClass == .compact ? 10 : 25, weight: .bold, design: .rounded))
+                                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                                 .foregroundColor(Color(.systemGray))
                             Spacer()
                             HStack {
@@ -909,7 +1124,7 @@ struct SettingsView: View {
                                 ZStack {
                                     Capsule()
                                         .frame(width: horizontalSizeClass == .compact ? 80 : 160,height: horizontalSizeClass == .compact ? 44 : 88)
-                                        .foregroundColor(Color(exampleSlotOn ? .green : (.systemGray)))
+                                        .foregroundColor(exampleSlotOn ? .green : Color(.systemGray3))
                                     ZStack{
                                         Circle()
                                             .frame(width: horizontalSizeClass == .compact ? 40 : 80, height: horizontalSizeClass == .compact ? 40 : 80)
@@ -919,8 +1134,10 @@ struct SettingsView: View {
                                             .foregroundColor(Color(.systemGray))
                                     }
                                     .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
-                                    .offset(x:exampleSlotOn ? horizontalSizeClass == .compact ? 14 : 36 : horizontalSizeClass == .compact ? -14 : -36)
+                                    //.offset(x:exampleEmptyOn ? (horizontalSizeClass == .compact ? 18 : -18) : (horizontalSizeClass == .compact ? offSet : -offSet))
+                                    .offset(x:exampleSlotOn ? offSet : -offSet)
                                     .padding(horizontalSizeClass == .compact ? 0 : 24)
+                                    .animation(.spring, value: animate)
                                 }
                                 .onTapGesture {
                                     exampleSlotOn.toggle()
@@ -929,154 +1146,221 @@ struct SettingsView: View {
                             }
                             Spacer()
                             //Divider()
-                            LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(Color(.systemGray5))
-                                        .scaledToFit()
+                            if horizontalSizeClass == .compact {
+                                VStack {
                                     Text(getTime(date: getDateTwoHoursPrior(from: getCurrentTimeRoundedToHalfHour())))
                                         .lineLimit(1)
-                                        .minimumScaleFactor(0.01)
-                                        .font(.system(size: 300, weight: .bold, design: .rounded))
-                                        .padding()
-                                        .foregroundColor(.primary)
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .padding(.top)
+                                    LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
+                                        Image("eatlunch")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .stroke(.black, lineWidth: 6)
+                                            )
+                                            .padding()
+                                        
+                                        Image("brownie")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(.black, lineWidth: 6)
+                                            )
+                                            .padding()
+                                        
+                                        Image("playground")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(.black, lineWidth: 6)
+                                            )
+                                            .padding()
+                                        
+                                        Image("school")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(.black, lineWidth: 6)
+                                            )
+                                            .padding()
+                                    }
                                 }
-                                Image("putsockson")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .overlay(
+                                .background(exampleSlotOn ? .green : Color(.systemGray5))
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                .padding([.leading, .trailing])
+                                .padding([.leading, .trailing])
+                            } else {
+                                LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
+                                    ZStack {
                                         RoundedRectangle(cornerRadius: 10)
-                                            .stroke(.black, lineWidth: 4)
-                                    )
-                                Image("dog")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(.black, lineWidth: 4)
-                                    )
-                                Image("lunch")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(.black, lineWidth: 4)
-                                    )
-                                Image("cleanup")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(.black, lineWidth: 4)
-                                    )
-                                
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(exampleSlotOn ? .green : Color(.systemGray5))
+                                            .fill(Color(.systemGray5))
+                                            .scaledToFit()
+                                        Text(getTime(date: getDateTwoHoursPrior(from: getCurrentTimeRoundedToHalfHour())))
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.01)
+                                            .font(.system(size: 300, weight: .bold, design: .rounded))
+                                            .padding()
+                                            .foregroundColor(.primary)
+                                    }
+                                    Image("putsockson")
+                                        .resizable()
                                         .scaledToFit()
-                                    Text(getTime(date: getCurrentTimeRoundedToHalfHour()))
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.01)
-                                        .font(.system(size: 300, weight: .bold, design: .rounded))
-                                        .padding()
-                                        .foregroundColor(.primary)
-                                        .shadow(color: exampleSlotOn ? Color(.systemBackground) : Color.clear, radius: 5)
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(.black, lineWidth: 4)
+                                        )
+                                    Image("dog")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(.black, lineWidth: 4)
+                                        )
+                                    Image("lunch")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(.black, lineWidth: 4)
+                                        )
+                                    Image("cleanup")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(.black, lineWidth: 4)
+                                        )
+                                    
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .fill(exampleSlotOn ? .green : Color(.systemGray5))
+                                            .scaledToFit()
+                                        Text(getTime(date: getCurrentTimeRoundedToHalfHour()))
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.01)
+                                            .font(.system(size: 300, weight: .bold, design: .rounded))
+                                            .padding()
+                                            .foregroundColor(.primary)
+                                            .shadow(color: exampleSlotOn ? Color(.systemBackground) : Color.clear, radius: 5)
+                                    }
+                                    Image("eatlunch")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
+                                        )
+                                    Image("brownie")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
+                                        )
+                                    Image("playground")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
+                                        )
+                                    Image("school")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
+                                        )
                                 }
-                                Image("eatlunch")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
-                                    )
-                                Image("brownie")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
-                                    )
-                                Image("playground")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
-                                    )
-                                Image("school")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(exampleSlotOn ? .green : .black, lineWidth: exampleSlotOn ? 7 : 4)
-                                    )
+                                //Divider()
                             }
-                            //Divider()
                             Spacer()
                         }
                         .padding()
                     }
                 }
-                .padding()
+                .padding([.leading, .trailing])
                 //.scrollIndicators(.hidden)
                 .ignoresSafeArea(.all)
                 .animation(.default, value: animate)
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        HStack { //bottom row of buttons for settings
+                            if horizontalSizeClass != .compact {
+                                Button(action: {
+                                    self.presentation.wrappedValue.dismiss()
+                                    onDismiss()
+                                }) {
+                                    Text("\(Image(systemName: "arrow.backward")) Back")
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.1)
+                                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+                                        .foregroundColor(.primary)
+                                        .padding()
+                                        .padding()
+                                        .background(Color(.systemGray5))
+                                        .cornerRadius(25)
+                                }
+                                .padding()
+                            }
+                            NavigationLink(destination: TimeslotView()) {
+                                Text("\(Image(systemName: "book")) Tutorial")
+                                    .lineLimit(1)
+                                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+                                    .foregroundColor(.primary)
+                                    .padding(horizontalSizeClass == .compact ? 20 : 30)
+                                    .background(Color(.systemGray5))
+                                    .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
+                            }
+                            .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
+                            .navigationViewStyle(StackNavigationViewStyle())
+                            .navigationBarHidden(true)
+                            
+                            if horizontalSizeClass != .compact {
+                                NavigationLink(destination: StatisticsView()) {
+                                    Text("\(Image(systemName: "chart.bar.xaxis")) Statistics")
+                                        .lineLimit(1)
+                                    //.minimumScaleFactor(0.1)
+                                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+                                        .foregroundColor(.primary)
+                                        .padding(horizontalSizeClass == .compact ? 20 : 30)
+                                        .background(Color(.systemGray5))
+                                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
+                                }
+                                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
+                            }
+                        }
+                        .navigationViewStyle(StackNavigationViewStyle())
+                        .navigationBarHidden(true)
+                        Spacer()
+                    }
+                    .background(
+                        LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                            .ignoresSafeArea()
+                    )
+                }
                 .fullScreenCover(isPresented: $debugView) { //just for me ;)
                     DebugView()
                 }
-                HStack { //bottom row of buttons for settings
-                    if horizontalSizeClass != .compact {
-                        Button(action: {
-                            self.presentation.wrappedValue.dismiss()
-                            onDismiss()
-                        }) {
-                            Text("\(Image(systemName: "arrow.backward")) Back")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.1)
-                                .font(.system(size: horizontalSizeClass == .compact ? 10 : 25, weight: .bold, design: .rounded))
-                                .foregroundColor(.primary)
-                                .padding()
-                                .padding()
-                                .background(Color(.systemGray5))
-                                .cornerRadius(25)
-                        }
-                        .padding()
-                    }
-                    NavigationLink(destination: TimeslotView()) {
-                        Text("\(Image(systemName: "book")) Tutorial")
-                            .lineLimit(1)
-                            .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                            .foregroundColor(.primary)
-                            .padding(horizontalSizeClass == .compact ? 20 : 30)
-                            .background(Color(.systemGray5))
-                            .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-                    }
-                    .padding()
-                    .navigationViewStyle(StackNavigationViewStyle())
-                    .navigationBarHidden(true)
-                    
-                    NavigationLink(destination: StatisticsView()) {
-                        Text("\(Image(systemName: "chart.bar.xaxis")) Statistics")
-                            .lineLimit(1)
-                        //.minimumScaleFactor(0.1)
-                            .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                            .foregroundColor(.primary)
-                            .padding(horizontalSizeClass == .compact ? 20 : 30)
-                            .background(Color(.systemGray5))
-                            .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-                    }
-                    .padding()
-                }
-                .navigationViewStyle(StackNavigationViewStyle())
-                .navigationBarHidden(true)
                 .sheet(isPresented: $showCustomPassword) { //set and/or verify custom password if bioauth and password not set
                     if buttonsOn {
                         let customPassword = defaults.string(forKey: "customPassword")
@@ -1281,6 +1565,8 @@ struct SettingsView: View {
             }
             .navigationViewStyle(StackNavigationViewStyle())
             .navigationBarHidden(true)
+            .padding(.top)
+            //put sheets here
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .navigationBarHidden(true)
