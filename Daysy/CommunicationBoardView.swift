@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct CommunicationBoardView: View {
     
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
@@ -15,7 +16,13 @@ struct CommunicationBoardView: View {
     @State var tappedIcons: [String] = []
     @State var animate = false
     @State var isTextFieldActive = false
+    @State var isCustomTextFieldActive = false
     @State var searchText = ""
+    @State var typeText = ""
+    @State var unlockButtons = false
+    @State var lockButtonsOn = defaults.bool(forKey: "buttonsOn")
+    
+    @State var currCommunicationBoard = loadCommunicationBoard()
     
     var body: some View {
         
@@ -105,12 +112,22 @@ struct CommunicationBoardView: View {
                             HStack {
                                 ForEach(0..<tappedIcons.count, id: \.self) { icon in //next display default icon results
                                     if tappedIcons[icon] == "action:divider" {
-                                        Divider().padding()
+                                        //Divider().padding()
                                         //                                        Image(systemName: "line.diagonal")
                                         //                                            .resizable()
                                         //                                            .rotationEffect(.degrees(315))
                                         //                                            .frame(width:125, height: 125)
                                         //                                            .foregroundColor(Color(.systemGray))
+                                    } else if tappedIcons[icon].contains("customIconObject:") {
+                                        getCustomIconSmall(tappedIcons[icon])
+                                            .frame(width:125, height: 125)
+                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(lineWidth: 3)
+                                                    .foregroundColor(.black)
+                                            )
+                                            .padding(.trailing, 5)
                                     } else {
                                         loadImage(named: tappedIcons[icon])
                                             .resizable()
@@ -162,6 +179,7 @@ struct CommunicationBoardView: View {
                 }
                 .padding()
                 ScrollView {
+                    
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 100 : 175))], spacing: horizontalSizeClass == .compact ? 5 : 10) {
                         if isTextFieldActive {
                             ForEach(0..<filteredData.count, id: \.self) { icon in //next display default icon results
@@ -182,21 +200,124 @@ struct CommunicationBoardView: View {
                                 }
                             }
                         } else {
-                            ForEach(1..<allPECS.count, id: \.self) { icon in //next display default icon results
-                                Button(action: {
-                                    tappedIcons.append(allPECS[icon])
-                                    speechSynthesizer.speak(allPECS[icon])
-                                    animate.toggle()
-                                }) {
-                                    loadImage(named: allPECS[icon])
-                                        .resizable()
-                                        .scaledToFit()
-                                        .clipShape(RoundedRectangle(cornerRadius: 30))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 30)
-                                                .stroke(lineWidth: 5)
-                                                .foregroundColor(.black)
-                                        )
+                            ForEach(currCommunicationBoard, id: \.self) { items in
+                                if items.count == 1 {
+                                    if items[0].contains("customIconObject:") {
+                                        Button(action: {
+                                            print("tapped \(items[0])")
+                                            //                    tappedIcons.append(items[0])
+                                            //                    speechSynthesizer.speak(item[0])
+                                            //                    animate.toggle()
+                                        }) {
+                                            getCustomIcon(items[0])
+                                                .scaledToFit()
+                                                .clipShape(RoundedRectangle(cornerRadius: 30))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 30)
+                                                        .stroke(lineWidth: 5)
+                                                        .foregroundColor(.black)
+                                                )
+                                                .contextMenu {
+                                                    if lockButtonsOn && !unlockButtons {
+                                                        Button {
+                //                                            if !canUseBiometrics() && !canUsePassword() {
+                //                                                showCustomPassword = true
+                //                                            } else {
+                //                                                authenticateWithBiometrics()
+                //                                            }
+                                                        } label: {
+                                                            Label("Unlock Buttons", systemImage: "lock.open")
+                                                        }
+                                                    } else {
+                                                        Button {
+                                                            
+                                                        } label: {
+                                                            Label("Custom Icon Test Button", systemImage: "square.and.pencil")
+                                                        }
+                                                        
+                                                        Button {
+                                                            
+                                                        } label: {
+                                                            Label("Custom Icon Test Button", systemImage: "square.and.pencil")
+                                                        }
+                                                    }
+                                                }
+                                        }
+                                    } else {
+                                        Button(action: {
+                                            //                    tappedIcons.append(item[0])
+                                            //                    speechSynthesizer.speak(item[0])
+                                            //                    animate.toggle()
+                                        }) {
+                                            loadImage(named: items[0])
+                                                .resizable()
+                                                .scaledToFit()
+                                                .clipShape(RoundedRectangle(cornerRadius: 30))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 30)
+                                                        .stroke(lineWidth: 5)
+                                                        .foregroundColor(.black)
+                                                )
+                                                .contextMenu {
+                                                    if lockButtonsOn && !unlockButtons {
+                                                        Button {
+                //                                            if !canUseBiometrics() && !canUsePassword() {
+                //                                                showCustomPassword = true
+                //                                            } else {
+                //                                                authenticateWithBiometrics()
+                //                                            }
+                                                        } label: {
+                                                            Label("Unlock Buttons", systemImage: "lock.open")
+                                                        }
+                                                    } else {
+                                                        Button {
+                                                            
+                                                        } label: {
+                                                            Label("Icon Test Button", systemImage: "square.and.pencil")
+                                                        }
+                                                        
+                                                        Button {
+                                                            
+                                                        } label: {
+                                                            Label("Icon Test Button", systemImage: "square.and.pencil")
+                                                        }
+                                                    }
+                                                }
+                                        }
+                                    }
+                                } else {
+                                    Button(action: {
+                                        print("tapped folder named \(items[0])")
+                                    }) {
+                                        Image(systemName: "square.grid.3x3.square")
+                                            .resizable()
+                                            .scaledToFit()
+                                    }
+                                    .contextMenu {
+                                        if lockButtonsOn && !unlockButtons {
+                                            Button {
+                                                //                                            if !canUseBiometrics() && !canUsePassword() {
+                                                //                                                showCustomPassword = true
+                                                //                                            } else {
+                                                //                                                authenticateWithBiometrics()
+                                                //                                            }
+                                            } label: {
+                                                Label("Unlock Buttons", systemImage: "lock.open")
+                                            }
+                                        } else {
+                                            Button {
+                                                
+                                            } label: {
+                                                Label("Folder Test Button", systemImage: "square.and.pencil")
+                                            }
+                                            
+                                            Button {
+                                                
+                                            } label: {
+                                                Label("Folder Test Button", systemImage: "square.and.pencil")
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -211,7 +332,7 @@ struct CommunicationBoardView: View {
                 HStack {
                     Spacer()
                     HStack {
-                        if horizontalSizeClass != .compact && !isTextFieldActive {
+                        if horizontalSizeClass != .compact && !isTextFieldActive && !isCustomTextFieldActive {
                             Button(action: {
                                 self.presentation.wrappedValue.dismiss()
                             }) {
@@ -223,33 +344,66 @@ struct CommunicationBoardView: View {
                             }
                         }
                         
-                        Button(action: {
-                            
-                        }) {
+                        ZStack {
+                            TextField(isTextFieldActive ? "\(Image(systemName: "magnifyingglass")) Search" : "", text: $searchText, onEditingChanged: { editing in
+                                isTextFieldActive = editing
+                                animate.toggle()
+                            }, onCommit: {
+                                
+                            })
+                            .minimumScaleFactor(0.1)
+                            .font(.system(size: horizontalSizeClass == .compact ? 40 : 65, weight: .semibold,  design: .rounded))
+                            .frame(width: isTextFieldActive ? (horizontalSizeClass == .compact ? 375 : 500) : (horizontalSizeClass == .compact ? 75 : 100), height: horizontalSizeClass == .compact ? 75 : 100)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color(.systemGray6))
+                            )
+                            if !isTextFieldActive {
+                                Image(systemName: "magnifyingglass")
+                                    .resizable()
+                                    .frame(width: horizontalSizeClass == .compact ? 40 : 70, height: horizontalSizeClass == .compact ? 40 : 70)
+                                    .foregroundColor(.primary)
+                            }
+                        }
+                        .padding(isTextFieldActive ? 10 : 0)
+                        
+                        HStack {
                             ZStack {
-                                TextField(isTextFieldActive ? "\(Image(systemName: "magnifyingglass")) Search" : "", text: $searchText, onEditingChanged: { editing in
-                                    isTextFieldActive = editing
+                                TextField(isCustomTextFieldActive ? "\(Image(systemName: "magnifyingglass")) Search" : "", text: $typeText, onEditingChanged: { editing in
+                                    isCustomTextFieldActive = editing
                                     animate.toggle()
                                 }, onCommit: {
                                     
                                 })
                                 .minimumScaleFactor(0.1)
                                 .font(.system(size: horizontalSizeClass == .compact ? 40 : 65, weight: .semibold,  design: .rounded))
-                                .frame(width: isTextFieldActive ? (horizontalSizeClass == .compact ? 375 : 500) : (horizontalSizeClass == .compact ? 75 : 100), height: horizontalSizeClass == .compact ? 75 : 100)
+                                .frame(width: isCustomTextFieldActive ? (horizontalSizeClass == .compact ? 375 : 500) : (horizontalSizeClass == .compact ? 75 : 100), height: horizontalSizeClass == .compact ? 75 : 100)
                                 .background(
                                     RoundedRectangle(cornerRadius: 20)
                                         .fill(Color(.systemGray6))
                                 )
-                                if !isTextFieldActive {
+                                if !isCustomTextFieldActive {
                                     Image(systemName: "magnifyingglass")
                                         .resizable()
                                         .frame(width: horizontalSizeClass == .compact ? 40 : 70, height: horizontalSizeClass == .compact ? 40 : 70)
                                         .foregroundColor(.primary)
                                 }
                             }
-                            .padding(isTextFieldActive ? 10 : 0)
+                            .padding(isCustomTextFieldActive ? 10 : 0)
+                            if isCustomTextFieldActive && !typeText.isEmpty {
+                                Button(action: {
+                                    speechSynthesizer.speak(typeText)
+                                }) {
+                                    Image(systemName: "play.square.fill")
+                                        .resizable()
+                                        .frame(width:100, height: 100)
+                                        .foregroundColor(.purple)
+                                        .padding()
+                                }
+                            }
                         }
-                        if !isTextFieldActive {
+                        
+                        if !isTextFieldActive && !isCustomTextFieldActive {
                             Button(action: {
                                 tappedIcons.append("action:divider")
                                 animate.toggle()
@@ -260,7 +414,7 @@ struct CommunicationBoardView: View {
                                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
                                         .foregroundColor(Color(.systemGray6))
                                         .padding()
-                                    Image(systemName: "square.filled.and.line.vertical.and.square")
+                                    Image(systemName: "keyboard")
                                         .resizable()
                                         .frame(width: horizontalSizeClass == .compact ? 50 : 75, height: horizontalSizeClass == .compact ? 30 : 55)
                                         .frame(width: horizontalSizeClass == .compact ? 50 : 75, height: horizontalSizeClass == .compact ? 30 : 55)
@@ -305,7 +459,7 @@ struct CommunicationBoardView: View {
                     Spacer()
                 }
                 .background(
-                    LinearGradient(gradient: Gradient(colors: [Color.black.opacity(1), Color.black.opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                    LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
                         .ignoresSafeArea()
                 )
             }
@@ -313,6 +467,8 @@ struct CommunicationBoardView: View {
         .animation(.spring, value: animate)
     }
 }
+
+
 
 #Preview {
     CommunicationBoardView()

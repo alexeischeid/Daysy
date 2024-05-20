@@ -12,6 +12,9 @@ import UserNotifications
 import CoreData
 import LocalAuthentication
 
+import Vision
+import CoreML
+
 var currSessionLog = [""]
 
 func loadImage(named imageName: String) -> Image {
@@ -46,6 +49,22 @@ func loadSheetArray() -> [SheetObject] {
     }
     return [SheetObject(label: "Debug, ignore this page")]
 }
+
+func loadCommunicationBoard() -> [[String]] {
+    if let savedData = defaults.data(forKey: "myCommunicationBoard") {
+        if let loadedObjects = try? decoder.decode([[String]].self, from: savedData) {
+            return loadedObjects
+        }
+    }
+    return defaultCommunicationBoard
+}
+
+func saveCommunicationBoard(_ communicationBoard: [[String]]) {
+    if let encoded = try? encoder.encode(communicationBoard) {
+        defaults.set(encoded, forKey: "myCommunicationBoard")
+    }
+}
+
 
 func newSheet(gridType: String, label: String = "label") {
     var currArray = loadSheetArray()
@@ -465,7 +484,6 @@ func fillMissingDates(in usageArray: [UsageData]) -> [UsageData] {
                 currentDate = nextDay
             } else {
              currentDate = Date()
-                print("failed to reassign date")
             }
         }
     }
@@ -498,4 +516,44 @@ func hasCameraPermission() -> Bool {
     default:
         return false
     }
+}
+
+func updateSuggestedWords(currLabel: String) -> [String] {
+    // Initialize a UITextChecker instance
+    let textChecker = UITextChecker()
+    
+    // Get range of text checked by UITextChecker
+    let textRange = NSRange(location: 0, length: currLabel.utf16.count)
+    
+    // Get completions for the current search text
+    let completions = textChecker.completions(forPartialWordRange: textRange, in: currLabel, language: "en")
+    
+    // If completions are found, update the suggestedWords array
+    if let completions = completions {
+        return completions
+    } else {
+        return []
+    }
+}
+
+func predictImage(input: UIImage) -> MobileNetV2Output? {
+    guard let img = input.resize(to: CGSize(width: 224, height: 224)),
+          let buffer = img.toBuffer() else {
+        return nil
+    }
+    
+    let output = try? model.prediction(image: buffer)
+    if let output=output {
+        //for debug
+        print("label: \(output.classLabel)")
+        ForEach(0..<output.)
+        
+        return output
+    }
+    return nil
+}
+
+//just to simplify ML assisted searches
+func searchIcons() -> [String] {
+    return []
 }

@@ -438,11 +438,8 @@ struct TryItView: View { //interactive little mini sheet to play with
     
     @State var showIcons = false
     @State var showTime = false
-    @State private var selectedDate = Date()
     @State var currTime = "0:00"
     @State var currLabel = "Label"
-    @State var currText = ""
-    @State var searchText = ""
     @State var showLabels = false
     @State var currSetIndex = 0
     @State var currGrid = [Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder")]
@@ -491,7 +488,6 @@ struct TryItView: View { //interactive little mini sheet to play with
                         ForEach(0..<4, id: \.self) { index in
                             Button(action:{
                                 currSetIndex = index
-                                searchText = ""
                                 showIcons.toggle()}) {
                                     if currGrid[index] == Image(systemName:"plus.viewfinder") {
                                         if #available(iOS 15.0, *) {
@@ -617,7 +613,6 @@ struct TryItView: View { //interactive little mini sheet to play with
                                     ForEach(0..<4, id: \.self) { index in
                                         Button(action:{
                                             currSetIndex = index
-                                            searchText = ""
                                             showIcons.toggle()}) {
                                                 if currGrid[index] == Image(systemName:"plus.viewfinder") {
                                                     if #available(iOS 15.0, *) {
@@ -733,76 +728,18 @@ struct TryItView: View { //interactive little mini sheet to play with
 
             }
             .sheet(isPresented: $showTime) {
-                Spacer()
-                DatePicker("", selection: $selectedDate, displayedComponents: .hourAndMinute)
-                    .datePickerStyle(WheelDatePickerStyle())
-                    .labelsHidden()
-                    .frame(width: 400, height: 400)
-                    .scaleEffect(horizontalSizeClass == .compact ? 1.5 : 3)
-                Spacer()
-                HStack {
-                    Button(action: {
-                        showTime.toggle()
-                    }) {
-                        Image(systemName:"xmark.square.fill")
-                            .resizable()
-                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            .foregroundColor(Color(.systemGray))
-                        //.fontWeight(.bold)
-                            .padding()
+                TimeLabelPickerView(viewType: .time, saveItem: { item in
+                    if item is Date {
+                        currTime = getTime(date: item as!Date)
                     }
-                    Button(action: {
-                        showTime.toggle()
-                        currTime = getTime(date: selectedDate)
-                    }) {
-                        Image(systemName:"checkmark.square.fill")
-                            .resizable()
-                            .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                        //.fontWeight(.bold)
-                            .foregroundColor(.green)
-                            .padding()
-                    }
-                }
+                }, oldDate: Date(), oldLabel: $currLabel)
             }
             .sheet(isPresented: $showLabels) {
-                VStack {
-                    Spacer()
-                    ZStack {
-                        TextField("Your Label", text: $currText)
-                        //.textFieldStyle(RoundedBorderTextFieldStyle())
-                            .font(.system(size: horizontalSizeClass == .compact ? 40 : 100, weight: .bold, design: .rounded))
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color(.systemGray5))
-                            )
+                TimeLabelPickerView(viewType: .label, saveItem: { item in
+                    if item is String {
+                        currLabel = item as!String
                     }
-                    .padding()
-                    Spacer()
-                    Button(action: {
-                        showLabels.toggle()
-                        if !currText.isEmpty {
-                            currLabel = currText
-                        }
-                    }) {
-                        if currText.isEmpty {
-                            Image(systemName:"xmark.square.fill")
-                                .resizable()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            //.fontWeight(.bold)
-                                .foregroundColor(Color(.systemGray))
-                                .padding()
-                        } else {
-                            Image(systemName:"checkmark.square.fill")
-                                .resizable()
-                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            //.fontWeight(.bold)
-                                .foregroundColor(.green)
-                                .padding()
-                        }
-                    }
-                    .padding()
-                }
+                }, oldLabel: $currLabel)
             }
             Spacer()
             HStack {

@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import AVFoundation
 import PhotosUI
+import NaturalLanguage
 
 
 
@@ -126,7 +127,7 @@ struct AppGridList: Codable {
 
 class CustomSpeechSynthesizer {
     let synthesizer = AVSpeechSynthesizer()
-
+    
     func configureAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.default, options: [.mixWithOthers])
@@ -135,19 +136,33 @@ class CustomSpeechSynthesizer {
             currSessionLog.append("Failed to configure audio session: \(error.localizedDescription)")
         }
     }
-
+    
     func speak(_ text: String) {
-           do {
-               try AVAudioSession.sharedInstance().setCategory(.playback,mode: .default, options: [.mixWithOthers/*, .duckOthers*/])
-
-           } catch let error {
-               currSessionLog.append("This error message from SpeechSynthesizer \(error.localizedDescription)")
-           }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers/*, .duckOthers*/])
+        } catch let error {
+            currSessionLog.append("This error message from SpeechSynthesizer \(error.localizedDescription)")
+        }
         
-        let speechUtterance: AVSpeechUtterance = AVSpeechUtterance(string: text)
+        let speechUtterance: AVSpeechUtterance = AVSpeechUtterance(string: String(text.prefix(250)))
         speechUtterance.rate = AVSpeechUtteranceMaximumSpeechRate / 2.3
-        speechUtterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        
+        // Determine language and set voice
+        let language = detectLanguage(for: text)
+        speechUtterance.voice = AVSpeechSynthesisVoice(language: language)
+        
         synthesizer.speak(speechUtterance)
+    }
+    
+    private func detectLanguage(for text: String) -> String {
+        let recognizer = NLLanguageRecognizer()
+        recognizer.processString(text)
+        if let languageCode = recognizer.dominantLanguage?.rawValue {
+            return languageCode
+        } else {
+            // Default to English if language cannot be determined
+            return "en"
+        }
     }
 }
 
@@ -287,6 +302,63 @@ struct DeviceRotationViewModifier: ViewModifier {
 extension View {
     func onRotate(perform action: @escaping (UIDeviceOrientation) -> Void) -> some View {
         self.modifier(DeviceRotationViewModifier(action: action))
+    }
+}
+
+extension Collection {
+    // Returns the element at the specified index if it is within bounds, otherwise nil.
+    subscript (safe index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
+    }
+}
+
+extension UIImage {
+    func resize(to size: CGSize) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
+        self.draw(in: CGRect(origin: .zero, size: size))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return resizedImage
+    }
+    
+    func toBuffer() -> CVPixelBuffer? {
+        guard let image = self.cgImage else { return nil }
+        
+        let frameSize = CGSize(width: image.width, height: image.height)
+        
+        var pixelBuffer: CVPixelBuffer?
+        let status = CVPixelBufferCreate(kCFAllocatorDefault,
+                                         Int(frameSize.width),
+                                         Int(frameSize.height),
+                                         kCVPixelFormatType_32ARGB,
+                                         nil,
+                                         &pixelBuffer)
+        
+        guard status == kCVReturnSuccess, let buffer = pixelBuffer else { return nil }
+        
+        CVPixelBufferLockBaseAddress(buffer, CVPixelBufferLockFlags(rawValue: 0))
+        let pixelData = CVPixelBufferGetBaseAddress(buffer)
+        
+        let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
+        guard let context = CGContext(data: pixelData,
+                                      width: Int(frameSize.width),
+                                      height: Int(frameSize.height),
+                                      bitsPerComponent: 8,
+                                      bytesPerRow: CVPixelBufferGetBytesPerRow(buffer),
+                                      space: rgbColorSpace,
+                                      bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue) else {
+            CVPixelBufferUnlockBaseAddress(buffer, CVPixelBufferLockFlags(rawValue: 0))
+            return nil
+        }
+        
+        context.translateBy(x: 0, y: frameSize.height)
+        context.scaleBy(x: 1.0, y: -1.0)
+        
+        context.draw(image, in: CGRect(origin: .zero, size: frameSize))
+        
+        CVPixelBufferUnlockBaseAddress(buffer, CVPixelBufferLockFlags(rawValue: 0))
+        
+        return buffer
     }
 }
 

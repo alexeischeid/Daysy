@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AllIconsPickerView: View {
     @State var currSheet: SheetObject = SheetObject()
-    var currImage: String = "plus.viewfinder"
+    @State var currImage: String = "plus.viewfinder"
     var modifyIcon: (String) -> Void
     var modifyDetails: ([String]) -> Void
     var modifySheet: (SheetObject) -> Void
@@ -318,6 +318,7 @@ struct AllIconsPickerView: View {
                                                 Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
                                                     oldEditingIcon = key
                                                     currCustomIconText = extractKey(from: key)
+                                                    customAnimate.toggle()
                                                     if getNoImageIcons().contains(customPECSAddresses[key]!) {
                                                         selectedCustomImage = UIImage(systemName: "plus.viewfinder")
                                                     } else {
@@ -502,7 +503,13 @@ struct AllIconsPickerView: View {
                 lastOrientation = newOrientation
             }
         }
-        .onAppear { print("current image os named \(currImage)")}
+        .onAppear {
+            var oldImage = currImage
+            currImage = "square.fill"
+            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
+                currImage = oldImage
+            }
+        }
         .fullScreenCover(isPresented: $showCustom) { //fullscreencover for creating a custom icon
             VStack {
                 RoundedRectangle(cornerRadius: (lastOrientation.isLandscape && horizontalSizeClass != .compact) ? (isCustomTextFieldActive ? 25 : 50) : 50)
@@ -1473,6 +1480,7 @@ struct AllIconsPickerView: View {
                                         let newArray = updateCustomIcons(oldKey: oldEditingIcon, newKey: currCustomIconText)
                                         saveSheetArray(sheetObjects: newArray)
                                         currSheet = newArray[getCurrSheetIndex()]
+                                        modifySheet(currSheet)
                                         
                                         if selectedCustomImage == UIImage(systemName: "plus.viewfinder") {
                                             saveNoImageIcons(customPECSAddresses[currCustomIconText]!)

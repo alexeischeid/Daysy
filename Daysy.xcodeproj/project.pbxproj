@@ -14,13 +14,16 @@
 		D44985942B0284DD003084DA /* DaysyItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44985932B0284DC003084DA /* DaysyItems.swift */; };
 		D44985962B02852E003084DA /* DaysyFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44985952B02852E003084DA /* DaysyFuncs.swift */; };
 		D44B50F72AF1465C00AF0511 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44B50F62AF1465C00AF0511 /* StatisticsView.swift */; };
+		D47074972BE95AA30084A8BF /* TimeLabelPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47074962BE95AA30084A8BF /* TimeLabelPickerView.swift */; };
+		D470F9BD2BF2B6C400E4B2BA /* MobileNetV2.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = D470F9BC2BF2B6C400E4B2BA /* MobileNetV2.mlmodel */; };
+		D476EFAD2BEC076700745F0D /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D476EFAC2BEC076700745F0D /* Launch Screen.storyboard */; };
 		D49C44562B06633300362DD5 /* CustomIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49C44552B06633300362DD5 /* CustomIconView.swift */; };
 		D49C44582B0B085F00362DD5 /* CustomPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49C44572B0B085F00362DD5 /* CustomPasswordView.swift */; };
 		D4ADEDF42BE2C6B20039FA48 /* AllIconsPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4ADEDF32BE2C6B20039FA48 /* AllIconsPickerView.swift */; };
 		D4ADEDF62BE4360E0039FA48 /* OpenAIStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4ADEDF52BE4360E0039FA48 /* OpenAIStuff.swift */; };
 		D4B4D70F2AF4502A0003D5EA /* StatsDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B4D70E2AF4502A0003D5EA /* StatsDetailView.swift */; };
 		D4B4D7132AF4974C0003D5EA /* ModImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B4D7122AF4974C0003D5EA /* ModImageView.swift */; };
-		D4B562EF2B9787B800520CA7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4B562EE2B9787B800520CA7 /* Assets.xcassets */; };
+		D4E076892BEC09A100A3A74E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4E076882BEC09A100A3A74E /* Assets.xcassets */; };
 		D4E696242AE1A097004AEF99 /* DaysyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E696232AE1A097004AEF99 /* DaysyApp.swift */; };
 		D4E696262AE1A097004AEF99 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E696252AE1A097004AEF99 /* ContentView.swift */; };
 		D4E6962B2AE1A09C004AEF99 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4E6962A2AE1A09C004AEF99 /* Preview Assets.xcassets */; };
@@ -92,13 +95,16 @@
 		D44985932B0284DC003084DA /* DaysyItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyItems.swift; sourceTree = "<group>"; };
 		D44985952B02852E003084DA /* DaysyFuncs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyFuncs.swift; sourceTree = "<group>"; };
 		D44B50F62AF1465C00AF0511 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StatisticsView.swift; path = ../StatisticsView.swift; sourceTree = "<group>"; };
+		D47074962BE95AA30084A8BF /* TimeLabelPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLabelPickerView.swift; sourceTree = "<group>"; };
+		D470F9BC2BF2B6C400E4B2BA /* MobileNetV2.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = MobileNetV2.mlmodel; sourceTree = "<group>"; };
+		D476EFAC2BEC076700745F0D /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		D49C44552B06633300362DD5 /* CustomIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CustomIconView.swift; path = ../CustomIconView.swift; sourceTree = "<group>"; };
 		D49C44572B0B085F00362DD5 /* CustomPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPasswordView.swift; sourceTree = "<group>"; };
 		D4ADEDF32BE2C6B20039FA48 /* AllIconsPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllIconsPickerView.swift; sourceTree = "<group>"; };
 		D4ADEDF52BE4360E0039FA48 /* OpenAIStuff.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenAIStuff.swift; sourceTree = "<group>"; };
 		D4B4D70E2AF4502A0003D5EA /* StatsDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsDetailView.swift; sourceTree = "<group>"; };
 		D4B4D7122AF4974C0003D5EA /* ModImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModImageView.swift; sourceTree = "<group>"; };
-		D4B562EE2B9787B800520CA7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D4E076882BEC09A100A3A74E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D4E696202AE1A097004AEF99 /* Daysy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daysy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4E696232AE1A097004AEF99 /* DaysyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyApp.swift; sourceTree = "<group>"; };
 		D4E696252AE1A097004AEF99 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -164,14 +170,17 @@
 		D4E696172AE1A097004AEF99 = {
 			isa = PBXGroup;
 			children = (
+				D470F9BC2BF2B6C400E4B2BA /* MobileNetV2.mlmodel */,
+				D476EFAC2BEC076700745F0D /* Launch Screen.storyboard */,
 				D44985952B02852E003084DA /* DaysyFuncs.swift */,
 				D44985932B0284DC003084DA /* DaysyItems.swift */,
 				D44985912B028494003084DA /* DaysyStructs.swift */,
 				D4ADEDF32BE2C6B20039FA48 /* AllIconsPickerView.swift */,
+				D47074962BE95AA30084A8BF /* TimeLabelPickerView.swift */,
 				D42B7AA42AFD726500619894 /* CustomIconsFunctions.swift */,
 				D4ADEDF52BE4360E0039FA48 /* OpenAIStuff.swift */,
-				D4EEDD132BD98D8A008114D5 /* Animations */,
 				D4E696222AE1A097004AEF99 /* Daysy */,
+				D4EEDD132BD98D8A008114D5 /* Animations */,
 				D4E696332AE1A09C004AEF99 /* DaysyTests */,
 				D4E6963D2AE1A09C004AEF99 /* DaysyUITests */,
 				D4E696212AE1A097004AEF99 /* Products */,
@@ -192,6 +201,7 @@
 			isa = PBXGroup;
 			children = (
 				D4F89E2B2B15363600089DB8 /* Info.plist */,
+				D4E076882BEC09A100A3A74E /* Assets.xcassets */,
 				D4E696232AE1A097004AEF99 /* DaysyApp.swift */,
 				D4E696252AE1A097004AEF99 /* ContentView.swift */,
 				D49C44552B06633300362DD5 /* CustomIconView.swift */,
@@ -203,7 +213,6 @@
 				D44B50F62AF1465C00AF0511 /* StatisticsView.swift */,
 				D4B4D70E2AF4502A0003D5EA /* StatsDetailView.swift */,
 				D4427A502AEDC95700C9DDB9 /* DebugView.swift */,
-				D4B562EE2B9787B800520CA7 /* Assets.xcassets */,
 				D4E696292AE1A09C004AEF99 /* Preview Content */,
 			);
 			path = Daysy;
@@ -373,7 +382,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D4B562EF2B9787B800520CA7 /* Assets.xcassets in Resources */,
+				D476EFAD2BEC076700745F0D /* Launch Screen.storyboard in Resources */,
+				D4E076892BEC09A100A3A74E /* Assets.xcassets in Resources */,
 				D4E6962B2AE1A09C004AEF99 /* Preview Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -399,6 +409,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D470F9BD2BF2B6C400E4B2BA /* MobileNetV2.mlmodel in Sources */,
 				D4EEDD262BD98D8A008114D5 /* LoadingThreeBalls.swift in Sources */,
 				D49C44582B0B085F00362DD5 /* CustomPasswordView.swift in Sources */,
 				D4EEDD282BD98D8A008114D5 /* LoadingThreeBallsRotation.swift in Sources */,
@@ -409,6 +420,7 @@
 				D4EEDD1D2BD98D8A008114D5 /* LoadingFiveLinesChronological.swift in Sources */,
 				D4ADEDF62BE4360E0039FA48 /* OpenAIStuff.swift in Sources */,
 				D4E696262AE1A097004AEF99 /* ContentView.swift in Sources */,
+				D47074972BE95AA30084A8BF /* TimeLabelPickerView.swift in Sources */,
 				D4427A512AEDC95700C9DDB9 /* DebugView.swift in Sources */,
 				D4EEDD1B2BD98D8A008114D5 /* LoadingFiveLines.swift in Sources */,
 				D4EEDD232BD98D8A008114D5 /* LoadingPulseOutline.swift in Sources */,
@@ -614,17 +626,18 @@
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Daysy uses FaceID for the Lock Buttons Setting";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = "";
-				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Alex.Daysy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -653,17 +666,18 @@
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Daysy uses FaceID for the Lock Buttons Setting";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = "";
-				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Alex.Daysy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

@@ -6,10 +6,6 @@
 	<array>
 		<dict/>
 	</array>
-	<key>CFBundleIdentifier</key>
-	<string></string>
-	<key>CFBundleExecutable</key>
-	<string></string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -86,6 +86,9 @@ func getCustomIconSmall(_ keyString: String) -> some View {
     let customImage = loadImageFromLocalURL(customIconObjects[removeCustomIconObjectPrefix(keyString)] ?? "")?.asImage ?? Image(systemName: "exclamationmark.triangle.fill")
     let noImage = getNoImageIcons().contains(customIconObjects[removeCustomIconObjectPrefix(keyString)] ?? "")
     
+    let uiImage = loadImageFromLocalURL(customIconObjects[removeCustomIconObjectPrefix(keyString)] ?? "") ?? UIImage(systemName: "square.fill")
+    predictImage(input: uiImage!)
+    
     return CustomIconViewSmall(selectedCustomImage: customImage, currCustomIconText: customIconName, noImage: noImage)
 }
 
@@ -254,9 +257,9 @@ func deleteFile(at url: String) {
 
     do {
         try fileManager.removeItem(at: deleteURL!)
-        print("File deleted successfully at \(deleteURL!.absoluteString)")
+//        print("File deleted successfully at \(deleteURL!.absoluteString)")
     } catch {
-        print("Error deleting file: \(error.localizedDescription)")
+//        print("Error deleting file: \(error.localizedDescription)")
     }
 }
 
@@ -280,7 +283,6 @@ func updateCustomIcons(oldKey: String, newKey: String) -> [SheetObject] { //TODO
         }
 
         for (removedIconIndex, removedIcon) in sheet.removedIcons.enumerated() {
-            print(sheet.removedIcons[removedIconIndex])
             if removedIcon.currIcon.contains(oldKey) {
                 currSheetArray[sheetIndex].removedIcons[removedIconIndex].currIcon = currKey
             }
@@ -320,11 +322,9 @@ func deleteCustomIcons(currIcon: String) -> [SheetObject] {
         for (gridIndex, grid) in sheet.currGrid.enumerated() {
             for (iconIndex, icon) in grid.currIcons.enumerated() {
                 if icon.currIcon.contains(currKey) {
-                    print("the icon \(icon.currIcon) contains \(currKey)")
                 }
                 if icon.currIcon == currKey {
                     currSheetArray[sheetIndex].currGrid[gridIndex].currIcons[iconIndex].currIcon = "plus.viewfinder"
-                    print("found the icon \(currKey) in the main sheet")
                 }
             }
         }
@@ -332,14 +332,12 @@ func deleteCustomIcons(currIcon: String) -> [SheetObject] {
         for removedIcon in sheet.removedIcons {
             if removedIcon.currIcon == currKey {
                 currSheetArray[sheetIndex].removedIcons = currSheetArray[sheetIndex].removedIcons.filter { $0.currIcon != currKey }
-                print("found the icon \(currKey) in removed icons")
             }
         }
 
         for completedIcon in sheet.completedIcons {
             if completedIcon.currIcon == currKey {
                 currSheetArray[sheetIndex].completedIcons = currSheetArray[sheetIndex].completedIcons.filter { $0.currIcon != currKey }
-                print("found the icon \(currKey) in completed icons")
             }
         }
         
