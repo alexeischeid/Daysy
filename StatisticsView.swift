@@ -14,17 +14,10 @@ struct StatisticsView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
     @State var sheetArray = loadSheetArray()
-    @State var completedIcons = getAllCompleted()
     @State var removedIcons = getAllRemoved()
-    @State var completedratio = getCompletedRatio()
-    @State var removedratio = getRemovedRatio()
     @State var showSheet = false
     @State var currSheetName = ""
     @State var animate = false
-    
-    @State var sheetCompletedIcons = 0
-    @State var sheetRemovedIcons = 0
-    @State var sheetCompletedRatio = 0.00
     
     @State private var selectedOption = 2
     let options = ["Lifetime", "Month", "Week"]
@@ -58,7 +51,7 @@ struct StatisticsView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.01)
                         .font(.system(size: horizontalSizeClass == .compact ? 20 : 35, weight: .bold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundStyle(Color(.systemGray))
                         .padding()
                     
                     VStack {
@@ -95,17 +88,17 @@ struct StatisticsView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.01)
                         .font(.system(size: horizontalSizeClass == .compact ? 20 : 35, weight: .bold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundStyle(Color(.systemGray))
                         .padding()
                     ScrollView(.horizontal) {
                         HStack {
                             ForEach(0..<mostIcons.prefix(10).count, id: \.self) { item in
                                 if String(mostIcons[item].prefix(7)) != "action:" {
                                     VStack {
-                                        if mostIcons[item].contains("customIconObject:") { //TODO: check if the only item(s) in the list are custom icons and handle, currently a bug where it won't display
+                                        if UIImage(named: mostIcons[item]) == nil { //TODO: check if the only item(s) in the list are custom icons and handle, currently a bug where it won't display
                                             //check if default icon or custom icon and handle
                                             if horizontalSizeClass == .compact {
-                                                getCustomIconSmall(mostIcons[item])
+                                                getCustomIcon(mostIcons[item])
                                                     .frame(width:min(250, 500), height: min(250, 500))
                                                     .clipShape(RoundedRectangle(cornerRadius: 15))
                                                     .overlay(
@@ -124,7 +117,7 @@ struct StatisticsView: View {
                                                     .padding()
                                             }
                                         } else {
-                                            loadImage(named: mostIcons[item])
+                                            Image(mostIcons[item])
                                                 .resizable()
                                                 .frame(width: horizontalSizeClass == .compact ? min(250, 500) : min(350, 1000), height: horizontalSizeClass == .compact ? min(250, 500) : min(350, 1000))
                                                 .clipShape(RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 15 : 30))
@@ -136,192 +129,14 @@ struct StatisticsView: View {
                                         }
                                         Text("Used \(howmany(in: usage, for:mostIcons[item])) times")
                                             .font(.title3)
-                                            .foregroundColor(Color(.systemGray))
+                                            .foregroundStyle(Color(.systemGray))
                                     }
                                 }
                             }
                         }
                     }
+                    .padding(.bottom, 100)
                 }
-                
-                Spacer()
-                Divider()
-                    .padding()
-                    .padding()
-                    .padding()
-                
-                Text("\(Image(systemName: "checkmark.circle.badge.xmark")) Completed/Removed (Overall)")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.01)
-                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 35, weight: .bold, design: .rounded))
-                    .foregroundColor(Color(.systemGray))
-                    .padding()
-                if getAllRemoved().count == 0 && getAllCompleted().count == 0 {
-                    HStack(alignment: .bottom) {
-                        VStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .frame(width: 200, height: 100)
-                                    .foregroundColor(.green)
-                                Image(systemName: "checkmark")
-                                    .font(.system(size: 50, weight: .heavy, design: .rounded))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .scaledToFit()
-                            }
-                            .padding()
-                            .padding(.top, 300)
-                            Text("Completed: \(completedIcons.count)")
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: 30, weight: .bold, design: .rounded))
-                                .padding()
-                                .multilineTextAlignment(.center)
-                        }
-                        
-                        VStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .frame(width: 200, height: 100)
-                                    .foregroundColor(.red)
-                                Image(systemName: "trash")
-                                    .minimumScaleFactor(0.1)
-                                    .font(.system(size: 50, weight: .heavy, design: .rounded))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .scaledToFit()
-                            }
-                            .padding()
-                            .padding(.top, 300)
-                            Text("Removed: \(removedIcons.count)")
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: 30, weight: .bold, design: .rounded))
-                                .padding()
-                                .multilineTextAlignment(.center)
-                        }
-                    }
-                    .padding()
-                } else {
-                    HStack(alignment: .bottom) {
-                        VStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .frame(width: 200, height: (500 * (getCompletedRatio()) + 50))
-                                    .foregroundColor(.green)
-                                Image(systemName: "checkmark")
-                                    .font(.system(size: 25, weight: .heavy, design: .rounded))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .scaledToFit()
-                            }
-                            .padding()
-                            Text("Completed: \(completedIcons.count)")
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: 30, weight: .bold, design: .rounded))
-                                .padding()
-                                .multilineTextAlignment(.center)
-                        }
-                        VStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .frame(width: 200, height: (500 * (getRemovedRatio()) + 50))
-                                    .foregroundColor(.red)
-                                Image(systemName: "trash")
-                                    .minimumScaleFactor(0.1)
-                                    .font(.system(size: 25, weight: .heavy, design: .rounded))
-                                    .foregroundColor(Color(.systemBackground))
-                                    .scaledToFit()
-                            }
-                            .padding()
-                            Text("Removed: \(removedIcons.count)")
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: 30, weight: .bold, design: .rounded))
-                                .padding()
-                                .multilineTextAlignment(.center)
-                        }
-                    }
-                    .padding()
-                    .scaleEffect(horizontalSizeClass == .compact ? 0.75 : 1)
-                }
-                Text("\(Image(systemName: "checklist")) Completed/Removed Icons (Per Sheet)")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.01)
-                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 35, weight: .bold, design: .rounded))
-                    .foregroundColor(Color(.systemGray))
-                    .padding()
-                ScrollView(.horizontal) {
-                    HStack {
-                        ForEach(0..<sheetArray.count, id: \.self) { item in
-                            if sheetArray[item].label != "Debug, ignore this page" {
-                                if getCurrCompletedRatio(allCompleted: CGFloat(getThisCompletedIcons(item: sheetArray[item])), allRemoved: CGFloat(getThisremovedIcons(item: sheetArray[item]))) == -1 {
-                                    VStack {
-                                        Spacer()
-                                        HStack(alignment: .bottom) {
-                                            ZStack {
-                                                RoundedRectangle(cornerRadius: 10)
-                                                    .frame(width: 100, height: 50)
-                                                    .foregroundColor(.green)
-                                                Text("0")
-                                                    .font(.system(size: 35, weight: .heavy, design: .rounded))
-                                                    .foregroundColor(Color(.systemBackground))
-                                                    .scaledToFit()
-                                            }
-                                            ZStack {
-                                                RoundedRectangle(cornerRadius: 10)
-                                                    .frame(width: 100, height: 50)
-                                                    .foregroundColor(.red)
-                                                Text("0")
-                                                    .minimumScaleFactor(0.1)
-                                                    .font(.system(size: 35, weight: .heavy, design: .rounded))
-                                                    .foregroundColor(Color(.systemBackground))
-                                                    .scaledToFit()
-                                            }
-                                        }
-                                        .padding()
-                                        Text("\(sheetArray[item].label)")
-                                            .lineLimit(1)
-                                            .font(.system(size: 40, weight: .bold, design: .rounded))
-                                            .foregroundColor(.primary)
-                                    }
-                                    .padding()
-                                    //}
-                                } else {
-                                    VStack {
-                                        Spacer()
-                                        HStack(alignment: .bottom) {
-                                            ZStack {
-                                                RoundedRectangle(cornerRadius: 10)
-                                                    .frame(width: 100, height: (200 * (getCurrCompletedRatio(allCompleted: CGFloat(getThisCompletedIcons(item: sheetArray[item])), allRemoved: CGFloat(getThisremovedIcons(item: sheetArray[item])))) + 50))
-                                                    .foregroundColor(.green)
-                                                Text("\(sheetArray[item].completedIcons.count)")
-                                                    .font(.system(size: 35, weight: .heavy, design: .rounded))
-                                                    .foregroundColor(Color(.systemBackground))
-                                                    .scaledToFit()
-                                            }
-                                            ZStack {
-                                                RoundedRectangle(cornerRadius: 10)
-                                                    .frame(width: 100, height: (200 * (1 - getCurrCompletedRatio(allCompleted: CGFloat(getThisCompletedIcons(item: sheetArray[item])), allRemoved: CGFloat(getThisremovedIcons(item: sheetArray[item])))) + 50))
-                                                    .foregroundColor(.red)
-                                                Text("\(sheetArray[item].removedIcons.count)")
-                                                    .minimumScaleFactor(0.1)
-                                                    .font(.system(size: 35, weight: .heavy, design: .rounded))
-                                                    .foregroundColor(Color(.systemBackground))
-                                                    .scaledToFit()
-                                            }
-                                        }
-                                        .padding()
-                                        Text("\(sheetArray[item].label)")
-                                            .lineLimit(1)
-                                            .font(.system(size: 40, weight: .bold, design: .rounded))
-                                            .foregroundColor(.primary)
-                                    }
-                                    .padding()
-                                }
-                            }
-                        }
-                        .frame(width: 250, height: 400)
-                        .background(Color(.systemGray5))
-                        .cornerRadius(30)
-                        .scaleEffect(horizontalSizeClass == .compact ? 0.85 : 1)
-                    }
-                }
-                .padding(.bottom, 150)
             }
             .navigationBarHidden(true)
             .animation(.spring)
@@ -335,7 +150,7 @@ struct StatisticsView: View {
                         Text("\(Image(systemName: "arrow.backward")) Back")
                             .lineLimit(1)
                             .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                            .foregroundColor(.primary)
+                            .foregroundStyle(.primary)
                             .padding(horizontalSizeClass == .compact ? 20 : 30)
                             .background(Color(.systemGray5))
                             .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)

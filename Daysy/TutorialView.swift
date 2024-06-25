@@ -9,12 +9,511 @@
 
 import SwiftUI
 import Foundation
+import Pow
 
-var progress = 0
-var totalSheets: CGFloat = 6
+struct SheetTutorialView: View { //main welcome page
+    
+    @State private var currentPage = 0
+    
+    var body: some View {
+        TabView(selection: $currentPage) {
+            TimeslotView()
+                .tag(0)
+                .onTapGesture {withAnimation{currentPage += 1}}
+            AsyncView()
+                .tag(1)
+                .onTapGesture {withAnimation{currentPage += 1}}
+            TryItView()
+                .tag(2)
+            ModIconView()
+                .tag(3)
+            ButtonsView()
+                .tag(4)
+                .onTapGesture {withAnimation{currentPage += 1}}
+            GotItView()
+                .tag(5)
+        }
+        .tabViewStyle(.page(indexDisplayMode: .always))
+        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+    }
+}
 
+struct BoardTutorialView: View { //main welcome page
+    
+    @State private var currentPage = 0
+    
+    var body: some View {
+        TabView(selection: $currentPage) {
+            IconView()
+                .tag(0)
+            TappedIconView()
+                .tag(1)
+            ButtonView()
+                .tag(2)
+            GotItView()
+                .tag(3)
+        }
+        .tabViewStyle(.page(indexDisplayMode: .always))
+        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+    }
+}
 
-struct TutorialView: View { //main welcome page
+struct IconView: View {
+    
+    @StateObject private var speechDelegate = SpeechSynthesizerDelegate()
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @State var openFolder = false
+    
+    var body: some View {
+        VStack {
+            Text("\(Image(systemName: "hand.tap")) Folders and Icons")
+                .minimumScaleFactor(0.01)
+                .multilineTextAlignment(.center)
+                .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+                .symbolRenderingMode(.hierarchical)
+            Text("Your Communication Board has two main things: Folders and Icons. Daysy will speak aloud any Folder or Icon you tap.")
+                .minimumScaleFactor(0.01)
+                .multilineTextAlignment(.center)
+                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+            Spacer()
+            Button(action: {
+                speechDelegate.speak("School")
+                openFolder.toggle()
+            }) {
+                VStack {
+                    ZStack {
+                            Image("school")
+                                .resizable()
+                                .scaledToFill()
+                    }.mask(
+                        Image(systemName: "folder.fill")
+                            .resizable()
+                            .scaledToFit()
+                    )
+                    .overlay(
+                        ZStack {
+                            Image(systemName: "folder")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundStyle(.blue)
+                            Image(systemName: "folder.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundStyle(.blue)
+                                .opacity(0.3)
+                        }
+                    )
+                    Text("School")
+                        .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .bold, design: .rounded))
+                        .lineLimit(1)
+                        .foregroundStyle(.primary)
+                }
+                    .frame(width: horizontalSizeClass == .compact ? 200 : 300, height: horizontalSizeClass == .compact ? 200 : 300)
+                    .padding()
+            }
+            Button(action: {speechDelegate.speak("hello")}) {
+                Image("hello")
+                    .resizable()
+                    .frame(width: horizontalSizeClass == .compact ? 200 : 300, height: horizontalSizeClass == .compact ? 200 : 300)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(.black, lineWidth: 3)
+                    )
+                    .foregroundStyle(.primary)
+                    .padding()
+            }
+            Spacer()
+        }
+        .navigationBarTitle("", displayMode: .inline)
+        .navigationBarHidden(true)
+    }
+}
+
+struct TappedIconView: View {
+    
+    @StateObject private var speechDelegate = SpeechSynthesizerDelegate()
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @State var tappedIcons = activities
+    @State var openFolder = false
+    
+    var body: some View {
+        VStack {
+            Text("\(Image(systemName: "square.stack.3d.down.right")) Tapped Icons")
+                .minimumScaleFactor(0.01)
+                .multilineTextAlignment(.center)
+                .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+                .symbolRenderingMode(.hierarchical)
+            Text("You can see all of the icons you have seelcted at the top of the screen. You can speak all of these icons, scroll through them, or clear them.")
+                .minimumScaleFactor(0.01)
+                .multilineTextAlignment(.center)
+                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+            Spacer()
+            VStack {
+                Text("View your Tapped Icons")
+                    .minimumScaleFactor(0.01)
+                    .multilineTextAlignment(.center)
+                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+                    .foregroundStyle(.primary)
+                Text("\(Image(systemName: "arrow.left.arrow.right"))")
+                    .minimumScaleFactor(0.01)
+                    .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                    .foregroundStyle(.primary)
+                    .symbolRenderingMode(.hierarchical)
+            }.padding()
+            HStack {
+                Button(action: {
+                    speechDelegate.speak("This button plays all of your tapped icons")
+                }) {
+                    Image(systemName: "play.square.fill")
+                        .resizable()
+                        .frame(width: horizontalSizeClass == .compact ? 50 : 100, height: horizontalSizeClass == .compact ? 50 : 100)
+                        .foregroundStyle(.purple)
+                        .symbolRenderingMode(.hierarchical)
+                        .padding(.leading, 5)
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(1..<tappedIcons.count, id: \.self) { icon in
+                            Image(tappedIcons[icon])
+                                .resizable()
+                                .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(.black, lineWidth: 3)
+                                )
+                                .padding(.trailing, 5)
+                                .foregroundStyle(.primary)
+                        }
+                    }
+                    .padding(.trailing, horizontalSizeClass == .compact ? 75 : 100)
+                }
+                Button(action: {
+                    speechDelegate.speak("This button clears all of your tapped icons")
+                }) {
+                    Image(systemName: "delete.backward.fill")
+                        .resizable()
+                        .frame(width: horizontalSizeClass == .compact ? 57.5 : 115, height: horizontalSizeClass == .compact ? 50 : 100)
+                        .foregroundStyle(.red)
+                        .symbolRenderingMode(.hierarchical)
+                        .padding(.trailing, 5)
+                }
+                
+            }
+            HStack(alignment: .top) {
+                VStack(alignment: .leading) {
+                    Text("\(Image(systemName: "arrow.up"))")
+                        .minimumScaleFactor(0.01)
+                        .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                        .foregroundStyle(.purple)
+                    Text("Speak your Tapped Icons")
+                        .minimumScaleFactor(0.01)
+                        .multilineTextAlignment(.leading)
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+                        .foregroundStyle(.purple)
+                }
+                Spacer()
+                VStack(alignment: .trailing) {
+                    Text("\(Image(systemName: "arrow.up"))")
+                        .minimumScaleFactor(0.01)
+                        .font(.system(size: horizontalSizeClass == .compact ? 30 : 40, weight: .bold, design: .rounded))
+                        .foregroundStyle(.red)
+                    Text("Clear your Tapped Icons")
+                        .minimumScaleFactor(0.01)
+                        .multilineTextAlignment(.trailing)
+                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+                        .foregroundStyle(.red)
+                }
+            }.padding()
+            Spacer()
+        }
+        .navigationBarTitle("", displayMode: .inline)
+        .navigationBarHidden(true)
+    }
+}
+
+struct ButtonView: View {
+    
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @State var openMenu = false
+    
+    var body: some View {
+        ZStack {
+            if !openMenu {
+                Text("Everything else you might need is in the bottom right corner. Tap it to learn more!")
+                    .minimumScaleFactor(0.01)
+                    .multilineTextAlignment(.center)
+                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+                    .padding()
+            }
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    VStack(alignment: .trailing) {
+                        HStack {
+                            Spacer()
+                            VStack(alignment: .trailing) {
+                                Text("Search")
+                                    .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
+                                    .fontWeight(.bold)
+                                Text("Search through your Folders and Icons.")
+                                    .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                        .foregroundStyle(Color(.systemGray))
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        
+                        HStack {
+                            Spacer()
+                            VStack(alignment: .trailing) {
+                                Text("Type to Speak")
+                                    .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
+                                    .fontWeight(.bold)
+                                Text("Type anything, and Daysy will speak it aloud.")
+                                    .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                        .foregroundStyle(Color(.systemGray))
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        
+                        HStack {
+                            Spacer()
+                            VStack(alignment: .trailing) {
+                                Text("Draw")
+                                    .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
+                                    .fontWeight(.bold)
+                                Text("An open canvas to draw express yourself.")
+                                    .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                        .foregroundStyle(.cyan)
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        
+                        HStack {
+                            Spacer()
+                            VStack(alignment: .trailing) {
+                                Text("Create Icon")
+                                    .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
+                                    .fontWeight(.bold)
+                                Text("Create and add Icons to your Comunication Board.")
+                                    .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                        .foregroundStyle(.green)
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        
+                        HStack {
+                            Spacer()
+                            VStack(alignment: .trailing) {
+                                Text("Create Folder")
+                                    .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
+                                    .fontWeight(.bold)
+                                Text("Create and add Folders to your Communication Board.")
+                                    .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                        .foregroundStyle(.blue)
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        
+                        HStack {
+                            Spacer()
+                            VStack(alignment: .trailing) {
+                                Text("Settings")
+                                    .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
+                                    .fontWeight(.bold)
+                                Text("Customize Daysy to fit your personal needs and likes.")
+                                    .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                        .foregroundStyle(Color(.systemGray))
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        
+                        HStack {
+                            Spacer()
+                            VStack(alignment: .trailing) {
+                                Text("Sheets")
+                                    .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
+                                    .fontWeight(.bold)
+                                Text("View all of your schedules and planned activities with Sheets.")
+                                    .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                        .foregroundStyle(.purple)
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        
+                    }.opacity(openMenu ? 1.0 : 0.0)
+                    if openMenu {
+                        VStack {
+                            Button(action: {
+                            }) {
+                                VStack {
+                                    ZStack {
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .frame(width: 75, height: 75)
+                                            .foregroundStyle(Color(.systemGray))
+                                        Image(systemName: "magnifyingglass")
+                                            .resizable()
+                                            .frame(width: min(40, 100), height: min(40, 100))
+                                            .foregroundStyle(Color(.systemGray6))
+                                    }
+                                }
+                            }
+                            
+                            Button(action: {
+                            }) {
+                                VStack {
+                                    ZStack {
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .frame(width: 75, height: 75)
+                                            .foregroundStyle(Color(.systemGray))
+                                        Image(systemName: "keyboard")
+                                            .resizable()
+                                            .frame(width: min(52, 130), height: min(40, 100))
+                                            .foregroundStyle(Color(.systemGray6))
+                                    }
+                                }
+                            }
+                            
+                            Button(action: {
+                            }) {
+                                VStack {
+                                    ZStack {
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .frame(width: 75, height: 75)
+                                            .foregroundStyle(.cyan)
+                                        Image(systemName: "pencil.and.outline")
+                                            .resizable()
+                                            .frame(width: min(40, 100), height: min(40, 100))
+                                            .foregroundStyle(Color(.systemGray6))
+                                            .symbolRenderingMode(.hierarchical)
+                                    }
+                                }
+                            }
+                            
+                            Button(action: {
+                            }) {
+                                VStack {
+                                    ZStack {
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .frame(width: 75, height: 75)
+                                            .foregroundStyle(.green)
+                                        Image(systemName: "plus.viewfinder")
+                                            .resizable()
+                                            .frame(width: min(40, 100), height: min(40, 100))
+                                            .foregroundStyle(Color(.systemGray6))
+                                            .symbolRenderingMode(.hierarchical)
+                                    }
+                                }
+                            }
+                            
+                            Button(action: {
+                            }) {
+                                VStack {
+                                    ZStack {
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .frame(width: 75, height: 75)
+                                            .foregroundStyle(.blue)
+                                        Image(systemName: "folder.badge.plus")
+                                            .resizable()
+                                            .frame(width: min(52.4, 131), height: min(40, 100))
+                                            .foregroundStyle(Color(.systemGray6))
+                                            .padding(.leading, 5)
+                                            .padding(.bottom, 3)
+                                    }
+                                }
+                            }
+                            
+                            Button(action: {
+                            }) {
+                                VStack {
+                                    ZStack {
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .frame(width: 75, height: 75)
+                                            .foregroundStyle(Color(.systemGray))
+                                        Image(systemName: "gear")
+                                            .resizable()
+                                            .frame(width: min(40, 100), height: min(40, 100))
+                                            .foregroundStyle(Color(.systemGray6))
+                                    }
+                                }
+                            }
+                            
+                            Button(action: {
+                            }) {
+                                VStack {
+                                    ZStack {
+                                        Image(systemName: "square.fill")
+                                            .resizable()
+                                            .frame(width: 75, height: 75)
+                                            .foregroundStyle(.purple)
+                                        Image(systemName: "newspaper")
+                                            .resizable()
+                                            .frame(width: min(45.6, 114), height: min(40, 100))
+                                            .foregroundStyle(Color(.systemGray6))
+                                    }
+                                }
+                            }
+                        }
+                        .transition(.move(edge: .trailing))
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color(.systemGray6))
+                        )
+                    }
+                }
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        withAnimation(.spring) {
+                            openMenu.toggle()
+                        }
+                    }) {
+                        ZStack {
+                            Image(systemName: "square.fill")
+                                .resizable()
+                                .frame(width: 75, height: 75)
+                                .foregroundStyle(Color(.systemGray))
+                            Text("\(Image(systemName: openMenu ? "square.3.layers.3d.slash" : "square.3.layers.3d"))")
+                                .font(.system(size: 40))
+                                .foregroundStyle(Color(.systemGray6))
+                                .symbolRenderingMode(openMenu ? .hierarchical : .monochrome)
+                        }
+                        .padding(.trailing)
+                        .padding(.bottom, 5)
+                    }
+                    .padding(.bottom)
+                }
+            }
+        }
+        .navigationBarTitle("", displayMode: .inline)
+        .navigationBarHidden(true)
+        .onTapGesture {
+            withAnimation(.spring) {
+                openMenu.toggle()
+            }
+        }
+    }
+}
+
+struct WelcomeView: View { //main welcome page
     
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
@@ -24,67 +523,168 @@ struct TutorialView: View { //main welcome page
     var body: some View {
         NavigationView {
             VStack {
-                GeometryReader { geometry in
-                    RoundedRectangle(cornerRadius: 20)
-                        .frame(width: geometry.size.width * (0/totalSheets), height: 5)
-                        .foregroundColor(.purple)
+                if horizontalSizeClass != .compact {
+                    Spacer()
                 }
-                .frame(height: 5)
+                VStack {
+                    Image("logo-transparent")
+                        .resizable()
+                        .frame(width: 250, height: 250)
+                    if horizontalSizeClass == .compact {
+                        VStack {
+                            Text("Welcome to")
+                                .lineLimit(1)
+                                .font(.system(size: 45, weight: .bold, design: .rounded))
+                            Text("Daysy!")
+                                .lineLimit(1)
+                                .font(.system(size: 45, weight: .bold, design: .rounded))
+                        }
+                    } else {
+                        Text("Welcome to Daysy!")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.01)
+                            .font(.system(size: 100, weight: .bold, design: .rounded))
+                            .padding([.leading, .trailing, .bottom])
+                    }
+                }
+                if horizontalSizeClass != .compact {
+                    Spacer()
+                }
+                
+                if horizontalSizeClass == .compact {
+                    VStack {
+                        NavigationLink(destination: SheetTutorialView()) {
+                            
+                            HStack {
+                                Text("\(Image(systemName: "newspaper"))")
+                                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                                    .symbolRenderingMode(.hierarchical)
+                                    .opacity(0.75)
+                                    .padding(.leading)
+                                Text("Learn about Sheets")
+                                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                                    .lineLimit(1)
+                                    .padding()
+                                Text("\(Image(systemName: "chevron.forward"))")
+                                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                                    .opacity(0.4)
+                                    .padding(.trailing)
+                            }
+                            .foregroundStyle(.white)
+                            .padding([.top, .bottom])
+                            .background(Color.purple)
+                            .cornerRadius(20)
+                            .padding([.leading, .trailing])
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        NavigationLink(destination: BoardTutorialView()) {
+                            HStack {
+                                Text("\(Image(systemName: "hand.tap"))")
+                                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                                    .symbolRenderingMode(.hierarchical)
+                                    .opacity(0.75)
+                                    .padding(.leading)
+                                Text("Learn about Board")
+                                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                                    .lineLimit(1)
+                                    .padding()
+                                Text("\(Image(systemName: "chevron.forward"))")
+                                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                                    .opacity(0.4)
+                                    .padding(.trailing)
+                            }
+                            .foregroundStyle(.white)
+                            .padding([.top, .bottom])
+                            .background(Color.orange)
+                            .cornerRadius(20)
+                            .padding([.leading, .trailing])
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                    .navigationBarTitle("", displayMode: .inline)
+                } else {
+                    VStack {
+                        NavigationLink(destination: SheetTutorialView()) {
+                            HStack {
+                                Spacer()
+                                HStack {
+                                    Text("\(Image(systemName: "newspaper"))")
+                                        .font(.system(size: 45, weight: .bold, design: .rounded))
+                                        .symbolRenderingMode(.hierarchical)
+                                        .opacity(0.75)
+                                        .padding()
+                                    Text("Learn about Sheets")
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .lineLimit(1)
+                                        .padding()
+                                    Text("\(Image(systemName: "chevron.forward"))")
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .opacity(0.4)
+                                        .padding()
+                                }
+                                .foregroundStyle(.white)
+                                .padding([.top, .bottom])
+                                .background(Color.purple)
+                                .cornerRadius(30)
+                                .padding([.leading, .trailing])
+                                .padding([.leading, .trailing])
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .padding(.bottom)
+                        
+                        NavigationLink(destination: BoardTutorialView()) {
+                            HStack {
+                                Spacer()
+                                HStack {
+                                    Text("\(Image(systemName: "hand.tap"))")
+                                        .font(.system(size: 45, weight: .bold, design: .rounded))
+                                        .symbolRenderingMode(.hierarchical)
+                                        .opacity(0.75)
+                                        .padding()
+                                    Text("Learn about Board")
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .lineLimit(1)
+                                        .padding()
+                                    Text("\(Image(systemName: "chevron.forward"))")
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .opacity(0.4)
+                                        .padding()
+                                }
+                                .foregroundStyle(.white)
+                                .padding([.top, .bottom])
+                                .background(Color.orange)
+                                .cornerRadius(30)
+                                .padding([.leading, .trailing])
+                                .padding([.leading, .trailing])
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                    .padding()
+                    .padding([.leading, .trailing])
+                    .navigationBarTitle("", displayMode: .inline)
+                }
+                
                 Spacer()
-                Text("Welcome to Daysy!")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.01)
-                    .font(.system(size: horizontalSizeClass == .compact ? 35 : 100, weight: .bold, design: .rounded))
-                    .padding(.leading)
-                    .padding(.trailing)
-                
-                Text("Let's Get Started.")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.01)
-                    .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
-                    .padding(.leading)
-                    .padding(.trailing)
-                
-                NavigationLink(destination: TimeslotView()) {
-                    Text("\(Image(systemName: "book")) View Tutorial")
-                        .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .padding()
-                        .padding()
-                        .background(Color.blue)
-                        .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .bold, design: .rounded))
-                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 30)
-                }
-                .padding()
-                /*
-                .navigationDestination(isPresented: $presentNext) {
-                    TimeslotView()
-                } */
-                .navigationBarTitle("", displayMode: .inline)
-                
-                Text("or")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.01)
-                    .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
-                    .foregroundColor(Color(.systemGray))
                 
                 NavigationLink(destination: ContentView()) {
-                    Text("\(Image(systemName: "square.grid.3x3.square")) Begin Setup")
+                    Text("\(Image(systemName: "checklist")) Begin Setup")
                         .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
                         .fontWeight(.semibold)
-                        .foregroundColor(.primary)
+                        .foregroundStyle(.primary)
                         .padding()
                         .padding()
                         .background(Color(.systemGray6))
                         .cornerRadius(horizontalSizeClass == .compact ? 15 : 30)
+                        .symbolRenderingMode(.hierarchical)
                 }
-                .padding()
-                Spacer()
-            } /*
-            .navigationDestination(isPresented: $beginSetup) {
-                ContentView()
-            } */
+                .padding([.top, .bottom])
+                .buttonStyle(PlainButtonStyle())
+            }
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .navigationBarHidden(true)
@@ -98,12 +698,6 @@ struct TimeslotView: View { //timeslot tutorial view
     
     var body: some View {
         VStack {
-            GeometryReader { geometry in
-                RoundedRectangle(cornerRadius: 20)
-                    .frame(width: geometry.size.width * (1/totalSheets), height: 5)
-                    .foregroundColor(.purple)
-            }
-            .frame(height: 5)
             Text("\(Image(systemName: "timer")) Timeslots")
                 .lineLimit(1)
                 .minimumScaleFactor(0.01)
@@ -126,7 +720,7 @@ struct TimeslotView: View { //timeslot tutorial view
                             .minimumScaleFactor(0.01)
                             .font(.system(size: 300,  weight: .bold, design: .rounded))
                             .padding()
-                            .foregroundColor(.primary)
+                            .foregroundStyle(.primary)
                     }
                     
                     Image("eatlunch")
@@ -219,40 +813,9 @@ struct TimeslotView: View { //timeslot tutorial view
                 .padding([.leading, .trailing])
                 .padding([.leading, .trailing])
             }
-            //Divider()
             Spacer()
-            HStack {
-                Button(action: {
-                    self.presentation.wrappedValue.dismiss()
-                }) {
-                    Text("\(Image(systemName: "arrow.backward")) Back")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
-                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                        .foregroundColor(.primary)
-                        .padding(horizontalSizeClass == .compact ? 20 : 30)
-                        .background(Color(.systemGray5))
-                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-                }
-                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
-                
-                NavigationLink(destination: AsyncView()) {
-                    Text("Next \(Image(systemName: "arrow.forward"))")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
-                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                        .foregroundColor(.primary)
-                        .padding(horizontalSizeClass == .compact ? 20 : 30)
-                        .background(Color(.systemGray5))
-                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-                }
-                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
-            } /*
-               .navigationDestination(isPresented: $presentNext) {
-               AsyncView()
-               } */
-            .navigationBarTitle("", displayMode: .inline)
         }
+        .navigationBarTitle("", displayMode: .inline)
         .navigationBarHidden(true)
     }
 }
@@ -264,12 +827,6 @@ struct AsyncView: View { //custom labels tutorial view
     
     var body: some View {
         VStack {
-            GeometryReader { geometry in
-                RoundedRectangle(cornerRadius: 20)
-                    .frame(width: geometry.size.width * (2/totalSheets), height: 5)
-                    .foregroundColor(.purple)
-            }
-            .frame(height: 5)
             Text("\(Image(systemName: "tag")) Custom Labels")
                 .lineLimit(1)
                 .minimumScaleFactor(0.01)
@@ -293,7 +850,7 @@ struct AsyncView: View { //custom labels tutorial view
                             .font(.system(size: 300,  weight: .bold, design: .rounded))
                             .padding()
                             .padding()
-                            .foregroundColor(.primary)
+                            .foregroundStyle(.primary)
                     }
                     Image("putsockson")
                         .resizable()
@@ -387,38 +944,8 @@ struct AsyncView: View { //custom labels tutorial view
             }
             //Divider()
             Spacer()
-            HStack {
-                Button(action: {
-                    self.presentation.wrappedValue.dismiss()
-                }) {
-                    Text("\(Image(systemName: "arrow.backward")) Back")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
-                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                        .foregroundColor(.primary)
-                        .padding(horizontalSizeClass == .compact ? 20 : 30)
-                        .background(Color(.systemGray5))
-                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-                }
-                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
-                
-                NavigationLink(destination: TryItView()) {
-                    Text("Next \(Image(systemName: "arrow.forward"))")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
-                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                        .foregroundColor(.primary)
-                        .padding(horizontalSizeClass == .compact ? 20 : 30)
-                        .background(Color(.systemGray5))
-                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-                }
-                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
-            } /*
-            .navigationDestination(isPresented: $presentNext) {
-                TryItView()
-            } */
-            .navigationBarTitle("", displayMode: .inline)
         }
+        .navigationBarTitle("", displayMode: .inline)
         .navigationBarHidden(true)
     }
 }
@@ -445,12 +972,6 @@ struct TryItView: View { //interactive little mini sheet to play with
     @State var currGrid = [Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder"), Image(systemName:"plus.viewfinder")]
     var body: some View {
         VStack {
-            GeometryReader { geometry in
-                RoundedRectangle(cornerRadius: 20)
-                    .frame(width: geometry.size.width * (3/totalSheets), height: 5)
-                    .foregroundColor(.purple)
-            }
-            .frame(height: 5)
             Spacer()
             Text("Practice setting up! The example below is fully interactive. You can try setting a time, setting a custom label, as well as adding icons.")
                 .minimumScaleFactor(0.01)
@@ -461,126 +982,115 @@ struct TryItView: View { //interactive little mini sheet to play with
             //Divider()
             ZStack {
                 if horizontalSizeClass != .compact {
-                    LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
-                        Button(action: {showTime.toggle()}) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color(.systemGray5))
-                                    .scaledToFit()
-                                HStack {
-                                    Image(systemName: "square.and.pencil")
-                                        .resizable()
-                                        .minimumScaleFactor(0.01)
-                                        .frame(width: 30, height: 30)
-                                        .padding(.leading)
-                                        .foregroundColor(Color(.systemGray))
-                                    
-                                    Text(currTime)
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.01)
-                                        .font(.system(size: 300,  weight: .bold, design: .rounded))
-                                        .padding(.trailing)
-                                        .foregroundColor(.primary)
+                    VStack {
+                        LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
+                            Button(action: {showTime.toggle()}) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .fill(Color(.systemGray5))
+                                        .scaledToFit()
+                                    HStack {
+                                        Image(systemName: "square.and.pencil")
+                                            .resizable()
+                                            .minimumScaleFactor(0.01)
+                                            .frame(width: 30, height: 30)
+                                            .padding(.leading)
+                                            .foregroundStyle(Color(.systemGray))
+                                        
+                                        Text(currTime)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.01)
+                                            .font(.system(size: 300,  weight: .bold, design: .rounded))
+                                            .padding(.trailing)
+                                            .foregroundStyle(.primary)
+                                    }
                                 }
                             }
-                        }
-                        .foregroundColor(.primary)
-                        ForEach(0..<4, id: \.self) { index in
-                            Button(action:{
-                                currSetIndex = index
-                                showIcons.toggle()}) {
-                                    if currGrid[index] == Image(systemName:"plus.viewfinder") {
-                                        if #available(iOS 15.0, *) {
+                            .foregroundStyle(.primary)
+                            ForEach(0..<4, id: \.self) { index in
+                                Button(action:{
+                                    currSetIndex = index
+                                    showIcons.toggle()}) {
+                                        if currGrid[index] == Image(systemName:"plus.viewfinder") {
                                             Image(systemName: "plus.viewfinder")
                                                 .resizable()
                                                 .scaledToFit()
                                                 .symbolRenderingMode(.hierarchical)
-                                                .foregroundColor(Color(.systemGray))
+                                                .foregroundStyle(Color(.systemGray))
                                                 .padding()
                                         } else {
-                                            Image(systemName: "plus.viewfinder")
+                                            currGrid[index]
                                                 .resizable()
                                                 .scaledToFit()
-                                                .foregroundColor(Color(.systemGray))
-                                                .padding()
+                                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 20)
+                                                        .stroke(.black, lineWidth: 6)
+                                                )
+                                                .padding(5)
+                                                .transition(.asymmetric(insertion: .movingParts.iris(blurRadius: 50), removal: .movingParts.vanish(.purple)))
                                         }
-                                    } else {
-                                        currGrid[index]
-                                            .resizable()
-                                            .scaledToFit()
-                                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 20)
-                                                    .stroke(.black, lineWidth: 6)
-                                            )
-                                            .padding(5)
                                     }
-                                }
-                                .foregroundColor(.primary)
-                        }
-                    }
-                    Divider()
-                    LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
-                        Button(action: {showLabels.toggle()}) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color(.systemGray5))
-                                    .scaledToFit()
-                                HStack {
-                                    Image(systemName: "square.and.pencil")
-                                        .resizable()
-                                        .minimumScaleFactor(0.01)
-                                        .frame(width: 30, height: 30)
-                                        .padding(.leading)
-                                        .foregroundColor(Color(.systemGray))
-                                    
-                                    Text(currLabel)
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.01)
-                                        .font(.system(size: 300,  weight: .bold, design: .rounded))
-                                        .padding(.trailing)
-                                        .foregroundColor(.primary)
-                                }
+                                    .foregroundStyle(.primary)
+                                    .buttonStyle(PlainButtonStyle())
                             }
                         }
-                        .foregroundColor(.primary)
-                        ForEach(4..<8, id: \.self) { index in
-                            Button(action:{
-                                currSetIndex = index
-                                showIcons.toggle()}) {
-                                    if currGrid[index] == Image(systemName:"plus.viewfinder") {
-                                        if #available(iOS 15.0, *) {
+                        Divider()
+                        LazyVGrid(columns: Array(repeating: GridItem(), count: 5)) {
+                            Button(action: {showLabels.toggle()}) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .fill(Color(.systemGray5))
+                                        .scaledToFit()
+                                    HStack {
+                                        Image(systemName: "square.and.pencil")
+                                            .resizable()
+                                            .minimumScaleFactor(0.01)
+                                            .frame(width: 30, height: 30)
+                                            .padding(.leading)
+                                            .foregroundStyle(Color(.systemGray))
+                                        
+                                        Text(currLabel)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.01)
+                                            .font(.system(size: 300,  weight: .bold, design: .rounded))
+                                            .padding(.trailing)
+                                            .foregroundStyle(.primary)
+                                    }
+                                }
+                            }
+                            .foregroundStyle(.primary)
+                            .buttonStyle(PlainButtonStyle())
+                            ForEach(4..<8, id: \.self) { index in
+                                Button(action:{
+                                    currSetIndex = index
+                                    showIcons.toggle()}) {
+                                        if currGrid[index] == Image(systemName:"plus.viewfinder") {
                                             Image(systemName: "plus.viewfinder")
                                                 .resizable()
                                                 .scaledToFit()
                                                 .symbolRenderingMode(.hierarchical)
-                                                .foregroundColor(Color(.systemGray))
+                                                .foregroundStyle(Color(.systemGray))
                                                 .padding()
                                         } else {
-                                            Image(systemName: "plus.viewfinder")
+                                            currGrid[index]
                                                 .resizable()
                                                 .scaledToFit()
-                                                .foregroundColor(Color(.systemGray))
-                                                .padding()
+                                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 20)
+                                                        .stroke(.black, lineWidth: 6)
+                                                )
+                                                .padding(5)
                                         }
-                                    } else {
-                                        currGrid[index]
-                                            .resizable()
-                                            .scaledToFit()
-                                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 20)
-                                                    .stroke(.black, lineWidth: 6)
-                                            )
-                                            .padding(5)
                                     }
-                                }
-                                .foregroundColor(.primary)
+                                    .foregroundStyle(.primary)
+                                    .buttonStyle(PlainButtonStyle())
+                            }
                         }
                     }
                 } else {
                     //iPhone grid here
-                    //TODO: maybe just change the lazyvgrud and have all the sheets and fullscreencovers still work and scale
                     VStack {
                         Picker("Options", selection: $selectedOption) {
                             ForEach(PickerOption.allCases, id: \.self) { option in
@@ -598,37 +1108,30 @@ struct TryItView: View { //interactive little mini sheet to play with
                                             .minimumScaleFactor(0.01)
                                             .frame(width: 30, height: 30)
                                             .padding(.leading)
-                                            .foregroundColor(Color(.systemGray))
+                                            .foregroundStyle(Color(.systemGray))
                                         
                                         Text(currTime)
                                             .lineLimit(1)
                                             .minimumScaleFactor(0.01)
                                             .font(.system(size: 30,  weight: .bold, design: .rounded))
                                             .padding(.trailing)
-                                            .foregroundColor(.primary)
+                                            .foregroundStyle(.primary)
                                     }
                                     .padding(.top)
                                 }
+                                .buttonStyle(PlainButtonStyle())
                                 LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                                     ForEach(0..<4, id: \.self) { index in
                                         Button(action:{
                                             currSetIndex = index
                                             showIcons.toggle()}) {
                                                 if currGrid[index] == Image(systemName:"plus.viewfinder") {
-                                                    if #available(iOS 15.0, *) {
-                                                        Image(systemName: "plus.viewfinder")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .symbolRenderingMode(.hierarchical)
-                                                            .foregroundColor(Color(.systemGray))
-                                                            .padding()
-                                                    } else {
-                                                        Image(systemName: "plus.viewfinder")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .foregroundColor(Color(.systemGray))
-                                                            .padding()
-                                                    }
+                                                    Image(systemName: "plus.viewfinder")
+                                                        .resizable()
+                                                        .scaledToFit()
+                                                        .symbolRenderingMode(.hierarchical)
+                                                        .foregroundStyle(Color(.systemGray))
+                                                        .padding()
                                                 } else {
                                                     currGrid[index]
                                                         .resizable()
@@ -641,7 +1144,8 @@ struct TryItView: View { //interactive little mini sheet to play with
                                                         .padding(5)
                                                 }
                                             }
-                                            .foregroundColor(.primary)
+                                            .foregroundStyle(.primary)
+                                            .buttonStyle(PlainButtonStyle())
                                     }
                                 }
                             }
@@ -658,37 +1162,30 @@ struct TryItView: View { //interactive little mini sheet to play with
                                             .minimumScaleFactor(0.01)
                                             .frame(width: 30, height: 30)
                                             .padding(.leading)
-                                            .foregroundColor(Color(.systemGray))
+                                            .foregroundStyle(Color(.systemGray))
                                         
                                         Text(currLabel)
                                             .lineLimit(1)
                                             .minimumScaleFactor(0.01)
                                             .font(.system(size: 30,  weight: .bold, design: .rounded))
                                             .padding(.trailing)
-                                            .foregroundColor(.primary)
+                                            .foregroundStyle(.primary)
                                     }
                                     .padding(.top)
                                 }
+                                .buttonStyle(PlainButtonStyle())
                                 LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                                     ForEach(4..<8, id: \.self) { index in
                                         Button(action:{
                                             currSetIndex = index
                                             showIcons.toggle()}) {
                                                 if currGrid[index] == Image(systemName:"plus.viewfinder") {
-                                                    if #available(iOS 15.0, *) {
-                                                        Image(systemName: "plus.viewfinder")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .symbolRenderingMode(.hierarchical)
-                                                            .foregroundColor(Color(.systemGray))
-                                                            .padding()
-                                                    } else {
-                                                        Image(systemName: "plus.viewfinder")
-                                                            .resizable()
-                                                            .scaledToFit()
-                                                            .foregroundColor(Color(.systemGray))
-                                                            .padding()
-                                                    }
+                                                    Image(systemName: "plus.viewfinder")
+                                                        .resizable()
+                                                        .scaledToFit()
+                                                        .symbolRenderingMode(.hierarchical)
+                                                        .foregroundStyle(Color(.systemGray))
+                                                        .padding()
                                                 } else {
                                                     currGrid[index]
                                                         .resizable()
@@ -701,7 +1198,7 @@ struct TryItView: View { //interactive little mini sheet to play with
                                                         .padding(5)
                                                 }
                                             }
-                                            .foregroundColor(.primary)
+                                            .foregroundStyle(.primary)
                                     }
                                 }
                             }
@@ -718,11 +1215,13 @@ struct TryItView: View { //interactive little mini sheet to play with
                 AllIconsPickerView(currSheet: SheetObject(), //no sheet to provide tutorial,
                                    currImage: "plus.viewfinder",
                                    modifyIcon: { newIcon in
-                    currGrid[currSetIndex] = loadImage(named: newIcon)
+                    currGrid[currSetIndex] = Image(newIcon)
+                }, modifyCustomIcon: {
+                    //can't modify custom icons in tutorial
                 }, modifyDetails: { newDetails in
                     //no need to modify details here
-                }, modifySheet: {newSheet in
-                    //no need to modify sheet in tutorial
+                }, onDismiss: {
+                    showIcons.toggle()
                 }, showCreateCustom: false,
                 tutorialMode: true)
 
@@ -742,38 +1241,8 @@ struct TryItView: View { //interactive little mini sheet to play with
                 }, oldLabel: $currLabel)
             }
             Spacer()
-            HStack {
-                Button(action: {
-                    self.presentation.wrappedValue.dismiss()
-                }) {
-                    Text("\(Image(systemName: "arrow.backward")) Back")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
-                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                        .foregroundColor(.primary)
-                        .padding(horizontalSizeClass == .compact ? 20 : 30)
-                        .background(Color(.systemGray5))
-                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-                }
-                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
-                
-                NavigationLink(destination: ModIconView()) {
-                    Text("Next \(Image(systemName: "arrow.forward"))")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
-                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                        .foregroundColor(.primary)
-                        .padding(horizontalSizeClass == .compact ? 20 : 30)
-                        .background(Color(.systemGray5))
-                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-                }
-                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
-            } /*
-            .navigationDestination(isPresented: $presentNext) {
-                ModIconView()
-            } */
-            .navigationBarTitle("", displayMode: .inline)
         }
+        .navigationBarTitle("", displayMode: .inline)
         .navigationBarHidden(true)
     }
 }
@@ -786,45 +1255,26 @@ struct ModIconView: View { //tutorial view on completing or removing icon
     @State var showMod = false
     @State var currSetIndex = 0
     @State var isModded = false
-    @State var isComplete = false
     @State var imageArray = [Image("zipup"), Image("trumpet"), Image("sitcrisscross"), Image("playkeyboard")]
     var body: some View {
         VStack {
-            GeometryReader { geometry in
-                RoundedRectangle(cornerRadius: 20)
-                    .frame(width: geometry.size.width * (4/totalSheets), height: 5)
-                    .foregroundColor(.purple)
-            }
-            .frame(height: 5)
             if isModded {
-                if isComplete {
-                    Text("You have completed an icon!")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.01)
-                        .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
-                        .padding(horizontalSizeClass == .compact ? 5 : 15)
-                    Text("Good job. You will be able to view all your completed icons for a individual Sheet after setup. You can try it again, or move on.")
-                        .minimumScaleFactor(0.01)
-                        .multilineTextAlignment(.center)
-                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                } else {
-                    Text("You have removed an icon!")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.01)
-                        .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
-                        .padding(horizontalSizeClass == .compact ? 5 : 15)
-                    Text("Good job. You will be able to view all your removed icons for a individual Sheet after setup. You can try it again, or move on.")
-                        .minimumScaleFactor(0.01)
-                        .multilineTextAlignment(.center)
-                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                }
-            } else {
-                Text("Complete/Remove Your Icons")
+                Text("You have removed an icon!")
                     .lineLimit(1)
                     .minimumScaleFactor(0.01)
                     .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
                     .padding(horizontalSizeClass == .compact ? 5 : 15)
-                Text("After you’re done setting up, you can tap any icon to complete it, or remove it from the Sheet. Try it!")
+                Text("Good job. You will be able to view all your removed icons for all your Sheets, or an individual Sheet, after setup. You can try it again, or move on.")
+                    .minimumScaleFactor(0.01)
+                    .multilineTextAlignment(.center)
+                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+            } else {
+                Text("Remove Your Icons")
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.01)
+                    .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
+                    .padding(horizontalSizeClass == .compact ? 5 : 15)
+                Text("After you’re done setting up, you can tap any icon to remove it from the Sheet. Try it!")
                     .minimumScaleFactor(0.01)
                     .multilineTextAlignment(.center)
                     .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
@@ -853,7 +1303,8 @@ struct ModIconView: View { //tutorial view on completing or removing icon
                                             .padding(5)
                                     }
                                 }
-                                .foregroundColor(.primary)
+                                .foregroundStyle(.primary)
+                                .transition(.asymmetric(insertion: .movingParts.iris(blurRadius: 50), removal: .movingParts.vanish(.purple)))
                         }
                     }
                 } else {
@@ -879,14 +1330,14 @@ struct ModIconView: View { //tutorial view on completing or removing icon
                                                 .padding()
                                         }
                                     }
-                                    .foregroundColor(.primary)
+                                    .foregroundStyle(.primary)
                             }
                             if imageArray.count < 3 {
                                 HStack {
                                     Image(systemName: "square.fill")
                                         .resizable()
                                         .scaledToFit()
-                                        .foregroundColor(.clear)
+                                        .foregroundStyle(.clear)
                                         .padding()
                                 }
                             }
@@ -909,19 +1360,19 @@ struct ModIconView: View { //tutorial view on completing or removing icon
                                 Image(systemName:"xmark.square.fill")
                                     .resizable()
                                     .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
-                                //.fontWeight(.bold)
+                                
                                 Text("Cancel")
                                     .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
                             }
                         }
                         .padding()
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundStyle(Color(.systemGray))
                         
                         Button(action: {
                             showMod.toggle()
                             isModded = true
-                            isComplete = false
                             imageArray.remove(at: currSetIndex)
+                            hapticFeedback(type: 1)
                         }) {
                             VStack {
                                 ZStack {
@@ -931,69 +1382,22 @@ struct ModIconView: View { //tutorial view on completing or removing icon
                                     Image(systemName: "square.slash")
                                         .resizable()
                                         .frame(width: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250), height: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250))
-                                        .foregroundColor(Color(.systemBackground))
+                                        .foregroundStyle(Color(.systemBackground))
+                                        .symbolRenderingMode(.hierarchical)
                                 }
                                 Text("Remove Icon")
                                     .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
                             }
                         }
                         .padding()
-                        .foregroundColor(.red)
-                        
-                        Button(action: {
-                            showMod.toggle()
-                            isModded = true
-                            isComplete = true
-                            imageArray.remove(at: currSetIndex)
-                        }) {
-                            VStack {
-                                Image(systemName: "checkmark.square.fill")
-                                    .resizable()
-                                    .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
-                                //.fontWeight(.bold)
-                                Text("Complete Icon")
-                                    .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
-                            }
-                        }
-                        .padding()
-                        .foregroundColor(.green)
+                        .foregroundStyle(.pink)
                     }
                 }
             }
             
             Spacer()
-            HStack {
-                Button(action: {
-                    self.presentation.wrappedValue.dismiss()
-                }) {
-                    Text("\(Image(systemName: "arrow.backward")) Back")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
-                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                        .foregroundColor(.primary)
-                        .padding(horizontalSizeClass == .compact ? 20 : 30)
-                        .background(Color(.systemGray5))
-                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-                }
-                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
-                
-                NavigationLink(destination: ButtonsView()) {
-                    Text("Next \(Image(systemName: "arrow.forward"))")
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
-                        .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                        .foregroundColor(.primary)
-                        .padding(horizontalSizeClass == .compact ? 20 : 30)
-                        .background(Color(.systemGray5))
-                        .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-                }
-                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
-            } /*
-               .navigationDestination(isPresented: $presentNext) {
-               ButtonsView()
-               } */
-            .navigationBarTitle("", displayMode: .inline)
         }
+        .navigationBarTitle("", displayMode: .inline)
         .navigationBarHidden(true)
     }
 }
@@ -1005,12 +1409,6 @@ struct ButtonsView: View { //view describing the buttons on a sheet
     
     var body: some View {
         VStack {
-            GeometryReader { geometry in
-                RoundedRectangle(cornerRadius: 20)
-                    .frame(width: geometry.size.width * (5/totalSheets), height: 5)
-                    .foregroundColor(.purple)
-            }
-            .frame(height: 5)
             VStack(alignment: .leading) {
                 Spacer()
                 HStack {
@@ -1019,13 +1417,36 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                             .resizable()
                             .padding()
                             .frame(width: min(100, 200), height: min(100, 200))
-                            .foregroundColor(.blue)
+                            .foregroundStyle(.orange)
+                        Image(systemName: "hand.tap")
+                            .resizable()
+                            .frame(width: min(42, 104), height: min(48, 118))
+                            .foregroundStyle(Color(.systemBackground))
+                            .symbolRenderingMode(.hierarchical)
+                    }
+                    VStack(alignment: .leading) {
+                        Text("Communication Board")
+                            .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
+                            .fontWeight(.bold)
+                        Text("Tap to view your Communication Board.")
+                            .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
+                            .foregroundStyle(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
+                    }
+                }
+                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
+                
+                HStack {
+                    ZStack {
+                        Image(systemName: "square.fill")
+                            .resizable()
+                            .padding()
+                            .frame(width: min(100, 200), height: min(100, 200))
+                            .foregroundStyle(.blue)
                         Image(systemName: "pencil")
                             .resizable()
                             .frame(width: min(40, 100), height: min(40, 100))
                             .padding()
-                            //.fontWeight(.semibold)
-                            .foregroundColor(Color(.systemBackground))
+                            .foregroundStyle(Color(.systemBackground))
                     }
                     VStack(alignment: .leading) {
                         Text("Edit Sheet")
@@ -1033,8 +1454,7 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                             .fontWeight(.bold)
                         Text("Tap to edit your current Sheet.")
                             .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
-                            .foregroundColor(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
-                            .fontWeight(.medium)
+                            .foregroundStyle(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
                     }
                 }
                 .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
@@ -1045,13 +1465,12 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                             .resizable()
                             .padding()
                             .frame(width: min(100, 200), height: min(100, 200))
-                            .foregroundColor(Color(.systemGray))
+                            .foregroundStyle(Color(.systemGray))
                         Image(systemName: "gear")
                             .resizable()
                             .frame(width: min(40, 100), height: min(40, 100))
                             .padding()
-                            //.fontWeight(.semibold)
-                            .foregroundColor(Color(.systemBackground))
+                            .foregroundStyle(Color(.systemBackground))
                     }
                     VStack(alignment: .leading) {
                         Text("Settings")
@@ -1059,8 +1478,7 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                             .fontWeight(.bold)
                         Text("Customize Daysy to fit your personal needs and likes.")
                             .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
-                            .foregroundColor(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
-                            .fontWeight(.medium)
+                            .foregroundStyle(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
                     }
                 }
                 .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
@@ -1071,13 +1489,12 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                             .resizable()
                             .padding()
                             .frame(width: min(100, 200), height: min(100, 200))
-                            .foregroundColor(.purple)
+                            .foregroundStyle(.purple)
                         Image(systemName: "square.grid.2x2")
                             .resizable()
                             .frame(width: min(40, 100), height: min(40, 100))
                             .padding()
-                            //.fontWeight(.semibold)
-                            .foregroundColor(Color(.systemBackground))
+                            .foregroundStyle(Color(.systemBackground))
                     }
                     VStack(alignment: .leading) {
                         Text("View All Sheets")
@@ -1085,112 +1502,47 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                             .fontWeight(.bold)
                         Text("Tap to view all your Sheets, and switch between them.")
                             .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
-                            .foregroundColor(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
-                            .fontWeight(.medium)
+                            .foregroundStyle(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
                     }
                 }
                 .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
                 
                 HStack {
                     ZStack {
-                        Image(systemName: "folder.fill")
+                        Image(systemName: "square.fill")
                             .resizable()
                             .padding()
                             .frame(width: min(100, 200), height: min(100, 200))
-                            .foregroundColor(.red)
+                            .foregroundStyle(.pink)
                         Image(systemName: "square.slash")
                             .resizable()
-                            .frame(width: min(25, 35), height: min(25, 35))
+                            .frame(width: min(40, 100), height: min(40, 100))
                             .padding()
-                            .padding(.top)
-                            //.fontWeight(.semibold)
-                            .foregroundColor(Color(.systemBackground))
+                            .foregroundStyle(Color(.systemBackground))
+                            .symbolRenderingMode(.hierarchical)
                     }
                     VStack(alignment: .leading) {
                         Text("View Removed")
                             .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
                             .fontWeight(.bold)
-                        Text("Tap to view all icons that were deleted on the current Sheet.")
+                        Text("Tap to view all icons that were removed from your Sheets.")
                             .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
-                            .foregroundColor(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
-                            .fontWeight(.medium)
-                    }
-                }
-                .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
-                
-                HStack {
-                    ZStack {
-                        Image(systemName: "folder.fill")
-                            .resizable()
-                            .padding()
-                            .frame(width: min(100, 200), height: min(100, 200))
-                            .foregroundColor(.green)
-                        Image(systemName: "checkmark")
-                            .resizable()
-                            .frame(width: min(25, 35), height: min(25, 35))
-                            .padding()
-                            .padding(.top)
-                            //.fontWeight(.semibold)
-                            .foregroundColor(Color(.systemBackground))
-                    }
-                    VStack(alignment: .leading) {
-                        Text("View Completed")
-                            .font(.system(horizontalSizeClass == .compact ? .title3 : .largeTitle, design: .rounded))
-                            .fontWeight(.bold)
-                        Text("Tap to view all icons that were completed on the current Sheet.")
-                            .font(.system(horizontalSizeClass == .compact ? .body : .headline, design: .rounded))
-                            .foregroundColor(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
-                            .fontWeight(.medium)
+                            .foregroundStyle(horizontalSizeClass == .compact ? Color(.systemGray) : .primary)
                     }
                 }
                 .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
                 Spacer()
-                }
             }
+        }
         .navigationBarHidden(true)
-        HStack {
-            Button(action: {
-                self.presentation.wrappedValue.dismiss()
-            }) {
-                Text("\(Image(systemName: "arrow.backward")) Back")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.1)
-                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                    //.fontWeight(.semibold)
-                    .foregroundColor(.primary)
-                    .padding(horizontalSizeClass == .compact ? 20 : 30)
-                    .background(Color(.systemGray5))
-                    .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-            }
-            .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
-            
-            NavigationLink(destination: GotItView()) {
-                Text("Next \(Image(systemName: "arrow.forward"))")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.1)
-                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                //.fontWeight(.semibold)
-                    .foregroundColor(.primary)
-                    .padding(horizontalSizeClass == .compact ? 20 : 30)
-                    .background(Color(.systemGray5))
-                    .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-            }
-            .padding(horizontalSizeClass == .compact ? [.leading, .trailing] : [.top, .bottom, .leading, .trailing], 10)
-        } /*
-        .navigationDestination(isPresented: $presentNext) {
-            GotItView()
-        } */
         .navigationBarTitle("", displayMode: .inline)
     }
 }
 
 struct GotItView: View { //confirmation to go back/create a sheet or to rewatch the tutorial
-    @State var presentNext = false
     @Environment(\.presentationMode) var presentation
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
-    @State var beginSetup = false
-    @State var returnToSheets = false
     var body: some View {
         NavigationView {
             VStack {
@@ -1202,61 +1554,155 @@ struct GotItView: View { //confirmation to go back/create a sheet or to rewatch 
                     .padding(.leading)
                     .padding(.trailing)
                 
+                if horizontalSizeClass == .compact {
+                    VStack {
+                        NavigationLink(destination: SheetTutorialView()) {
+                            
+                            HStack {
+                                Text("\(Image(systemName: "newspaper"))")
+                                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                                    .opacity(0.75)
+                                    .padding(.leading)
+                                Text("Learn about Sheets")
+                                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                                    .lineLimit(1)
+                                    .padding()
+                                Text("\(Image(systemName: "chevron.forward"))")
+                                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                                    .opacity(0.4)
+                                    .padding(.trailing)
+                            }
+                            .foregroundStyle(.white)
+                            .padding([.top, .bottom])
+                            .background(Color.purple)
+                            .cornerRadius(20)
+                            .padding([.leading, .trailing])
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        NavigationLink(destination: BoardTutorialView()) {
+                            HStack {
+                                Text("\(Image(systemName: "hand.tap"))")
+                                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                                    .opacity(0.75)
+                                    .padding(.leading)
+                                    .symbolRenderingMode(.hierarchical)
+                                Text("Learn about Board")
+                                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                                    .lineLimit(1)
+                                    .padding()
+                                Text("\(Image(systemName: "chevron.forward"))")
+                                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                                    .opacity(0.4)
+                                    .padding(.trailing)
+                            }
+                            .foregroundStyle(.white)
+                            .padding([.top, .bottom])
+                            .background(Color.orange)
+                            .cornerRadius(20)
+                            .padding([.leading, .trailing])
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                    .navigationBarTitle("", displayMode: .inline)
+                } else {
+                    VStack {
+                        NavigationLink(destination: SheetTutorialView()) {
+                            HStack {
+                                Spacer()
+                                HStack {
+                                    Text("\(Image(systemName: "newspaper"))")
+                                        .font(.system(size: 45, weight: .bold, design: .rounded))
+                                        .opacity(0.75)
+                                        .padding()
+                                    Text("Learn about Sheets")
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .lineLimit(1)
+                                        .padding()
+                                    Text("\(Image(systemName: "chevron.forward"))")
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .opacity(0.4)
+                                        .padding()
+                                }
+                                .foregroundStyle(.white)
+                                .padding([.top, .bottom])
+                                .background(Color.purple)
+                                .cornerRadius(30)
+                                .padding([.leading, .trailing])
+                                .padding([.leading, .trailing])
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .padding(.bottom)
+                        
+                        NavigationLink(destination: BoardTutorialView()) {
+                            HStack {
+                                Spacer()
+                                HStack {
+                                    Text("\(Image(systemName: "hand.tap"))")
+                                        .font(.system(size: 45, weight: .bold, design: .rounded))
+                                        .opacity(0.75)
+                                        .padding()
+                                        .symbolRenderingMode(.hierarchical)
+                                    Text("Learn about Board")
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .lineLimit(1)
+                                        .padding()
+                                    Text("\(Image(systemName: "chevron.forward"))")
+                                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                                        .opacity(0.4)
+                                        .padding()
+                                }
+                                .foregroundStyle(.white)
+                                .padding([.top, .bottom])
+                                .background(Color.orange)
+                                .cornerRadius(30)
+                                .padding([.leading, .trailing])
+                                .padding([.leading, .trailing])
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                    .padding()
+                    .padding([.leading, .trailing])
+                    .navigationBarTitle("", displayMode: .inline)
+                }
+                
+                Divider().padding()
+                
                 if defaults.bool(forKey: "completedTutorial") {
                     NavigationLink(destination: ContentView()) {
-                        Text("\(Image(systemName: "square.grid.3x3.square")) Return to Sheets")
-                            .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
+                        Text(defaults.bool(forKey: "communicationDefaultMode") ? "\(Image(systemName: "hand.tap")) Return to Board" : "\(Image(systemName: "newspaper")) Return to Sheets")
+                            .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
                             .fontWeight(.semibold)
-                            .foregroundColor(.primary)
+                            .foregroundStyle(.primary)
                             .padding()
                             .padding()
                             .background(Color(.systemGray5))
-                            .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
+                            .cornerRadius(horizontalSizeClass == .compact ? 20 : 30)
+                            .symbolRenderingMode(.hierarchical)
                     }
                     .padding()
                     .navigationViewStyle(StackNavigationViewStyle())
+                    .navigationBarHidden(true)
+                    .buttonStyle(PlainButtonStyle())
                 } else {
                     NavigationLink(destination: ContentView()) {
-                        Text("\(Image(systemName: "square.grid.3x3.square")) Begin Setup")
-                            .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
+                        Text("\(Image(systemName: "checklist")) Begin Setup")
+                            .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
                             .fontWeight(.semibold)
-                            .foregroundColor(.primary)
+                            .foregroundStyle(.primary)
                             .padding()
                             .padding()
                             .background(Color(.systemGray5))
-                            .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
+                            .cornerRadius(horizontalSizeClass == .compact ? 20 : 30)
                     }
                     .padding()
+                    .navigationBarHidden(true)
+                    .buttonStyle(PlainButtonStyle())
                 }
-                
-                Text("or")
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.01)
-                    .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
-                    .foregroundColor(Color(.systemGray))
-                
-                NavigationLink(destination: TimeslotView()) {
-                        Text("\(Image(systemName: "arrow.counterclockwise")) Restart Tutorial")
-                        .font(.system(size: horizontalSizeClass == .compact ? 25 : 40, weight: .bold, design: .rounded))
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                            .padding()
-                            .padding()
-                            .background(Color(.systemGray5))
-                            .cornerRadius(horizontalSizeClass == .compact ? 15 : 25)
-                }
-                .padding()
-                .padding()/*
-                .navigationDestination(isPresented: $presentNext) {
-                    TimeslotView()
-                }
-                .navigationBarTitle("", displayMode: .inline)
-                .navigationDestination(isPresented: $beginSetup) {
-                    ContentView()
-                }
-                .navigationDestination(isPresented: $returnToSheets) {
-                    ContentView()
-                } */
                 Spacer()
             }
         }
@@ -1270,7 +1716,7 @@ struct TutorialModView: View { //fix with binding variables to show the icon
     @Binding var currIndex: Int
     var body: some View {
         if currIndex >= currImageArray.count {
-            loadSystemImage(named: "text.below.photo")
+            Image(systemName: "text.below.photo")
                 .resizable()
                 .scaledToFit()
                 .padding()
@@ -1289,5 +1735,5 @@ struct TutorialModView: View { //fix with binding variables to show the icon
 }
 
 #Preview {
-    TutorialView()
+    WelcomeView()
 }

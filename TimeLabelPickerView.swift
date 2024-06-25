@@ -62,15 +62,15 @@ struct TimePickerView: View {
                     Image(systemName:"xmark.square.fill")
                         .resizable()
                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                    //.fontWeight(.bold)
-                        .foregroundColor(Color(.systemGray))
+                    
+                        .foregroundStyle(Color(.systemGray))
                         .padding()
                 } else {
                     Image(systemName:"checkmark.square.fill")
                         .resizable()
                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                    //.fontWeight(.bold)
-                        .foregroundColor(.green)
+                    
+                        .foregroundStyle(.green)
                         .padding()
                 }
             }
@@ -84,6 +84,8 @@ struct LabelPickerView: View {
     @Environment(\.presentationMode) var presentation
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
+    @FocusState var isLabelFocused: Bool
+    
     @State var currLabel = ""
     var oldLabel = ""
     @State private var suggestedWords: [String] = []
@@ -93,7 +95,7 @@ struct LabelPickerView: View {
             Spacer()
             ZStack {
                 TextField("Your Label", text: $currLabel)
-                //.focused($isLabelFocused)
+                    .focused($isLabelFocused)
                     .font(.system(size: horizontalSizeClass == .compact ? 35 : 65, weight: .semibold, design: .rounded))
                     .padding()
                     .background(
@@ -117,7 +119,7 @@ struct LabelPickerView: View {
                                     RoundedRectangle(cornerRadius: 10)
                                         .fill(Color(.systemGray5))
                                 )
-                                .foregroundColor(.purple)
+                                .foregroundStyle(.purple)
                         }
                     }
                 }
@@ -125,7 +127,7 @@ struct LabelPickerView: View {
                     Text("filler")
                         .font(.headline)
                         .padding(2)
-                        .foregroundColor(.clear)
+                        .foregroundStyle(.clear)
                 }
             }
             Spacer()
@@ -141,13 +143,13 @@ struct LabelPickerView: View {
                     Image(systemName:"xmark.square.fill")
                         .resizable()
                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundStyle(Color(.systemGray))
                         .padding()
                 } else {
                     Image(systemName:"checkmark.square.fill")
                         .resizable()
                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                        .foregroundColor(.green)
+                        .foregroundStyle(.green)
                         .padding()
                 }
             }

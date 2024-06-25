@@ -32,7 +32,7 @@ struct LoadingText: View {
         HStack(spacing: 0) {
             ForEach(items.indices) { index in
                 Text(items[index])
-                    .foregroundColor(primaryColor)
+                    .foregroundStyle(primaryColor)
                     .font(.system(size: frame.height / 3, weight: .semibold, design: .default))
                     .offset(y: counter == index ? -frame.height / 8 : 0)
             }

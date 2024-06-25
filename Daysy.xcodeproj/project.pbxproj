@@ -3,12 +3,18 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D40ABA252C0E14D30056C5EB /* Pow in Frameworks */ = {isa = PBXBuildFile; productRef = D40ABA242C0E14D30056C5EB /* Pow */; };
+		D41543F52C1774A300230F39 /* ImpulseBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41543F42C1774A300230F39 /* ImpulseBarView.swift */; };
+		D41543F62C1774A300230F39 /* BarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41543F02C1774A300230F39 /* BarView.swift */; };
+		D41543F72C1774A300230F39 /* DefaultSectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41543F32C1774A300230F39 /* DefaultSectorView.swift */; };
+		D41543F82C1774A300230F39 /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41543F22C1774A300230F39 /* CircleView.swift */; };
+		D41543F92C1774A300230F39 /* DashBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41543F12C1774A300230F39 /* DashBarView.swift */; };
+		D41543FD2C17942C00230F39 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D41543FC2C17942C00230F39 /* Assets.xcassets */; };
 		D41E55042AE9509D003E8E91 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41E55032AE9509D003E8E91 /* SettingsView.swift */; };
-		D42B7AA52AFD726500619894 /* CustomIconsFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B7AA42AFD726500619894 /* CustomIconsFunctions.swift */; };
 		D4427A512AEDC95700C9DDB9 /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4427A502AEDC95700C9DDB9 /* DebugView.swift */; };
 		D44985922B028494003084DA /* DaysyStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44985912B028494003084DA /* DaysyStructs.swift */; };
 		D44985942B0284DD003084DA /* DaysyItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44985932B0284DC003084DA /* DaysyItems.swift */; };
@@ -17,13 +23,11 @@
 		D47074972BE95AA30084A8BF /* TimeLabelPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47074962BE95AA30084A8BF /* TimeLabelPickerView.swift */; };
 		D470F9BD2BF2B6C400E4B2BA /* MobileNetV2.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = D470F9BC2BF2B6C400E4B2BA /* MobileNetV2.mlmodel */; };
 		D476EFAD2BEC076700745F0D /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D476EFAC2BEC076700745F0D /* Launch Screen.storyboard */; };
-		D49C44562B06633300362DD5 /* CustomIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49C44552B06633300362DD5 /* CustomIconView.swift */; };
+		D480F2962C0A06310071A659 /* CreateIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D480F2952C0A06310071A659 /* CreateIconView.swift */; };
+		D49782772C0F5582009440D5 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = D49782762C0F5582009440D5 /* OpenAI */; };
 		D49C44582B0B085F00362DD5 /* CustomPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49C44572B0B085F00362DD5 /* CustomPasswordView.swift */; };
 		D4ADEDF42BE2C6B20039FA48 /* AllIconsPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4ADEDF32BE2C6B20039FA48 /* AllIconsPickerView.swift */; };
-		D4ADEDF62BE4360E0039FA48 /* OpenAIStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4ADEDF52BE4360E0039FA48 /* OpenAIStuff.swift */; };
-		D4B4D70F2AF4502A0003D5EA /* StatsDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B4D70E2AF4502A0003D5EA /* StatsDetailView.swift */; };
-		D4B4D7132AF4974C0003D5EA /* ModImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B4D7122AF4974C0003D5EA /* ModImageView.swift */; };
-		D4E076892BEC09A100A3A74E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4E076882BEC09A100A3A74E /* Assets.xcassets */; };
+		D4ADEDF62BE4360E0039FA48 /* PrivateKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4ADEDF52BE4360E0039FA48 /* PrivateKeys.swift */; };
 		D4E696242AE1A097004AEF99 /* DaysyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E696232AE1A097004AEF99 /* DaysyApp.swift */; };
 		D4E696262AE1A097004AEF99 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E696252AE1A097004AEF99 /* ContentView.swift */; };
 		D4E6962B2AE1A09C004AEF99 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4E6962A2AE1A09C004AEF99 /* Preview Assets.xcassets */; };
@@ -31,6 +35,7 @@
 		D4E6963F2AE1A09C004AEF99 /* DaysyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E6963E2AE1A09C004AEF99 /* DaysyUITests.swift */; };
 		D4E696412AE1A09C004AEF99 /* DaysyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E696402AE1A09C004AEF99 /* DaysyUITestsLaunchTests.swift */; };
 		D4E696502AE428E0004AEF99 /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E6964F2AE428E0004AEF99 /* TutorialView.swift */; };
+		D4EB24332C21D2D30072CAC3 /* SupaTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EB24322C21D2D30072CAC3 /* SupaTestView.swift */; };
 		D4EEDD142BD98D8A008114D5 /* LoadingBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EEDCFD2BD98D8A008114D5 /* LoadingBar.swift */; };
 		D4EEDD152BD98D8A008114D5 /* LoadingBarStripes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EEDCFE2BD98D8A008114D5 /* LoadingBarStripes.swift */; };
 		D4EEDD162BD98D8A008114D5 /* LoadingCircleBars.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EEDCFF2BD98D8A008114D5 /* LoadingCircleBars.swift */; };
@@ -55,6 +60,7 @@
 		D4EEDD292BD98D8A008114D5 /* LoadingThreeBallsTriangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EEDD122BD98D8A008114D5 /* LoadingThreeBallsTriangle.swift */; };
 		D4EEDD2B2BD99076008114D5 /* LoadingPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EEDD2A2BD99076008114D5 /* LoadingPreviewView.swift */; };
 		D4EEDD2D2BD9DFE6008114D5 /* CommunicationBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EEDD2C2BD9DFE6008114D5 /* CommunicationBoardView.swift */; };
+		D4F40EAF2C01260E00544A92 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F40EAE2C01260E00544A92 /* CanvasView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,23 +94,25 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D41543F02C1774A300230F39 /* BarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarView.swift; sourceTree = "<group>"; };
+		D41543F12C1774A300230F39 /* DashBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashBarView.swift; sourceTree = "<group>"; };
+		D41543F22C1774A300230F39 /* CircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleView.swift; sourceTree = "<group>"; };
+		D41543F32C1774A300230F39 /* DefaultSectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultSectorView.swift; sourceTree = "<group>"; };
+		D41543F42C1774A300230F39 /* ImpulseBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpulseBarView.swift; sourceTree = "<group>"; };
+		D41543FC2C17942C00230F39 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D41E55032AE9509D003E8E91 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SettingsView.swift; path = ../SettingsView.swift; sourceTree = "<group>"; };
-		D42B7AA42AFD726500619894 /* CustomIconsFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomIconsFunctions.swift; sourceTree = "<group>"; };
-		D4427A502AEDC95700C9DDB9 /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DebugView.swift; path = ../DebugView.swift; sourceTree = "<group>"; };
-		D44985912B028494003084DA /* DaysyStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyStructs.swift; sourceTree = "<group>"; };
-		D44985932B0284DC003084DA /* DaysyItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyItems.swift; sourceTree = "<group>"; };
-		D44985952B02852E003084DA /* DaysyFuncs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyFuncs.swift; sourceTree = "<group>"; };
+		D4427A502AEDC95700C9DDB9 /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
+		D44985912B028494003084DA /* DaysyStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyStructs.swift; sourceTree = SOURCE_ROOT; };
+		D44985932B0284DC003084DA /* DaysyItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyItems.swift; sourceTree = SOURCE_ROOT; };
+		D44985952B02852E003084DA /* DaysyFuncs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyFuncs.swift; sourceTree = SOURCE_ROOT; };
 		D44B50F62AF1465C00AF0511 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StatisticsView.swift; path = ../StatisticsView.swift; sourceTree = "<group>"; };
-		D47074962BE95AA30084A8BF /* TimeLabelPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLabelPickerView.swift; sourceTree = "<group>"; };
+		D47074962BE95AA30084A8BF /* TimeLabelPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TimeLabelPickerView.swift; path = ../TimeLabelPickerView.swift; sourceTree = "<group>"; };
 		D470F9BC2BF2B6C400E4B2BA /* MobileNetV2.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = MobileNetV2.mlmodel; sourceTree = "<group>"; };
 		D476EFAC2BEC076700745F0D /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		D49C44552B06633300362DD5 /* CustomIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CustomIconView.swift; path = ../CustomIconView.swift; sourceTree = "<group>"; };
+		D480F2952C0A06310071A659 /* CreateIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateIconView.swift; sourceTree = "<group>"; };
 		D49C44572B0B085F00362DD5 /* CustomPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPasswordView.swift; sourceTree = "<group>"; };
-		D4ADEDF32BE2C6B20039FA48 /* AllIconsPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllIconsPickerView.swift; sourceTree = "<group>"; };
-		D4ADEDF52BE4360E0039FA48 /* OpenAIStuff.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenAIStuff.swift; sourceTree = "<group>"; };
-		D4B4D70E2AF4502A0003D5EA /* StatsDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsDetailView.swift; sourceTree = "<group>"; };
-		D4B4D7122AF4974C0003D5EA /* ModImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModImageView.swift; sourceTree = "<group>"; };
-		D4E076882BEC09A100A3A74E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D4ADEDF32BE2C6B20039FA48 /* AllIconsPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AllIconsPickerView.swift; path = ../AllIconsPickerView.swift; sourceTree = "<group>"; };
+		D4ADEDF52BE4360E0039FA48 /* PrivateKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivateKeys.swift; sourceTree = "<group>"; };
 		D4E696202AE1A097004AEF99 /* Daysy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daysy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4E696232AE1A097004AEF99 /* DaysyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyApp.swift; sourceTree = "<group>"; };
 		D4E696252AE1A097004AEF99 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -115,6 +123,7 @@
 		D4E6963E2AE1A09C004AEF99 /* DaysyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyUITests.swift; sourceTree = "<group>"; };
 		D4E696402AE1A09C004AEF99 /* DaysyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		D4E6964F2AE428E0004AEF99 /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
+		D4EB24322C21D2D30072CAC3 /* SupaTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SupaTestView.swift; path = Daysy/SupaTestView.swift; sourceTree = "<group>"; };
 		D4EEDCFD2BD98D8A008114D5 /* LoadingBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingBar.swift; sourceTree = "<group>"; };
 		D4EEDCFE2BD98D8A008114D5 /* LoadingBarStripes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingBarStripes.swift; sourceTree = "<group>"; };
 		D4EEDCFF2BD98D8A008114D5 /* LoadingCircleBars.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingCircleBars.swift; sourceTree = "<group>"; };
@@ -139,6 +148,7 @@
 		D4EEDD122BD98D8A008114D5 /* LoadingThreeBallsTriangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingThreeBallsTriangle.swift; sourceTree = "<group>"; };
 		D4EEDD2A2BD99076008114D5 /* LoadingPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingPreviewView.swift; sourceTree = "<group>"; };
 		D4EEDD2C2BD9DFE6008114D5 /* CommunicationBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunicationBoardView.swift; sourceTree = "<group>"; };
+		D4F40EAE2C01260E00544A92 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		D4F89E2B2B15363600089DB8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -147,6 +157,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D40ABA252C0E14D30056C5EB /* Pow in Frameworks */,
+				D49782772C0F5582009440D5 /* OpenAI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,23 +179,43 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D41543EF2C1774A300230F39 /* Indicators */ = {
+			isa = PBXGroup;
+			children = (
+				D41543F02C1774A300230F39 /* BarView.swift */,
+				D41543F22C1774A300230F39 /* CircleView.swift */,
+				D41543F12C1774A300230F39 /* DashBarView.swift */,
+				D41543F32C1774A300230F39 /* DefaultSectorView.swift */,
+				D41543F42C1774A300230F39 /* ImpulseBarView.swift */,
+			);
+			path = Indicators;
+			sourceTree = "<group>";
+		};
+		D49F10922C1A4E5E00C84EEB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		D4E696172AE1A097004AEF99 = {
 			isa = PBXGroup;
 			children = (
 				D470F9BC2BF2B6C400E4B2BA /* MobileNetV2.mlmodel */,
 				D476EFAC2BEC076700745F0D /* Launch Screen.storyboard */,
+				D4427A502AEDC95700C9DDB9 /* DebugView.swift */,
 				D44985952B02852E003084DA /* DaysyFuncs.swift */,
 				D44985932B0284DC003084DA /* DaysyItems.swift */,
 				D44985912B028494003084DA /* DaysyStructs.swift */,
-				D4ADEDF32BE2C6B20039FA48 /* AllIconsPickerView.swift */,
-				D47074962BE95AA30084A8BF /* TimeLabelPickerView.swift */,
-				D42B7AA42AFD726500619894 /* CustomIconsFunctions.swift */,
-				D4ADEDF52BE4360E0039FA48 /* OpenAIStuff.swift */,
+				D4EB24322C21D2D30072CAC3 /* SupaTestView.swift */,
+				D4ADEDF52BE4360E0039FA48 /* PrivateKeys.swift */,
 				D4E696222AE1A097004AEF99 /* Daysy */,
 				D4EEDD132BD98D8A008114D5 /* Animations */,
+				D41543EF2C1774A300230F39 /* Indicators */,
 				D4E696332AE1A09C004AEF99 /* DaysyTests */,
 				D4E6963D2AE1A09C004AEF99 /* DaysyUITests */,
 				D4E696212AE1A097004AEF99 /* Products */,
+				D49F10922C1A4E5E00C84EEB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -201,18 +233,18 @@
 			isa = PBXGroup;
 			children = (
 				D4F89E2B2B15363600089DB8 /* Info.plist */,
-				D4E076882BEC09A100A3A74E /* Assets.xcassets */,
+				D41543FC2C17942C00230F39 /* Assets.xcassets */,
 				D4E696232AE1A097004AEF99 /* DaysyApp.swift */,
+				D480F2952C0A06310071A659 /* CreateIconView.swift */,
+				D4ADEDF32BE2C6B20039FA48 /* AllIconsPickerView.swift */,
+				D47074962BE95AA30084A8BF /* TimeLabelPickerView.swift */,
 				D4E696252AE1A097004AEF99 /* ContentView.swift */,
-				D49C44552B06633300362DD5 /* CustomIconView.swift */,
+				D4F40EAE2C01260E00544A92 /* CanvasView.swift */,
 				D4E6964F2AE428E0004AEF99 /* TutorialView.swift */,
 				D4EEDD2C2BD9DFE6008114D5 /* CommunicationBoardView.swift */,
 				D49C44572B0B085F00362DD5 /* CustomPasswordView.swift */,
-				D4B4D7122AF4974C0003D5EA /* ModImageView.swift */,
 				D41E55032AE9509D003E8E91 /* SettingsView.swift */,
 				D44B50F62AF1465C00AF0511 /* StatisticsView.swift */,
-				D4B4D70E2AF4502A0003D5EA /* StatsDetailView.swift */,
-				D4427A502AEDC95700C9DDB9 /* DebugView.swift */,
 				D4E696292AE1A09C004AEF99 /* Preview Content */,
 			);
 			path = Daysy;
@@ -291,6 +323,8 @@
 			);
 			name = Daysy;
 			packageProductDependencies = (
+				D40ABA242C0E14D30056C5EB /* Pow */,
+				D49782762C0F5582009440D5 /* OpenAI */,
 			);
 			productName = Daysy;
 			productReference = D4E696202AE1A097004AEF99 /* Daysy.app */;
@@ -356,7 +390,7 @@
 				};
 			};
 			buildConfigurationList = D4E6961B2AE1A097004AEF99 /* Build configuration list for PBXProject "Daysy" */;
-			compatibilityVersion = "Xcode 14.0";
+			compatibilityVersion = "Xcode 15.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -365,6 +399,8 @@
 			);
 			mainGroup = D4E696172AE1A097004AEF99;
 			packageReferences = (
+				D40ABA232C0E14D30056C5EB /* XCRemoteSwiftPackageReference "Pow" */,
+				D49782752C0F5582009440D5 /* XCRemoteSwiftPackageReference "OpenAI" */,
 			);
 			productRefGroup = D4E696212AE1A097004AEF99 /* Products */;
 			projectDirPath = "";
@@ -383,7 +419,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D476EFAD2BEC076700745F0D /* Launch Screen.storyboard in Resources */,
-				D4E076892BEC09A100A3A74E /* Assets.xcassets in Resources */,
+				D41543FD2C17942C00230F39 /* Assets.xcassets in Resources */,
 				D4E6962B2AE1A09C004AEF99 /* Preview Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -413,12 +449,11 @@
 				D4EEDD262BD98D8A008114D5 /* LoadingThreeBalls.swift in Sources */,
 				D49C44582B0B085F00362DD5 /* CustomPasswordView.swift in Sources */,
 				D4EEDD282BD98D8A008114D5 /* LoadingThreeBallsRotation.swift in Sources */,
-				D49C44562B06633300362DD5 /* CustomIconView.swift in Sources */,
 				D4EEDD1C2BD98D8A008114D5 /* LoadingFiveLinesCenter.swift in Sources */,
-				D4B4D70F2AF4502A0003D5EA /* StatsDetailView.swift in Sources */,
 				D44985962B02852E003084DA /* DaysyFuncs.swift in Sources */,
 				D4EEDD1D2BD98D8A008114D5 /* LoadingFiveLinesChronological.swift in Sources */,
-				D4ADEDF62BE4360E0039FA48 /* OpenAIStuff.swift in Sources */,
+				D4F40EAF2C01260E00544A92 /* CanvasView.swift in Sources */,
+				D4ADEDF62BE4360E0039FA48 /* PrivateKeys.swift in Sources */,
 				D4E696262AE1A097004AEF99 /* ContentView.swift in Sources */,
 				D47074972BE95AA30084A8BF /* TimeLabelPickerView.swift in Sources */,
 				D4427A512AEDC95700C9DDB9 /* DebugView.swift in Sources */,
@@ -431,10 +466,15 @@
 				D4EEDD162BD98D8A008114D5 /* LoadingCircleBars.swift in Sources */,
 				D4EEDD252BD98D8A008114D5 /* LoadingText.swift in Sources */,
 				D4EEDD272BD98D8A008114D5 /* LoadingThreeBallsBouncing.swift in Sources */,
+				D41543F62C1774A300230F39 /* BarView.swift in Sources */,
 				D4EEDD222BD98D8A008114D5 /* LoadingPulse.swift in Sources */,
 				D4EEDD292BD98D8A008114D5 /* LoadingThreeBallsTriangle.swift in Sources */,
+				D41543F92C1774A300230F39 /* DashBarView.swift in Sources */,
+				D480F2962C0A06310071A659 /* CreateIconView.swift in Sources */,
 				D41E55042AE9509D003E8E91 /* SettingsView.swift in Sources */,
+				D4EB24332C21D2D30072CAC3 /* SupaTestView.swift in Sources */,
 				D4EEDD2B2BD99076008114D5 /* LoadingPreviewView.swift in Sources */,
+				D41543F72C1774A300230F39 /* DefaultSectorView.swift in Sources */,
 				D44B50F72AF1465C00AF0511 /* StatisticsView.swift in Sources */,
 				D4EEDD1A2BD98D8A008114D5 /* LoadingDoubleHelix.swift in Sources */,
 				D4EEDD182BD98D8A008114D5 /* LoadingCircleRunner.swift in Sources */,
@@ -444,11 +484,11 @@
 				D44985922B028494003084DA /* DaysyStructs.swift in Sources */,
 				D4EEDD172BD98D8A008114D5 /* LoadingCircleBlinks.swift in Sources */,
 				D4EEDD2D2BD9DFE6008114D5 /* CommunicationBoardView.swift in Sources */,
-				D42B7AA52AFD726500619894 /* CustomIconsFunctions.swift in Sources */,
 				D4E696502AE428E0004AEF99 /* TutorialView.swift in Sources */,
 				D4EEDD1F2BD98D8A008114D5 /* LoadingFiveLinesWave.swift in Sources */,
+				D41543F52C1774A300230F39 /* ImpulseBarView.swift in Sources */,
 				D4EEDD212BD98D8A008114D5 /* LoadingIndicator.swift in Sources */,
-				D4B4D7132AF4974C0003D5EA /* ModImageView.swift in Sources */,
+				D41543F82C1774A300230F39 /* CircleView.swift in Sources */,
 				D4EEDD202BD98D8A008114D5 /* LoadingHeart.swift in Sources */,
 				D4EEDD152BD98D8A008114D5 /* LoadingBarStripes.swift in Sources */,
 			);
@@ -539,7 +579,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -597,7 +637,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -613,8 +653,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_ASSET_PATHS = "\"Daysy/Preview Content\"";
 				DEVELOPMENT_TEAM = Z435YPV42W;
 				ENABLE_PREVIEWS = YES;
@@ -632,14 +674,15 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Alex.Daysy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = NO;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -653,8 +696,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_ASSET_PATHS = "\"Daysy/Preview Content\"";
 				DEVELOPMENT_TEAM = Z435YPV42W;
 				ENABLE_PREVIEWS = YES;
@@ -672,14 +717,15 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Alex.Daysy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = NO;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -804,6 +850,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D40ABA232C0E14D30056C5EB /* XCRemoteSwiftPackageReference "Pow" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/EmergeTools/Pow";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
+		D49782752C0F5582009440D5 /* XCRemoteSwiftPackageReference "OpenAI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MacPaw/OpenAI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.9;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D40ABA242C0E14D30056C5EB /* Pow */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D40ABA232C0E14D30056C5EB /* XCRemoteSwiftPackageReference "Pow" */;
+			productName = Pow;
+		};
+		D49782762C0F5582009440D5 /* OpenAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D49782752C0F5582009440D5 /* XCRemoteSwiftPackageReference "OpenAI" */;
+			productName = OpenAI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D4E696182AE1A097004AEF99 /* Project object */;
 }

@@ -14,13 +14,13 @@ struct DaysyApp: App {
     
     var body: some Scene {
         WindowGroup {
-             //DebugView()
-             // /*
+            //             DebugView()
+            // /*
             if defaults.bool(forKey: "completedTutorial") {
-                //TutorialView()
+                //                WelcomeView()
                 ContentView()
             } else {
-                TutorialView()
+                WelcomeView()
             }
             // */
         }

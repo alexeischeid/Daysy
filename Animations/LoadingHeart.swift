@@ -24,7 +24,7 @@ struct LoadingHeart: View {
     var body: some View {
         Image(systemName: "heart.fill")
             .font(.system(size: frame.height * 0.9))
-            .foregroundColor(primaryColor)
+            .foregroundStyle(primaryColor)
             .scaleEffect(isAnimating ? 1.0 : 0.3)
             .animation(Animation.easeInOut(duration: timing).repeatForever(autoreverses: true))
             .rotationEffect(Angle(degrees: isAnimating ? 360 : 0))
