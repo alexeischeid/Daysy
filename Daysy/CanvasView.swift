@@ -52,7 +52,7 @@ struct CanvasView: View {
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .font(.largeTitle)
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(.gray)
                 }
             }
         }
@@ -71,7 +71,7 @@ struct CanvasView: View {
                 } else {
                     Image(systemName: "eraser")
                         .font(.largeTitle)
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(.gray)
                 }
             } else {
                 if color == selectedColor {

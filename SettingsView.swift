@@ -124,7 +124,7 @@ struct SettingsView: View {
                      .foregroundStyle(.white)
                      Image(systemName: aiOn ? "poweron" : "poweroff")
                      .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
-                     .foregroundStyle(Color(.systemGray))
+                     .foregroundStyle(.gray)
                      }
                      .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
                      .offset(x:aiOn ? offSet : -offSet)
@@ -170,7 +170,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.white)
                                 Image(systemName: speakOn ? "poweron" : "poweroff")
                                     .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
-                                    .foregroundStyle(Color(.systemGray))
+                                    .foregroundStyle(.gray)
                             }
                             .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
                             //.offset(x:exampleEmptyOn ? (horizontalSizeClass == .compact ? 18 : -18) : (horizontalSizeClass == .compact ? offSet : -offSet))
@@ -217,7 +217,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.white)
                                 Image(systemName: currSlotOn ? "poweron" : "poweroff")
                                     .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
-                                    .foregroundStyle(Color(.systemGray))
+                                    .foregroundStyle(.gray)
                             }
                             .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
                             .offset(x:currSlotOn ? offSet : -offSet)
@@ -263,7 +263,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.white)
                                 Image(systemName: buttonsOn ? "poweron" : "poweroff")
                                     .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
-                                    .foregroundStyle(Color(.systemGray))
+                                    .foregroundStyle(.gray)
                             }
                             .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
                             .offset(x:buttonsOn ? offSet : -offSet)
@@ -318,7 +318,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.white)
                                 Image(systemName: notifsOn ? "poweron" : "poweroff")
                                     .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
-                                    .foregroundStyle(Color(.systemGray))
+                                    .foregroundStyle(.gray)
                             }
                             .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
                             .offset(x:notifsOn ? offSet : -offSet)
@@ -356,7 +356,7 @@ struct SettingsView: View {
                             }), secondaryButton: .cancel()
                         )
                     }
-                    
+                    /*
                     HStack { //empty slots setting, same format as the rest below here
                         Button(action: {
                             showEmpty.toggle()
@@ -386,7 +386,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.white)
                                 Image(systemName: emptyOn ? "poweron" : "poweroff")
                                     .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
-                                    .foregroundStyle(Color(.systemGray))
+                                    .foregroundStyle(.gray)
                             }
                             .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
                             .offset(x:emptyOn ? offSet : -offSet)
@@ -402,7 +402,7 @@ struct SettingsView: View {
                     }
                     .background(Color(.systemGray5))
                     .cornerRadius(horizontalSizeClass == .compact ? 20 : 30)
-                    
+                    */
                     NavigationLink(destination: SheetTutorialView()) {
                         HStack {
                             Text("\(Image(systemName: "newspaper"))")
@@ -476,7 +476,7 @@ struct SettingsView: View {
                                             .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                                             .lineLimit(1)
                                             .padding([.top, .bottom, .leading], horizontalSizeClass == .compact ? 5 : 10)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.gray)
                                         Text("Back")
                                             .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
                                             .lineLimit(1)
@@ -576,7 +576,7 @@ struct SettingsView: View {
                         Spacer()
                     }
                     .background(
-                        LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                        LinearGradient(gradient: Gradient(colors: [Color(.systemBackground), Color(.systemBackground),  Color.clear]), startPoint: .bottom, endPoint: .top)
                             .ignoresSafeArea()
                     )
                 }
@@ -608,7 +608,7 @@ struct SettingsView: View {
                             Text("When using Timeslots, Daysy will send you a notification if you have uncompleted icons, when when your next timeslot starts.")
                                 .minimumScaleFactor(0.01)
                                 .font(.system(size: horizontalSizeClass == .compact ? 17 : 25, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color(.systemGray))
+                                .foregroundStyle(.gray)
                                 .multilineTextAlignment(horizontalSizeClass == .compact ? .leading : .center)
                                 .padding(.bottom)
                         }
@@ -684,7 +684,7 @@ struct SettingsView: View {
                             Text("The buttons to remove an icon, and the bottom buttons on a Sheet will be locked.")
                                 .minimumScaleFactor(0.01)
                                 .font(.system(size: horizontalSizeClass == .compact ? 17 : 25, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color(.systemGray))
+                                .foregroundStyle(.gray)
                                 .multilineTextAlignment(horizontalSizeClass == .compact ? .leading : .center)
                                 .padding(.bottom)
                         }
@@ -721,7 +721,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.white)
                                 Image(systemName: exampleButtonsOn ? "poweron" : "poweroff")
                                     .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
-                                    .foregroundStyle(Color(.systemGray))
+                                    .foregroundStyle(.gray)
                             }
                             .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
                             //.offset(x:exampleEmptyOn ? (horizontalSizeClass == .compact ? 18 : -18) : (horizontalSizeClass == .compact ? offSet : -offSet))
@@ -741,7 +741,7 @@ struct SettingsView: View {
                                 .resizable()
                                 .padding()
                                 .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                .foregroundStyle(Color(.systemGray))
+                                .foregroundStyle(.gray)
                         }
                         .padding()
                     } else {
@@ -837,7 +837,7 @@ struct SettingsView: View {
                                                 Image(systemName: "square.fill")
                                                     .resizable()
                                                     .frame(width: 65, height: 65)
-                                                    .foregroundStyle(Color(.systemGray))
+                                                    .foregroundStyle(.gray)
                                                 Image(systemName: "gear")
                                                     .resizable()
                                                     .frame(width: min(30, 75), height: min(30, 75))
@@ -903,7 +903,7 @@ struct SettingsView: View {
                                         Image(systemName: "square.fill")
                                             .resizable()
                                             .frame(width: 75, height: 75)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.gray)
                                         Image(systemName: "gear")
                                             .resizable()
                                             .frame(width: min(40, 100), height: min(40, 100))
@@ -949,7 +949,7 @@ struct SettingsView: View {
                             Text("When you tap an icon, Daysy will speak the name of the icon out loud.")
                                 .minimumScaleFactor(0.01)
                                 .font(.system(size: horizontalSizeClass == .compact ? 17 : 25, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color(.systemGray))
+                                .foregroundStyle(.gray)
                                 .multilineTextAlignment(horizontalSizeClass == .compact ? .leading : .center)
                                 .padding(.bottom)
                         }
@@ -995,11 +995,11 @@ struct SettingsView: View {
                         //                                            } else {
                         //                                                Text("\(Image(systemName: "circle"))")
                         //                                                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
-                        //                                                    .foregroundStyle(Color(.systemGray))
+                        //                                                    .foregroundStyle(.gray)
                         //                                            }
                         //                                            Text(voice.rawValue.capitalized)
                         //                                                .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .bold, design: .rounded))
-                        //                                                .foregroundStyle(currAiVoice == voice  ? .white : Color(.systemGray))
+                        //                                                .foregroundStyle(currAiVoice == voice  ? .white : .gray)
                         //                                                .lineLimit(1)
                         //                                                .minimumScaleFactor(0.1)
                         //                                                .opacity(currAiVoice == voice ? 1.0 : 0.8)
@@ -1031,7 +1031,7 @@ struct SettingsView: View {
                                         } else {
                                             Text("\(Image(systemName: "circle"))")
                                                 .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
-                                                .foregroundStyle(Color(.systemGray))
+                                                .foregroundStyle(.gray)
                                         }
                                         VStack(alignment: .leading) {
                                             Text(item[1])
@@ -1041,7 +1041,7 @@ struct SettingsView: View {
                                                 .minimumScaleFactor(0.1)
                                             Text(languageNames[item[0]]!)
                                                 .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .bold, design: .rounded))
-                                                .foregroundStyle(currVoice == item[2] ? .white : Color(.systemGray))
+                                                .foregroundStyle(currVoice == item[2] ? .white : .gray)
                                                 .lineLimit(1)
                                                 .minimumScaleFactor(0.1)
                                                 .opacity(currVoice == item[2] ? 0.8 : 1.0)
@@ -1082,7 +1082,7 @@ struct SettingsView: View {
                                             } else {
                                                 Text("\(Image(systemName: "circle"))")
                                                     .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
-                                                    .foregroundStyle(Color(.systemGray))
+                                                    .foregroundStyle(.gray)
                                             }
                                             Text(key)
                                                 .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
@@ -1114,7 +1114,7 @@ struct SettingsView: View {
                             Text("Daysy will automatically remove empty Slots from your Sheet, and organize the remaining icons.")
                                 .minimumScaleFactor(0.01)
                                 .font(.system(size: horizontalSizeClass == .compact ? 17 : 25, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color(.systemGray))
+                                .foregroundStyle(.gray)
                                 .multilineTextAlignment(horizontalSizeClass == .compact ? .leading : .center)
                                 .padding(.bottom)
                         }
@@ -1145,14 +1145,14 @@ struct SettingsView: View {
                             ZStack {
                                 Capsule()
                                     .frame(width: horizontalSizeClass == .compact ? 80 : 160,height: horizontalSizeClass == .compact ? 44 : 88)
-                                    .foregroundStyle(exampleEmptyOn ? .green : Color(.systemGray))
+                                    .foregroundStyle(exampleEmptyOn ? .green : .gray)
                                 ZStack{
                                     Circle()
                                         .frame(width: horizontalSizeClass == .compact ? 40 : 80, height: horizontalSizeClass == .compact ? 40 : 80)
                                         .foregroundStyle(.white)
                                     Image(systemName: exampleEmptyOn ? "poweron" : "poweroff")
                                         .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
-                                        .foregroundStyle(Color(.systemGray))
+                                        .foregroundStyle(.gray)
                                 }
                                 .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
                                 .offset(x:exampleEmptyOn ? offSet : -offSet)
@@ -1400,7 +1400,7 @@ struct SettingsView: View {
                             Text("When viewing a sheet with Timeslots, Daysy will highlight the currently active Timeslot in green, making it easier to identify.")
                                 .minimumScaleFactor(0.01)
                                 .font(.system(size: horizontalSizeClass == .compact ? 17 : 25, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color(.systemGray))
+                                .foregroundStyle(.gray)
                                 .multilineTextAlignment(horizontalSizeClass == .compact ? .leading : .center)
                                 .padding(.bottom)
                         }
@@ -1437,7 +1437,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.white)
                                 Image(systemName: exampleSlotOn ? "poweron" : "poweroff")
                                     .font( horizontalSizeClass == .compact ? Font.title3.weight(.black) : Font.largeTitle.weight(.black))
-                                    .foregroundStyle(Color(.systemGray))
+                                    .foregroundStyle(.gray)
                             }
                             .shadow(color: .black.opacity(0.14), radius: 4, x: 0, y: 2)
                             //.offset(x:exampleEmptyOn ? (horizontalSizeClass == .compact ? 18 : -18) : (horizontalSizeClass == .compact ? offSet : -offSet))
@@ -1615,7 +1615,7 @@ struct CustomToggleStyle: ToggleStyle { //for the custom toggle switches
             configuration.isOn.toggle()
         }) {
             RoundedRectangle(cornerRadius: size.height / 2)
-                .fill(configuration.isOn ? Color.green : Color(.systemGray))
+                .fill(configuration.isOn ? Color.green : .gray)
                 .frame(width: size.width, height: size.height)
                 .overlay(
                     RoundedRectangle(cornerRadius: size.height / 2)

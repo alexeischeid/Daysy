@@ -51,7 +51,7 @@ struct StatisticsView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.01)
                         .font(.system(size: horizontalSizeClass == .compact ? 20 : 35, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(.gray)
                         .padding()
                     
                     VStack {
@@ -88,7 +88,7 @@ struct StatisticsView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.01)
                         .font(.system(size: horizontalSizeClass == .compact ? 20 : 35, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(.gray)
                         .padding()
                     ScrollView(.horizontal) {
                         HStack {
@@ -129,7 +129,7 @@ struct StatisticsView: View {
                                         }
                                         Text("Used \(howmany(in: usage, for:mostIcons[item])) times")
                                             .font(.title3)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.gray)
                                     }
                                 }
                             }
@@ -160,7 +160,7 @@ struct StatisticsView: View {
                     Spacer()
                 }
                 .background(
-                    LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                    LinearGradient(gradient: Gradient(colors: [Color(.systemBackground), Color(.systemBackground), Color.clear]), startPoint: .bottom, endPoint: .top)
                         .ignoresSafeArea()
                 )
             }

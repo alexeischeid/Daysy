@@ -180,7 +180,7 @@ struct AllIconsPickerView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(.gray)
                         .padding()
                         .padding()
                 }
@@ -202,7 +202,7 @@ struct AllIconsPickerView: View {
                                         .scaledToFill()
                                         .symbolRenderingMode(.hierarchical)
                                 }
-                                .foregroundStyle(Color(.systemGray))
+                                .foregroundStyle(.gray)
                                 .padding(.leading, horizontalSizeClass == .compact ? 5 : 0)
                                 .padding(horizontalSizeClass == .compact ? 3 : 10)
 //                                .dropDestination(for: Data.self) { items, location in
@@ -373,7 +373,7 @@ struct AllIconsPickerView: View {
                                 
                             }
                             .padding()
-                            .foregroundStyle(Color(.systemGray))
+                            .foregroundStyle(.gray)
                         }
                         
                         if currImage != "plus.viewfinder" && !currImage.isEmpty{
@@ -420,7 +420,7 @@ struct AllIconsPickerView: View {
                     Spacer()
                 }
                 .background(
-                    LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                    LinearGradient(gradient: Gradient(colors: [Color(.systemBackground), Color(.systemBackground), Color.clear]), startPoint: .bottom, endPoint: .top)
                         .ignoresSafeArea()
                 )
             }

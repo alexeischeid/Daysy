@@ -15,6 +15,8 @@ struct CommunicationBoardView: View {
     
     var onDismiss: () -> Void
     
+    @Namespace private var animation
+    
     @State private var orientation = UIDeviceOrientation.unknown
     @State private var lastOrientation = UIDeviceOrientation.unknown
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
@@ -88,7 +90,7 @@ struct CommunicationBoardView: View {
                                 .minimumScaleFactor(0.01)
                                 .multilineTextAlignment(.center)
                                 .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color(.systemGray))
+                                .foregroundStyle(.gray)
                                 .padding()
                                 .padding()
                                 .padding(.top, tappedIcons.count > 0 && showSearch ? 100 : 0)
@@ -598,7 +600,7 @@ struct CommunicationBoardView: View {
                                                 } else {
                                                     Text("\(Image(systemName: "circle"))")
                                                         .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
-                                                        .foregroundStyle(Color(.systemGray))
+                                                        .foregroundStyle(.gray)
                                                 }
                                                 VStack(alignment: .leading) {
                                                     Text(item[1])
@@ -608,7 +610,7 @@ struct CommunicationBoardView: View {
                                                         .minimumScaleFactor(0.1)
                                                     Text(languageNames[item[0]]!)
                                                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .bold, design: .rounded))
-                                                        .foregroundStyle(currVoice == item[2] ? .white : Color(.systemGray))
+                                                        .foregroundStyle(currVoice == item[2] ? .white : .gray)
                                                         .lineLimit(1)
                                                         .minimumScaleFactor(0.1)
                                                         .opacity(currVoice == item[2] ? 0.8 : 1.0)
@@ -663,15 +665,21 @@ struct CommunicationBoardView: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.01)
                             .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
+                            .focused($focusFolder)
                         }
                         Spacer()
                         Button(action: {
+                            focusFolder = false
                             if currFolderName != "\(Image(systemName: "star.fill")) Most Used" {
                                 if currFolder.count <= 1 {
                                     withAnimation(.spring) {
                                         currCommunicationBoard.remove(at: currFolderIndex)
                                         commBoardIndices.remove(at: currFolderIndex)
                                     }
+                                    saveCommunicationBoard(currCommunicationBoard)
+                                } else {
+                                    currFolder[0] = currFolderName
+                                    currCommunicationBoard[currFolderIndex] = currFolder
                                     saveCommunicationBoard(currCommunicationBoard)
                                 }
                             }
@@ -686,7 +694,7 @@ struct CommunicationBoardView: View {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.5)
                                 .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color(.systemGray))
+                                .foregroundStyle(.gray)
                                 .padding()
                         }
                         
@@ -739,7 +747,7 @@ struct CommunicationBoardView: View {
                                     .minimumScaleFactor(0.01)
                                     .multilineTextAlignment(.center)
                                     .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .bold, design: .rounded))
-                                    .foregroundStyle(Color(.systemGray))
+                                    .foregroundStyle(.gray)
                             } else {
                                 LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 75 : 130))], spacing: 0) {
                                     ForEach(1..<currFolder.count, id: \.self) { key in //first display custom icon results
@@ -915,8 +923,8 @@ struct CommunicationBoardView: View {
                 .transition(.move(edge: .bottom))
                 .padding()
                 .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(.systemGray4))
+                    .thinMaterial,
+                    in: RoundedRectangle(cornerRadius: 20)
                 )
                 .padding(25)
                 .padding(.top, tappedIcons.count > 0 ? 100 : 0)
@@ -951,11 +959,16 @@ struct CommunicationBoardView: View {
                         }
                         Spacer()
                         Button(action: {
+                            focusFolder = false
                             if currFolderName != "\(Image(systemName: "star.fill")) Most Used" {
                                 if currFolder.count <= 1 {
                                     withAnimation(.spring) {
                                         currCommunicationBoard.remove(at: currFolderIndex)
                                     }
+                                    saveCommunicationBoard(currCommunicationBoard)
+                                } else {
+                                    currFolder[0] = currFolderName
+                                    currCommunicationBoard[currFolderIndex] = currFolder
                                     saveCommunicationBoard(currCommunicationBoard)
                                 }
                             }
@@ -971,7 +984,7 @@ struct CommunicationBoardView: View {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.5)
                                 .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color(.systemGray))
+                                .foregroundStyle(.gray)
                                 .padding()
                         }
                         
@@ -982,7 +995,7 @@ struct CommunicationBoardView: View {
                                 .minimumScaleFactor(0.01)
                                 .multilineTextAlignment(.center)
                                 .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color(.systemGray))
+                                .foregroundStyle(.gray)
                         } else {
                             LazyVGrid(columns: [GridItem(.adaptive(minimum: horizontalSizeClass == .compact ? 75 : 130))], spacing: 0) {
                                 ForEach(1..<currFolder.count, id: \.self) { key in
@@ -1143,8 +1156,8 @@ struct CommunicationBoardView: View {
                 .transition(.move(edge: .bottom))
                 .padding()
                 .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(.systemGray4))
+                    .thinMaterial,
+                    in: RoundedRectangle(cornerRadius: 20)
                 )
                 .padding(25)
                 .padding(.top, tappedIcons.count > 0 ? 100 : 0)
@@ -1181,7 +1194,7 @@ struct CommunicationBoardView: View {
                                             //                                                .draggable(Image(tappedIcons[key]))
                                                 .padding(.trailing, 5)
                                                 .foregroundStyle(.primary)
-                                                .transition(.movingParts.boing)
+                                                .transition(.identity.combined(with: .opacity))
                                         } else {
                                             Image(uiImage: customIconPreviews[tappedIcons[icon]] ?? UIImage(systemName: "square.fill")!)
                                                 .resizable()
@@ -1193,7 +1206,7 @@ struct CommunicationBoardView: View {
                                                 )
                                                 .padding(.trailing, 5)
                                                 .foregroundStyle(.primary)
-                                                .transition(.movingParts.boing)
+                                                .transition(.identity.combined(with: .opacity))
                                                 .accessibilityLabel(extractKey(from: tappedIcons[icon]))
                                         }
                                     }
@@ -1223,7 +1236,7 @@ struct CommunicationBoardView: View {
                     .transition(.opacity)
                     .padding(.bottom, openMenu && horizontalSizeClass == .compact ? 0 : 20)
                     .background(
-                        LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1), Color.clear.opacity(0)]), startPoint: .top, endPoint: .bottom)
+                        LinearGradient(gradient: Gradient(colors: [Color(.systemBackground), Color(.systemBackground), Color.clear]), startPoint: .top, endPoint: .bottom)
                             .ignoresSafeArea()
                     )
                 }
@@ -1243,7 +1256,7 @@ struct CommunicationBoardView: View {
                                         Image(systemName: "xmark.circle.fill")
                                             .resizable()
                                             .frame(width: horizontalSizeClass == .compact ? 50 : 75, height: horizontalSizeClass == .compact ? 50 : 75)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.gray)
                                     }
                                     TextField("\(Image(systemName: "magnifyingglass")) Search", text: $searchText)
                                         .focused($focusSearch)
@@ -1251,8 +1264,8 @@ struct CommunicationBoardView: View {
                                         .font(.system(size: horizontalSizeClass == .compact ? 40 : 65, weight: .semibold,  design: .rounded))
                                         .padding()
                                         .background(
-                                            RoundedRectangle(cornerRadius: 20)
-                                                .fill(Color(.systemGray6))
+                                            Color(.systemGray6),
+                                            in: RoundedRectangle(cornerRadius: 20)
                                         )
                                 }
                                 .shadow(color: Color(.systemBackground), radius: 10.0)
@@ -1270,7 +1283,7 @@ struct CommunicationBoardView: View {
                                         Image(systemName: "xmark.circle.fill")
                                             .resizable()
                                             .frame(width: horizontalSizeClass == .compact ? 50 : 75, height: horizontalSizeClass == .compact ? 50 : 75)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.gray)
                                             .symbolRenderingMode(.hierarchical)
                                     }
                                     TextEditor(text: $typeText)
@@ -1348,7 +1361,7 @@ struct CommunicationBoardView: View {
                                             Image(systemName: "lock.square.fill")
                                                 .resizable()
                                                 .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
-                                                .foregroundStyle(Color(.systemGray))
+                                                .foregroundStyle(.gray)
                                         }
                                     }
                                     Button(action: {
@@ -1362,7 +1375,7 @@ struct CommunicationBoardView: View {
                                                 Image(systemName: "square.fill")
                                                     .resizable()
                                                     .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
-                                                    .foregroundStyle(Color(.systemGray))
+                                                    .foregroundStyle(.gray)
                                                 Image(systemName: "magnifyingglass")
                                                     .resizable()
                                                     .frame(width: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100), height: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100))
@@ -1382,7 +1395,7 @@ struct CommunicationBoardView: View {
                                                 Image(systemName: "square.fill")
                                                     .resizable()
                                                     .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
-                                                    .foregroundStyle(Color(.systemGray))
+                                                    .foregroundStyle(.gray)
                                                 Image(systemName: "keyboard")
                                                     .resizable()
                                                     .frame(width: horizontalSizeClass == .compact ? min(39, 98) : min(40, 100), height: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100))
@@ -1467,7 +1480,7 @@ struct CommunicationBoardView: View {
                                                     Image(systemName: "square.fill")
                                                         .resizable()
                                                         .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
-                                                        .foregroundStyle(Color(.systemGray))
+                                                        .foregroundStyle(.gray)
                                                     Image(systemName: "gear")
                                                         .resizable()
                                                         .frame(width: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100), height: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100))
@@ -1498,9 +1511,8 @@ struct CommunicationBoardView: View {
                                 .transition(.move(edge: .trailing))
                                 .padding()
                                 .background(
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color(.systemGray6))
-                                        .shadow(color: Color(.systemGray6), radius: 15.0)
+                                    .thinMaterial,
+                                    in: RoundedRectangle(cornerRadius: 20)
                                 )
                             }
                         }
@@ -1517,11 +1529,11 @@ struct CommunicationBoardView: View {
                                         Image(systemName: "square.fill")
                                             .resizable()
                                             .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.thickMaterial)
                                             .shadow(color: Color(.systemBackground), radius: 15.0)
-                                        Text("\(Image(systemName: openMenu ? "square.3.layers.3d.slash" : "square.3.layers.3d"))")
+                                        Text("\(Image(systemName: openMenu ? "menucard.fill" : "menucard"))")
                                             .font(.system(size: horizontalSizeClass == .compact ? 30 : 40))
-                                            .foregroundStyle(Color(.systemGray6))
+                                            .foregroundStyle(.gray)
                                             .symbolRenderingMode(openMenu ? .hierarchical : .monochrome)
                                     }
                                     .padding(.trailing)
@@ -1596,8 +1608,8 @@ struct CommunicationBoardView: View {
                 .font(.system(size: horizontalSizeClass == .compact ? 35 : 65, weight: .semibold, design: .rounded))
                 .padding()
                 .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(.systemGray5))
+                    .thinMaterial,
+                    in: RoundedRectangle(cornerRadius: 20)
                 )
                 .padding([.leading, .trailing])
                 Spacer()
@@ -1614,7 +1626,7 @@ struct CommunicationBoardView: View {
                         Image(systemName:"xmark.square.fill")
                             .resizable()
                             .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                            .foregroundStyle(Color(.systemGray))
+                            .foregroundStyle(.gray)
                             .padding()
                     } else {
                         Image(systemName:"checkmark.square.fill")

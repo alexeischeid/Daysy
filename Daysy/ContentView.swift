@@ -13,6 +13,8 @@ import Pow
 
 struct ContentView: View {
     
+    @Namespace private var animation
+    
     @StateObject private var speechDelegate = SpeechSynthesizerDelegate()
     @Environment(\.presentationMode) var presentation
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
@@ -27,7 +29,6 @@ struct ContentView: View {
     
     //for contentview
     @State var editMode = false
-    @State var wasEditing = false
     @State var showIcons = false
     @State var showTime = false
     @State var showLabels = false
@@ -78,12 +79,9 @@ struct ContentView: View {
         ZStack {
             if showCommunication {
                 CommunicationBoardView(onDismiss: {
-                    //                    defaults.set(false, forKey: "communicationDefaultMode")
-                    //                    lockButtonsOn = defaults.bool(forKey: "buttonsOn")
-                    //                    showCurrentSlot = defaults.bool(forKey: "showCurrSlot")
-                    //                    speakIcons = defaults.bool(forKey: "speakOn")
                     showCommunication.toggle()
                     animate.toggle()
+                    currCommunicationBoard = loadCommunicationBoard()
                     if showCurrentSlot {
                         currGreenSlot = currSheet.getCurrSlot()
                     }
@@ -109,9 +107,7 @@ struct ContentView: View {
                                     if editMode {
                                         HStack {
                                             Button(action: {
-                                                if editMode {
-                                                    pickIcon.toggle()
-                                                }
+                                                pickIcon.toggle()
                                             }) {
                                                 if currSheet.currLabelIcon != nil && !currSheet.currLabelIcon!.isEmpty {
                                                     if UIImage(named: currSheet.currLabelIcon!) == nil {
@@ -124,7 +120,8 @@ struct ContentView: View {
                                                                     .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
                                                             )
                                                             .padding(horizontalSizeClass == .compact ? 2 : 10)
-                                                            .transition(.asymmetric(insertion: .movingParts.filmExposure, removal: .movingParts.vanish(.purple)))
+                                                            .matchedGeometryEffect(id: "SheetLabelIcon", in: animation)
+                                                            .transition(.asymmetric(insertion: .opacity.combined(with: .scale), removal: .opacity.combined(with: .scale)))
                                                     } else if !currSheet.currLabelIcon!.isEmpty {
                                                         Image(currSheet.currLabelIcon!)
                                                             .scaledToFit()
@@ -136,13 +133,15 @@ struct ContentView: View {
                                                                     .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
                                                             )
                                                             .padding(horizontalSizeClass == .compact ? 2 : 10)
-                                                            .transition(.asymmetric(insertion: .movingParts.filmExposure, removal: .movingParts.vanish(.purple)))
+                                                            .matchedGeometryEffect(id: "SheetLabelIcon", in: animation)
+                                                            .transition(.asymmetric(insertion: .opacity.combined(with: .scale), removal: .opacity.combined(with: .scale)))
                                                     } else {
                                                         Image(systemName: "plus.square.dashed")
                                                             .resizable()
                                                             .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
                                                             .symbolRenderingMode(.hierarchical)
-                                                            .foregroundStyle(Color(.systemGray))
+                                                            .foregroundStyle(.gray)
+                                                            .matchedGeometryEffect(id: "SheetLabelIcon", in: animation)
                                                             .padding(horizontalSizeClass == .compact ? 2 : 10)
                                                     }
                                                 } else {
@@ -150,7 +149,8 @@ struct ContentView: View {
                                                         .resizable()
                                                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
                                                         .symbolRenderingMode(.hierarchical)
-                                                        .foregroundStyle(Color(.systemGray))
+                                                        .foregroundStyle(.gray)
+                                                        .matchedGeometryEffect(id: "SheetLabelIcon", in: animation)
                                                         .padding(horizontalSizeClass == .compact ? 2 : 10)
                                                 }
                                             }
@@ -172,12 +172,13 @@ struct ContentView: View {
                                                 .font(.system(size: horizontalSizeClass == .compact ? 50 : 100, weight: .semibold, design: .rounded))
                                                 .padding()
                                                 .background(
-                                                    RoundedRectangle(cornerRadius: 20)
-                                                        .fill(Color(.systemGray4))
+                                                    Color(.systemGray4),
+                                                    in: RoundedRectangle(cornerRadius: 20)
                                                 )
                                                 .onChange(of: currTitleText, perform: { _ in
                                                     suggestedWords = updateSuggestedWords(currLabel: currTitleText)
                                                 })
+                                                .matchedGeometryEffect(id: "SheetLabel", in: animation)
                                                 .padding(horizontalSizeClass == .compact ? 2 : 10)
                                                 
                                                 if isTitleTextFieldActive {
@@ -192,8 +193,8 @@ struct ContentView: View {
                                                                         .font(.headline)
                                                                         .padding()
                                                                         .background(
-                                                                            RoundedRectangle(cornerRadius: 10)
-                                                                                .fill(Color(.systemGray5))
+                                                                            Color(.systemGray5),
+                                                                            in: RoundedRectangle(cornerRadius: 20)
                                                                         )
                                                                         .foregroundStyle(.purple)
                                                                 }
@@ -221,6 +222,7 @@ struct ContentView: View {
                                                             RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16)
                                                                 .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
                                                         )
+                                                        .matchedGeometryEffect(id: "SheetLabelIcon", in: animation)
                                                         .padding(horizontalSizeClass == .compact ? 2 : 10)
                                                 } else if !currSheet.currLabelIcon!.isEmpty {
                                                     Image(currSheet.currLabelIcon!)
@@ -232,6 +234,7 @@ struct ContentView: View {
                                                             RoundedRectangle(cornerRadius: horizontalSizeClass == .compact ? 8 : 16)
                                                                 .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 1 : 3)
                                                         )
+                                                        .matchedGeometryEffect(id: "SheetLabelIcon", in: animation)
                                                         .padding(horizontalSizeClass == .compact ? 2 : 10)
                                                 }
                                             }
@@ -239,6 +242,7 @@ struct ContentView: View {
                                                 .lineLimit(1)
                                                 .minimumScaleFactor(0.01)
                                                 .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
+                                                .matchedGeometryEffect(id: "SheetLabel", in: animation)
                                                 .padding(horizontalSizeClass == .compact ? 2 : 10)
                                         }
                                     }
@@ -259,7 +263,7 @@ struct ContentView: View {
                                                                 .resizable()
                                                                 .minimumScaleFactor(0.01)
                                                                 .frame(width: 30, height: 30)
-                                                                .foregroundStyle(Color(.systemGray))
+                                                                .foregroundStyle(.gray)
                                                                 .padding(.trailing)
                                                         }
                                                         
@@ -313,7 +317,7 @@ struct ContentView: View {
                                                                 .resizable()
                                                                 .minimumScaleFactor(0.01)
                                                                 .frame(width: 30, height: 30)
-                                                                .foregroundStyle(Color(.systemGray))
+                                                                .foregroundStyle(.gray)
                                                         }
                                                         
                                                         Text(currSheet.currGrid[list].currLabel)
@@ -364,19 +368,21 @@ struct ContentView: View {
                                                                 showIcons.toggle()
                                                                 searchText = ""
                                                             } else if !currSheet.currGrid[list].currIcons[slot].currIcon.isEmpty {
-                                                                currListIndex = list
-                                                                currSlotIndex = slot
-                                                                 showMod.toggle()
-                                                                hapticFeedback()
-                                                                tempDetails = []
-                                                                Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
-                                                                    tempDetails = currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? []
-                                                                    checkDetails = currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? []
-                                                                    animate.toggle()
-                                                                }
-                                                                unlockButtons = false
-                                                                speechDelegate.stopSpeaking()
-                                                                speechDelegate.speak(currSheet.currGrid[list].currIcons[slot].currIcon)
+                                                                    currListIndex = list
+                                                                    currSlotIndex = slot
+                                                                    withAnimation(.spring) {
+                                                                        showMod.toggle()
+                                                                        unlockButtons = false
+                                                                    }
+                                                                    hapticFeedback()
+                                                                    tempDetails = []
+                                                                    Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
+                                                                        tempDetails = currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? []
+                                                                        checkDetails = currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? []
+                                                                        animate.toggle()
+                                                                    }
+                                                                    speechDelegate.stopSpeaking()
+                                                                    speechDelegate.speak(currSheet.currGrid[list].currIcons[slot].currIcon)
                                                             }
                                                         }) {
                                                             if getCustomPECSAddresses()[currSheet.currGrid[list].currIcons[slot].currIcon] == nil && UIImage(named: currSheet.currGrid[list].currIcons[slot].currIcon) == nil { //if there isnt an icon
@@ -385,7 +391,7 @@ struct ContentView: View {
                                                                         .resizable()
                                                                         .scaledToFit()
                                                                         .symbolRenderingMode(.hierarchical)
-                                                                        .foregroundStyle(editMode ? Color(.systemGray) : .clear)
+                                                                        .foregroundStyle(.gray)
                                                                 }
                                                             } else {
                                                                 ZStack {
@@ -424,9 +430,10 @@ struct ContentView: View {
                                                                         Spacer()
                                                                     }
                                                                 }
-                                                                .transition(.asymmetric(insertion: .movingParts.filmExposure, removal: .movingParts.vanish(.purple)))
+                                                                .transition(.asymmetric(insertion: .opacity.combined(with: .scale), removal: .opacity.combined(with: .scale)))
                                                             }
                                                         }
+                                                        .matchedGeometryEffect(id: "\(list)\(slot)", in: animation)
                                                         .contextMenu {
                                                             if lockButtonsOn && !unlockButtons {
                                                                 Button {
@@ -478,8 +485,9 @@ struct ContentView: View {
                                                                         }
                                                                         currListIndex = list
                                                                         currSlotIndex = slot
-                                                                        if !editMode {editMode.toggle()} else {wasEditing.toggle()}
-                                                                        showMod.toggle()
+                                                                        withAnimation(.spring) {
+                                                                            showMod.toggle()
+                                                                        }
                                                                     } label: {
                                                                         Label("Add Details", systemImage: "plus.square.on.square")
                                                                     }
@@ -523,57 +531,10 @@ struct ContentView: View {
                                                             }
                                                         }
                                                         .padding()
-                                                        //                                                        .dropDestination(for: Data.self) { items, location in
-                                                        //                                                            guard let item = items.first else {
-                                                        //                                                                return false
-                                                        //                                                            }
-                                                        //
-                                                        //                                                            guard let uiImage = UIImage(data: item) else {
-                                                        //                                                                return false
-                                                        //                                                            }
-                                                        //
-                                                        //                                                            // Extract text from the image
-                                                        //                                                            let labelText = labelImage(input: uiImage)
-                                                        //                                                            let labelTextComponents = labelText.components(separatedBy: ", ")
-                                                        //                                                            guard let currCustomIconText = labelTextComponents.first else {
-                                                        //                                                                return false
-                                                        //                                                            }
-                                                        //
-                                                        //                                                            // Get custom addresses dictionary
-                                                        //                                                            var customPECSAddresses = getCustomPECSAddresses()
-                                                        //
-                                                        //                                                            var iconText = currCustomIconText
-                                                        //                                                            if customPECSAddresses[iconText] != nil || allPECS.contains(iconText) {
-                                                        //                                                                var i = 1
-                                                        //                                                                while customPECSAddresses["\(i)#id\(iconText)"] != nil || allPECS.contains("\(i)#id\(iconText)") {
-                                                        //                                                                    i += 1
-                                                        //                                                                }
-                                                        //                                                                iconText = "\(i)#id\(iconText)"
-                                                        //                                                            }
-                                                        //
-                                                        //                                                            // Save the image and update the dictionary
-                                                        //                                                            let savedPath = saveImageToDocumentsDirectory(uiImage)
-                                                        //                                                            customPECSAddresses[iconText] = savedPath
-                                                        //                                                            saveCustomPECSAddresses(customPECSAddresses)
-                                                        //
-                                                        //                                                            currSheet.currGrid[list].currIcons[slot].currIcon = iconText
-                                                        //                                                            var newSheetArray = loadSheetArray()
-                                                        //                                                            newSheetArray[currSheetIndex] = currSheet
-                                                        //                                                            currSheet = newSheetArray[currSheetIndex]
-                                                        //                                                            saveSheetArray(sheetObjects: newSheetArray)
-                                                        //                                                            Task {
-                                                        //                                                                do {
-                                                        //                                                                    customIconPreviews = await getCustomIconPreviews()
-                                                        //                                                                }
-                                                        //                                                            }
-                                                        //                                                            animate.toggle()
-                                                        //                                                            return true
-                                                        //                                                        }
                                                     }
                                                 }
                                                 if editMode {
                                                     Button(action: {
-                                                        //if you spam click delete on the last row on iPad, it will try to delete through the animation which results in a crash from attempting to delete an index that doesnt exist. This is just a hacky fix that doesnt let you delete things less than one second apart (which shouldnt be an issue anyways)
                                                         if !deleteAnimationFix {
                                                             deleteAnimationFix = true
                                                             Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
@@ -607,8 +568,10 @@ struct ContentView: View {
                                                     .padding(.leading)
                                                 }
                                             }
-                                            .background(currGreenSlot == list && !editMode && showCurrentSlot ? .green : Color(.systemGray6))
-                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .background(
+                                                currGreenSlot == list && !editMode && showCurrentSlot ? .green : Color(.systemGray6),
+                                                in: RoundedRectangle(cornerRadius: 20)
+                                            )
                                             .padding()
                                             
                                         }
@@ -640,7 +603,7 @@ struct ContentView: View {
                                                                                 .resizable()
                                                                                 .minimumScaleFactor(0.01)
                                                                                 .frame(width: 30, height: 30)
-                                                                                .foregroundStyle(Color(.systemGray))
+                                                                                .foregroundStyle(.gray)
                                                                         }
                                                                         
                                                                         Text(getTime(date: currSheet.currGrid[list].currTime))
@@ -702,7 +665,7 @@ struct ContentView: View {
                                                                                 .resizable()
                                                                                 .minimumScaleFactor(0.01)
                                                                                 .frame(width: 30, height: 30)
-                                                                                .foregroundStyle(Color(.systemGray))
+                                                                                .foregroundStyle(.gray)
                                                                         }
                                                                         
                                                                         Text(currSheet.currGrid[list].currLabel)
@@ -755,26 +718,28 @@ struct ContentView: View {
                                                                 } else if !currSheet.currGrid[list].currIcons[slot].currIcon.isEmpty {
                                                                     currListIndex = list
                                                                     currSlotIndex = slot
-                                                                    showMod.toggle()
+                                                                    withAnimation(.spring) {
+                                                                        showMod.toggle()
+                                                                        unlockButtons = false
+                                                                    }
                                                                     tempDetails = []
                                                                     Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
                                                                         tempDetails = currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? []
                                                                         checkDetails = currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? []
                                                                         animate.toggle()
                                                                     }
-                                                                    unlockButtons = false
                                                                     speechDelegate.stopSpeaking()
                                                                     speechDelegate.speak(currSheet.currGrid[list].currIcons[slot].currIcon)
                                                                 }
                                                             }) {
-                                                                if currSheet.currGrid[list].currIcons[slot].currIcon.isEmpty { //if there isnt an icon
+                                                                if getCustomPECSAddresses()[currSheet.currGrid[list].currIcons[slot].currIcon] == nil && UIImage(named: currSheet.currGrid[list].currIcons[slot].currIcon) == nil { //if there isnt an icon
                                                                     if editMode {
                                                                         Image(systemName: "plus.viewfinder")
                                                                             .resizable()
                                                                             .scaledToFit()
                                                                             .padding(10)
                                                                             .symbolRenderingMode(.hierarchical)
-                                                                            .foregroundStyle(editMode ? Color(.systemGray) : .clear)
+                                                                            .foregroundStyle(.gray)
                                                                     }
                                                                 } else {
                                                                     ZStack {
@@ -815,10 +780,10 @@ struct ContentView: View {
                                                                             Spacer()
                                                                         }
                                                                     }
-                                                                    .transition(.asymmetric(insertion: .movingParts.filmExposure, removal: .movingParts.vanish(.purple)))
+                                                                    .transition(.asymmetric(insertion: .opacity.combined(with: .scale), removal: .opacity.combined(with: .scale)))
                                                                 }
                                                             }
-                                                            //                                                        .draggable(account for custom icons too)
+                                                            .matchedGeometryEffect(id: "\(list)\(slot)", in: animation)
                                                             .contextMenu {
                                                                 if lockButtonsOn && !unlockButtons {
                                                                     Button {
@@ -870,8 +835,9 @@ struct ContentView: View {
                                                                             }
                                                                             currListIndex = list
                                                                             currSlotIndex = slot
-                                                                            if !editMode {editMode.toggle()} else {wasEditing.toggle()}
-                                                                            showMod.toggle()
+                                                                            withAnimation(.spring) {
+                                                                                showMod.toggle()
+                                                                            }
                                                                         } label: {
                                                                             Label("Add Details", systemImage: "plus.square.on.square")
                                                                         }
@@ -914,53 +880,8 @@ struct ContentView: View {
                                                                     }
                                                                 }
                                                             }
-                                                            //                                                            .dropDestination(for: Data.self) { items, location in
-                                                            //                                                                guard let item = items.first else {
-                                                            //                                                                    return false
-                                                            //                                                                }
-                                                            //
-                                                            //                                                                guard let uiImage = UIImage(data: item) else {
-                                                            //                                                                    return false
-                                                            //                                                                }
-                                                            //
-                                                            //                                                                // Extract text from the image
-                                                            //                                                                let labelText = labelImage(input: uiImage)
-                                                            //                                                                let labelTextComponents = labelText.components(separatedBy: ", ")
-                                                            //                                                                guard let currCustomIconText = labelTextComponents.first else {
-                                                            //                                                                    return false
-                                                            //                                                                }
-                                                            //
-                                                            //                                                                // Get custom addresses dictionary
-                                                            //                                                                var customPECSAddresses = getCustomPECSAddresses()
-                                                            //
-                                                            //                                                                var iconText = currCustomIconText
-                                                            //                                                                if customPECSAddresses[iconText] != nil {
-                                                            //                                                                    var i = 1
-                                                            //                                                                    while customPECSAddresses["\(i)#id\(iconText)"] != nil {
-                                                            //                                                                        i += 1
-                                                            //                                                                    }
-                                                            //                                                                    iconText = "\(i)#id\(iconText)"
-                                                            //                                                                }
-                                                            //
-                                                            //                                                                // Save the image and update the dictionary
-                                                            //                                                                let savedPath = saveImageToDocumentsDirectory(uiImage)
-                                                            //                                                                customPECSAddresses[iconText] = savedPath
-                                                            //                                                                saveCustomPECSAddresses(customPECSAddresses)
-                                                            //
-                                                            //                                                                currSheet.currGrid[list].currIcons[slot].currIcon = iconText
-                                                            //                                                                var newSheetArray = loadSheetArray()
-                                                            //                                                                newSheetArray[currSheetIndex] = currSheet
-                                                            //                                                                currSheet = newSheetArray[currSheetIndex]
-                                                            //                                                                saveSheetArray(sheetObjects: newSheetArray)
-                                                            //                                                                Task {
-                                                            //                                                                    do {
-                                                            //                                                                        customIconPreviews = await getCustomIconPreviews()
-                                                            //                                                                    }
-                                                            //                                                                }
-                                                            //                                                                animate.toggle()
-                                                            //                                                                return true
                                                             //                                                            }
-                                                            
+                                                            //                                                            .scaledToFit()
                                                         }
                                                         if editMode {
                                                             Button(action: {
@@ -1130,7 +1051,7 @@ struct ContentView: View {
                                                 .resizable()
                                                 .padding()
                                                 .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                                .foregroundStyle(Color(.systemGray))
+                                                .foregroundStyle(.gray)
                                         }
                                         .padding()
                                     } else {
@@ -1277,7 +1198,7 @@ struct ContentView: View {
                                                                 Image(systemName: "square.fill")
                                                                     .resizable()
                                                                     .frame(width: 65, height: 65)
-                                                                    .foregroundStyle(Color(.systemGray))
+                                                                    .foregroundStyle(.gray)
                                                                 Image(systemName: "gear")
                                                                     .resizable()
                                                                     .frame(width: min(30, 75), height: min(30, 75))
@@ -1285,7 +1206,7 @@ struct ContentView: View {
                                                             }
                                                             Text("Settings")
                                                                 .font(.system(size: 18, weight: .semibold, design: .rounded))
-                                                                .foregroundStyle(Color(.systemGray))
+                                                                .foregroundStyle(.gray)
                                                         }
                                                     }
                                                     .buttonStyle(PlainButtonStyle())
@@ -1331,7 +1252,7 @@ struct ContentView: View {
                                              Image(systemName:"xmark.square.fill")
                                              .resizable()
                                              .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                             .foregroundStyle(Color(.systemGray))
+                                             .foregroundStyle(.gray)
                                              .padding()
                                              } else { */
                                             Image(systemName:"checkmark.square.fill")
@@ -1365,7 +1286,7 @@ struct ContentView: View {
                                                 .resizable()
                                                 .padding()
                                                 .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                                .foregroundStyle(Color(.systemGray))
+                                                .foregroundStyle(.gray)
                                         }
                                         .padding()
                                     } else {
@@ -1458,7 +1379,7 @@ struct ContentView: View {
                                                         Image(systemName: "square.fill")
                                                             .resizable()
                                                             .frame(width: 75, height: 75)
-                                                            .foregroundStyle(Color(.systemGray))
+                                                            .foregroundStyle(.gray)
                                                         Image(systemName: "gear")
                                                             .resizable()
                                                             .frame(width: min(40, 100), height: min(40, 100))
@@ -1466,7 +1387,7 @@ struct ContentView: View {
                                                     }
                                                     Text("Settings")
                                                         .font(.system(size: 18, weight: .semibold, design: .rounded))
-                                                        .foregroundStyle(Color(.systemGray))
+                                                        .foregroundStyle(.gray)
                                                 }
                                             }
                                             .buttonStyle(PlainButtonStyle())
@@ -1507,7 +1428,7 @@ struct ContentView: View {
                             Spacer()
                         }
                         .background(
-                            LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                            LinearGradient(gradient: Gradient(colors: [Color(.systemBackground), Color(.systemBackground),  Color.clear]), startPoint: .bottom, endPoint: .top)
                                 .ignoresSafeArea()
                         )
                     }
@@ -1518,6 +1439,7 @@ struct ContentView: View {
                         removal: .opacity
                     )
                 )
+                .opacity(showMod ? 0 : 1)
                 .navigationViewStyle(StackNavigationViewStyle())
                 .navigationBarHidden(true)
                 .sheet(isPresented: $pickIcon) {
@@ -1558,7 +1480,7 @@ struct ContentView: View {
                         currCommunicationBoard = loadCommunicationBoard()
                     }, showCreateCustom: false, customIconPreviews: customIconPreviews)
                 }
-                .sheet(isPresented: $showTime) { //fullscreencover for setting times on a sheet
+                .sheet(isPresented: $showTime) { //sheet for setting times on a sheet
                     TimeLabelPickerView(viewType: .time, saveItem: { item in
                         if item is Date {
                             currSheet.currGrid[currListIndex].currTime = item as! Date
@@ -1571,7 +1493,7 @@ struct ContentView: View {
                         }
                     }, oldDate: currSheet.currGrid[currListIndex].currTime, oldLabel: $currText)
                 }
-                .sheet(isPresented: $showLabels) { //fullscreencover for setting a custom label in a sheet
+                .sheet(isPresented: $showLabels) { //sheet for setting a custom label in a sheet
                     TimeLabelPickerView(viewType: .label, saveItem: { item in
                         if item is String {
                             updateUsage("action:label")
@@ -1620,332 +1542,11 @@ struct ContentView: View {
                         currCommunicationBoard = loadCommunicationBoard()
                     }, customIconPreviews: customIconPreviews)
                 }
-                .fullScreenCover(isPresented: $showMod) { //the fullscreencover that enlarges the icon and lets you remove or complete it
-                    
-                    VStack {
-                        if editMode {
-                            Text("\(Image(systemName: "plus.square.on.square")) Add Details")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.01)
-                                .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
-                                .padding(.top)
-                        }
-                        
-                        ModImageView(currSheet: $currSheet, modListIndex: $currListIndex, modSlotIndex: $currSlotIndex, hasDetails: tempDetails.isEmpty)
-                        
-                        
-                        if editMode {
-                            
-                            Divider()
-                                .padding()
-                            
-                            ZStack {
-                                HStack {
-                                    ForEach(0..<tempDetails.count, id: \.self) { detail in
-                                        Button(action: {
-                                            detailIconIndex = detail
-                                            searchText = ""
-                                            showDetailsIcons.toggle()
-                                        }) {
-                                            //loadImage() or getCustomIcon() depending
-                                            if UIImage(named: tempDetails[detail]) == nil {
-                                                if horizontalSizeClass == .compact {
-                                                    Image(uiImage: customIconPreviews[tempDetails[detail]] ?? UIImage(systemName: "square.fill")!)
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .clipShape(RoundedRectangle(cornerRadius: 15))
-                                                        .overlay(
-                                                            RoundedRectangle(cornerRadius: 15)
-                                                                .stroke(.black, lineWidth: 6)
-                                                        )
-                                                        .padding(3)
-                                                } else {
-                                                    Image(uiImage: customIconPreviews[tempDetails[detail]] ?? UIImage(systemName: "square.fill")!)
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .clipShape(RoundedRectangle(cornerRadius: 15))
-                                                        .overlay(
-                                                            RoundedRectangle(cornerRadius: 15)
-                                                                .stroke(.black, lineWidth: 10)
-                                                        )
-                                                        .padding(7)
-                                                }
-                                            } else {
-                                                Image(tempDetails[detail])
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                                                    .overlay(
-                                                        RoundedRectangle(cornerRadius: 15)
-                                                            .stroke(.black, lineWidth: (horizontalSizeClass == .compact ? 6 : 10))
-                                                    )
-                                                    .padding(horizontalSizeClass == .compact ? 3 : 7)
-                                            }
-                                        }
-                                    }
-                                    if tempDetails.count < (horizontalSizeClass == .compact ? 3 : 5) {
-                                        Button(action: {
-                                            detailIconIndex = -1
-                                            searchText = ""
-                                            showDetailsIcons.toggle()
-                                        }) {
-                                            Image(systemName: "plus.viewfinder")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .symbolRenderingMode(.hierarchical)
-                                                .foregroundStyle(Color(.systemGray))
-                                                .padding()
-                                        }
-                                    }
-                                }
-                            }
-                            .sheet(isPresented: $showDetailsIcons) {
-                                
-                                AllIconsPickerView(currSheet: currSheet,
-                                                   currImage: detailIconIndex != -1 ? tempDetails[detailIconIndex] : "plus.viewfinder",
-                                                   modifyIcon: { newIcon in
-                                    withAnimation(.spring) {
-                                        if detailIconIndex != -1 {
-                                            tempDetails[detailIconIndex] = newIcon
-                                        } else {
-                                            tempDetails.append(newIcon)
-                                        }
-                                        currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = tempDetails
-                                    }
-                                    Task {
-                                        do {
-                                            customIconPreviews = await getCustomIconPreviews()
-                                        }
-                                    }
-                                    currCommunicationBoard = loadCommunicationBoard()
-                                }, modifyCustomIcon: {
-                                    Task {
-                                        do {
-                                            customIconPreviews = await getCustomIconPreviews()
-                                        }
-                                    }
-                                    currCommunicationBoard = loadCommunicationBoard()
-                                    currSheet = loadSheetArray()[currSheetIndex]
-                                }, modifyDetails: { newDetails in
-                                    //no need to modify details here
-                                }, onDismiss: {
-                                    Task {
-                                        do {
-                                            customIconPreviews = await getCustomIconPreviews()
-                                        }
-                                    }
-                                    showDetailsIcons.toggle()
-                                    //autosave
-                                    var newArray = loadSheetArray()
-                                    newArray[currSheetIndex] = autoRemoveSlots(currSheet)
-                                    currSheet = newArray[currSheetIndex]
-                                    saveSheetArray(sheetObjects: newArray)
-                                    currCommunicationBoard = loadCommunicationBoard()
-                                }, showCreateCustom: false, customIconPreviews: customIconPreviews)
-                                
-                            }
-                        } else {
-                            if !tempDetails.isEmpty {
-                                Divider()
-                                    .padding()
-                            }
-                            HStack {
-                                ForEach(0..<tempDetails.count, id: \.self) { detail in
-                                    if lockButtonsOn && !unlockButtons {
-                                        if UIImage(named: tempDetails[detail]) == nil {
-                                            Image(uiImage: customIconPreviews[tempDetails[detail]] ?? UIImage(systemName: "square.fill")!)
-                                                .resizable()
-                                                .scaledToFit()
-                                                .clipShape(RoundedRectangle(cornerRadius: 15))
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 15)
-                                                        .stroke(.black, lineWidth: 10)
-                                                )
-                                                .padding()
-                                        } else {
-                                            Image(uiImage: customIconPreviews[tempDetails[detail]] ?? UIImage(systemName: "square.fill")!)
-                                                .resizable()
-                                                .scaledToFit()
-                                                .clipShape(RoundedRectangle(cornerRadius: 15))
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 15)
-                                                        .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 6 : 10)
-                                                )
-                                                .padding()
-                                        }
-                                    } else {
-                                        Menu {
-                                            Button(role: .destructive) {
-                                                tempDetails.remove(at: detail)
-                                                currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = tempDetails
-                                                var newArray = loadSheetArray()
-                                                newArray[currSheetIndex] = currSheet
-                                                newArray[currSheetIndex] = autoRemoveSlots(newArray[currSheetIndex])
-                                                currSheet = newArray[currSheetIndex]
-                                                saveSheetArray(sheetObjects: newArray)
-                                                animate.toggle()
-                                            } label: {
-                                                Label("Delete from Details", systemImage: "trash")
-                                            }
-                                        } label: {
-                                            //loadImage() or getCustomIcon() depending
-                                            if UIImage(named: tempDetails[detail]) == nil {
-                                                if horizontalSizeClass == .compact {
-                                                    Image(uiImage: customIconPreviews[tempDetails[detail]] ?? UIImage(systemName: "square.fill")!)
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .clipShape(RoundedRectangle(cornerRadius: 15))
-                                                        .overlay(
-                                                            RoundedRectangle(cornerRadius: 15)
-                                                                .stroke(.black, lineWidth: 6)
-                                                        )
-                                                        .padding()
-                                                } else {
-                                                    Image(uiImage: customIconPreviews[tempDetails[detail]] ?? UIImage(systemName: "square.fill")!)
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .clipShape(RoundedRectangle(cornerRadius: 15))
-                                                        .overlay(
-                                                            RoundedRectangle(cornerRadius: 15)
-                                                                .stroke(.black, lineWidth: 10)
-                                                        )
-                                                        .padding()
-                                                }
-                                            } else {
-                                                Image(tempDetails[detail])
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                                                    .overlay(
-                                                        RoundedRectangle(cornerRadius: 15)
-                                                            .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 6 : 10)
-                                                    )
-                                                    .padding()
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        
-                        HStack(alignment: .top) {
-                            if !editMode {
-                                Button(action: {
-                                    showMod.toggle()
-                                    unlockButtons = false
-                                }) {
-                                    VStack {
-                                        Image(systemName:"xmark.square.fill")
-                                            .resizable()
-                                            .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
-                                        
-                                        Text("Cancel")
-                                            .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
-                                    }
-                                }
-                                .padding()
-                                .foregroundStyle(Color(.systemGray))
-                                if lockButtonsOn && !unlockButtons {
-                                    Button(action: {
-                                        if !canUseBiometrics() && !canUsePassword() {
-                                            animate.toggle()
-                                            showCustomPassword = true
-                                            showMod = false
-                                        } else {
-                                            Task {
-                                                unlockButtons = await authenticateWithBiometrics()
-                                                animate.toggle()
-                                            }
-                                            if unlockButtons {
-                                                Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { timer in
-                                                    withAnimation(.spring) {
-                                                        unlockButtons = false
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }) {
-                                        VStack {
-                                            Image(systemName: "lock.square")
-                                                .resizable()
-                                                .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
-                                            Text("Buttons Locked")
-                                                .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
-                                        }
-                                    }
-                                    .padding()
-                                    .foregroundStyle(Color(.systemGray))
-                                } else {
-                                    Button(action: {
-                                        showMod.toggle()
-                                        unlockButtons = false
-                                        updateUsage(currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon)
-                                        currSheet.removedIcons.append(currSheet.currGrid[currListIndex].currIcons[currSlotIndex])
-                                        currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = ""
-                                        currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = []
-                                        var newArray = loadSheetArray()
-                                        newArray[currSheetIndex] = currSheet
-                                        newArray[currSheetIndex] = autoRemoveSlots(newArray[currSheetIndex])
-                                        currSheet = newArray[currSheetIndex]
-                                        saveSheetArray(sheetObjects: newArray)
-                                        animate.toggle()
-                                        if removedSelectedLabel == "All Sheets" {
-                                            removedSelected = getAllRemoved()
-                                        } else {
-                                            removedSelected = getAllRemoved()
-                                            currSheet = loadSheetArray()[currSheetIndex]
-                                            
-                                            removedSelected = currSheet.removedIcons
-                                        }
-                                        hapticFeedback(type: 1)
-                                    }) {
-                                        VStack {
-                                            ZStack {
-                                                Image(systemName: "square.fill")
-                                                    .resizable()
-                                                    .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
-                                                Image(systemName: "square.slash")
-                                                    .resizable()
-                                                    .frame(width: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250), height: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250))
-                                                    .foregroundStyle(Color(.systemBackground))
-                                                    .symbolRenderingMode(.hierarchical)
-                                            }
-                                            Text(tempDetails.isEmpty ? "Remove Icon" : "Remove All")
-                                                .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
-                                        }
-                                    }
-                                    .padding()
-                                    .foregroundStyle(.pink)
-                                }
-                            } else {
-                                Button(action: {
-                                    showMod.toggle()
-                                    checkDetails = []
-                                    unlockButtons = false
-                                    if !wasEditing {editMode.toggle(); wasEditing.toggle()}
-                                }) {
-                                    if checkDetails == currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? [] {
-                                        Image(systemName:"xmark.square.fill")
-                                            .resizable()
-                                            .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
-                                            .foregroundStyle(Color(.systemGray))
-                                    } else {
-                                        Image(systemName:"checkmark.square.fill")
-                                            .resizable()
-                                            .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
-                                            .foregroundStyle(.green)
-                                    }
-                                }
-                                .padding()
-                            }
-                        }
-                    }
-                }
                 .fullScreenCover(isPresented: $showSettings) { //fullscreencover for the settings page
                     SettingsView(onDismiss: {
-//                        lockButtonsOn = defaults.bool(forKey: "buttonsOn")
-//                        showCurrentSlot = defaults.bool(forKey: "showCurrSlot")
-//                        speakIcons = defaults.bool(forKey: "speakOn")
+                        //                        lockButtonsOn = defaults.bool(forKey: "buttonsOn")
+                        //                        showCurrentSlot = defaults.bool(forKey: "showCurrSlot")
+                        //                        speakIcons = defaults.bool(forKey: "speakOn")
                         unlockButtons = false
                         currSheet = autoRemoveSlots(currSheet)
                         if showCurrentSlot {
@@ -1975,7 +1576,7 @@ struct ContentView: View {
                                         .padding(.bottom, horizontalSizeClass == .compact ? 5 : 0)
                                         .symbolRenderingMode(.hierarchical)
                                     HStack {
-                                        Text("From") .foregroundStyle(Color(.systemGray))
+                                        Text("From") .foregroundStyle(.gray)
                                             .minimumScaleFactor(0.01)
                                             .font(.system(size: horizontalSizeClass == .compact ? 17 : 25, weight: .bold, design: .rounded))
                                             .multilineTextAlignment(horizontalSizeClass == .compact ? .leading : .center)
@@ -2053,7 +1654,7 @@ struct ContentView: View {
                                     .minimumScaleFactor(0.01)
                                     .multilineTextAlignment(.center)
                                     .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .bold, design: .rounded))
-                                    .foregroundStyle(Color(.systemGray))
+                                    .foregroundStyle(.gray)
                                     .padding()
                                     .padding()
                                 Spacer()
@@ -2070,7 +1671,7 @@ struct ContentView: View {
                                         Image(systemName:"xmark.square.fill")
                                             .resizable()
                                             .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.gray)
                                         
                                             .padding()
                                     }
@@ -2078,7 +1679,7 @@ struct ContentView: View {
                                 Spacer()
                             }
                             .background(
-                                LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                                LinearGradient(gradient: Gradient(colors: [Color(.systemBackground), Color(.systemBackground),  Color.clear]), startPoint: .bottom, endPoint: .top)
                                     .ignoresSafeArea()
                             )
                         }
@@ -2158,8 +1759,8 @@ struct ContentView: View {
                                 .font(.system(size: horizontalSizeClass == .compact ? 40 : 65, weight: .bold, design: .rounded))
                                 .padding()
                                 .background(
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color(.systemGray6))
+                                    Color(.systemGray6),
+                                    in: RoundedRectangle(cornerRadius: 20)
                                 )
                                 .minimumScaleFactor(0.01)
                                 .padding([.leading, .trailing])
@@ -2282,55 +1883,61 @@ struct ContentView: View {
                                                         .foregroundStyle(loadSheetArray().count > 1 ? Color(.systemGray): Color(.systemGray6))
                                                         .padding()
                                                 }
-                                            } else {
-                                                Button(action: {
-                                                    withAnimation(.spring) {
-                                                        createNewSheet.toggle()
-                                                    }
-                                                    showAllSheets.toggle()
-                                                    Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false) { timer in
-                                                        self.presentation.wrappedValue.dismiss()
-                                                    }
-                                                }) {
-                                                    Image(systemName:"xmark.square.fill")
-                                                        .resizable()
-                                                        .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                                                        .foregroundStyle(Color(.systemGray))
-                                                        .padding()
-                                                }
                                             }
                                         }
                                     }
-                                    Button(action: {
-                                        sheetAnimate.toggle()
-                                        editMode.toggle()
-                                        withAnimation(.spring) {
-                                            createNewSheet.toggle()
+                                    HStack {
+                                        if horizontalSizeClass != .compact {
+                                            Button(action: {
+                                                withAnimation(.spring) {
+                                                    createNewSheet.toggle()
+                                                }
+                                                showAllSheets.toggle()
+                                                Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false) { timer in
+                                                    self.presentation.wrappedValue.dismiss()
+                                                }
+                                            }) {
+                                                Text("\(Image(systemName: "arrow.backward")) Back")
+                                                    .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+                                                    .lineLimit(1)
+                                                    .padding([.top, .bottom, .trailing], horizontalSizeClass == .compact ? 5 : 10)
+                                                    .padding()
+                                                    .background(Color(.systemGray6))
+                                                    .cornerRadius(horizontalSizeClass == .compact ? 20 : 25)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
                                         }
-                                        showAllSheets.toggle()
-                                        
-                                        defaults.set(true, forKey: "completedTutorial")
-                                        newSheet(gridType: newSheetSelection == 0 ? "time" : "label", label: currSheetText)
-                                        currTitleText = currSheetText
-                                        currSheetIndex = loadSheetArray().count - 1
-                                        sheetArray = loadSheetArray()
-                                        currSheetText = ""
-                                        currSheet = loadSheetArray()[currSheetIndex]
-                                        updateUsage("action:create")
-                                        print(newSheetSelection)
-                                        print(newSheetSelection == 0 ? "time" : "label")
-                                    }) {
-                                        Text("Next \(Image(systemName: "arrow.forward"))")
-                                            .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
-                                            .lineLimit(1)
-                                            .padding([.top, .bottom, .trailing], horizontalSizeClass == .compact ? 5 : 10)
-                                            .padding()
-                                            .background(Color(.systemGray6))
-                                            .cornerRadius(horizontalSizeClass == .compact ? 20 : 25)
+                                        Button(action: {
+                                            sheetAnimate.toggle()
+                                            editMode.toggle()
+                                            withAnimation(.spring) {
+                                                createNewSheet.toggle()
+                                            }
+                                            showAllSheets.toggle()
+                                            
+                                            defaults.set(true, forKey: "completedTutorial")
+                                            newSheet(gridType: newSheetSelection == 0 ? "time" : "label", label: currSheetText)
+                                            currTitleText = currSheetText
+                                            currSheetIndex = loadSheetArray().count - 1
+                                            sheetArray = loadSheetArray()
+                                            currSheetText = ""
+                                            currSheet = loadSheetArray()[currSheetIndex]
+                                            updateUsage("action:create")
+                                            print(newSheetSelection)
+                                            print(newSheetSelection == 0 ? "time" : "label")
+                                        }) {
+                                            Text("Next \(Image(systemName: "arrow.forward"))")
+                                                .font(.system(size: horizontalSizeClass == .compact ? 20 : 25, weight: .bold, design: .rounded))
+                                                .lineLimit(1)
+                                                .padding([.top, .bottom, .trailing], horizontalSizeClass == .compact ? 5 : 10)
+                                                .padding()
+                                                .background(Color(.systemGray6))
+                                                .cornerRadius(horizontalSizeClass == .compact ? 20 : 25)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                        .changeEffect(
+                                            .wiggle(rate: .fast), value: newSheetSelection)
                                     }
-                                    .buttonStyle(PlainButtonStyle())
-                                    .changeEffect(
-                                        .wiggle(rate: .fast), value: newSheetSelection)
                                     Spacer()
                                 }
                             }
@@ -2352,7 +1959,7 @@ struct ContentView: View {
                                         Text("You have \(loadSheetArray().count - 1) Sheets. \(Image(systemName: "timer").resizable()) indicates Timeslots, and \(Image(systemName: "tag").resizable()) indicates Custom Labels.")
                                             .minimumScaleFactor(0.01)
                                             .font(.system(size: horizontalSizeClass == .compact ? 17 : 25, weight: .bold, design: .rounded))
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.gray)
                                             .multilineTextAlignment(horizontalSizeClass == .compact ? .leading : .center)
                                             .padding(.bottom)
                                     }
@@ -2428,13 +2035,13 @@ struct ContentView: View {
                                                                     Image(systemName: "timer")
                                                                         .resizable()
                                                                         .frame(width: horizontalSizeClass == .compact ? 65: 105, height: horizontalSizeClass == .compact ? 65: 105)
-                                                                        .foregroundStyle(Color(.systemGray))
+                                                                        .foregroundStyle(.gray)
                                                                         .padding(.top, sheetArray[sheet].label.isEmpty ? 0 : 15)
                                                                 } else {
                                                                     Image(systemName: "tag")
                                                                         .resizable()
                                                                         .frame(width: horizontalSizeClass == .compact ? 65: 105, height: horizontalSizeClass == .compact ? 65: 105)
-                                                                        .foregroundStyle(Color(.systemGray))
+                                                                        .foregroundStyle(.gray)
                                                                         .padding(.top, sheetArray[sheet].label.isEmpty ? 0 : 15)
                                                                 }
                                                             }
@@ -2443,13 +2050,13 @@ struct ContentView: View {
                                                                 Image(systemName: "timer")
                                                                     .resizable()
                                                                     .frame(width: horizontalSizeClass == .compact ? 65: 105, height: horizontalSizeClass == .compact ? 65: 105)
-                                                                    .foregroundStyle(Color(.systemGray))
+                                                                    .foregroundStyle(.gray)
                                                                     .padding(.top, sheetArray[sheet].label.isEmpty ? 0 : 15)
                                                             } else {
                                                                 Image(systemName: "tag")
                                                                     .resizable()
                                                                     .frame(width: horizontalSizeClass == .compact ? 65: 105, height: horizontalSizeClass == .compact ? 65: 105)
-                                                                    .foregroundStyle(Color(.systemGray))
+                                                                    .foregroundStyle(.gray)
                                                                     .padding(.top, sheetArray[sheet].label.isEmpty ? 0 : 15)
                                                             }
                                                         }
@@ -2585,7 +2192,7 @@ struct ContentView: View {
                                     Spacer()
                                 }
                                 .background(
-                                    LinearGradient(gradient: Gradient(colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(1),  Color.clear.opacity(0)]), startPoint: .bottom, endPoint: .top)
+                                    LinearGradient(gradient: Gradient(colors: [Color(.systemBackground), Color(.systemBackground),  Color.clear]), startPoint: .bottom, endPoint: .top)
                                         .ignoresSafeArea()
                                 )
                             }
@@ -2661,18 +2268,22 @@ struct ContentView: View {
                         message: Text("This cannot be undone."),
                         primaryButton: .destructive(Text("Delete \(currSheet.label)")) {
                             editMode = false
-                            animate.toggle()
                             removeSheet(sheetIndex: currSheetIndex)
                             if loadSheetArray().count < 2 {
                                 showAllSheets = true
                                 withAnimation(.spring) {
                                     createNewSheet = true
+                                    currSheetIndex = 0
+                                    currSheet = SheetObject()
                                 }
-                                currSheetIndex = 0
-                                currSheet = SheetObject()
                             } else {
-                                currSheetIndex = loadSheetArray().count - 1
-                                currSheet = loadSheetArray()[currSheetIndex]
+                                currSheet = SheetObject()
+                                Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { timer in
+                                    withAnimation(.spring) {
+                                        currSheetIndex = loadSheetArray().count - 1
+                                        currSheet = loadSheetArray()[currSheetIndex]
+                                    }
+                                }
                             }
                             sheetArray = loadSheetArray()
                             currTitleText = currSheet.label
@@ -2680,6 +2291,328 @@ struct ContentView: View {
                         secondaryButton: .cancel()
                     )
                 }
+            }
+            if showMod {
+                VStack {
+                    if editMode {
+                        Text("\(Image(systemName: "plus.square.on.square")) Add Details")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.01)
+                            .font(.system(size: horizontalSizeClass == .compact ? 30 : 50, weight: .bold, design: .rounded))
+                            .padding(.top)
+                    } else {
+                        Spacer()
+                    }
+                    
+                    ModImageView(currSheet: $currSheet, modListIndex: $currListIndex, modSlotIndex: $currSlotIndex, hasDetails: tempDetails.isEmpty)
+                        .matchedGeometryEffect(id: "\(currListIndex)\(currSlotIndex)", in: animation)
+                    
+                    
+                    if editMode {
+                        
+                        Divider()
+                            .padding()
+                        
+                        ZStack {
+                            HStack {
+                                ForEach(0..<tempDetails.count, id: \.self) { detail in
+                                    Button(action: {
+                                        detailIconIndex = detail
+                                        searchText = ""
+                                        showDetailsIcons.toggle()
+                                    }) {
+                                        //loadImage() or getCustomIcon() depending
+                                        if UIImage(named: tempDetails[detail]) == nil {
+                                            if horizontalSizeClass == .compact {
+                                                Image(uiImage: customIconPreviews[tempDetails[detail]] ?? UIImage(systemName: "square.fill")!)
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: 15)
+                                                            .stroke(.black, lineWidth: 6)
+                                                    )
+                                                    .padding(3)
+                                            } else {
+                                                Image(uiImage: customIconPreviews[tempDetails[detail]] ?? UIImage(systemName: "square.fill")!)
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: 15)
+                                                            .stroke(.black, lineWidth: 10)
+                                                    )
+                                                    .padding(7)
+                                            }
+                                        } else {
+                                            Image(tempDetails[detail])
+                                                .resizable()
+                                                .scaledToFit()
+                                                .clipShape(RoundedRectangle(cornerRadius: 15))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 15)
+                                                        .stroke(.black, lineWidth: (horizontalSizeClass == .compact ? 6 : 10))
+                                                )
+                                                .padding(horizontalSizeClass == .compact ? 3 : 7)
+                                        }
+                                    }
+                                }
+                                if tempDetails.count < (horizontalSizeClass == .compact ? 3 : 5) {
+                                    Button(action: {
+                                        detailIconIndex = -1
+                                        searchText = ""
+                                        showDetailsIcons.toggle()
+                                    }) {
+                                        Image(systemName: "plus.viewfinder")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .symbolRenderingMode(.hierarchical)
+                                            .foregroundStyle(.gray)
+                                            .padding()
+                                    }
+                                }
+                            }
+                        }
+                        .sheet(isPresented: $showDetailsIcons) {
+                            
+                            AllIconsPickerView(currSheet: currSheet,
+                                               currImage: detailIconIndex != -1 ? tempDetails[detailIconIndex] : "plus.viewfinder",
+                                               modifyIcon: { newIcon in
+                                withAnimation(.spring) {
+                                    if detailIconIndex != -1 {
+                                        tempDetails[detailIconIndex] = newIcon
+                                    } else {
+                                        tempDetails.append(newIcon)
+                                    }
+                                    currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = tempDetails
+                                }
+                                Task {
+                                    do {
+                                        customIconPreviews = await getCustomIconPreviews()
+                                    }
+                                }
+                                currCommunicationBoard = loadCommunicationBoard()
+                            }, modifyCustomIcon: {
+                                Task {
+                                    do {
+                                        customIconPreviews = await getCustomIconPreviews()
+                                    }
+                                }
+                                currCommunicationBoard = loadCommunicationBoard()
+                                currSheet = loadSheetArray()[currSheetIndex]
+                            }, modifyDetails: { newDetails in
+                                //no need to modify details here
+                            }, onDismiss: {
+                                Task {
+                                    do {
+                                        customIconPreviews = await getCustomIconPreviews()
+                                    }
+                                }
+                                showDetailsIcons.toggle()
+                                //autosave
+                                var newArray = loadSheetArray()
+                                newArray[currSheetIndex] = autoRemoveSlots(currSheet)
+                                currSheet = newArray[currSheetIndex]
+                                saveSheetArray(sheetObjects: newArray)
+                                currCommunicationBoard = loadCommunicationBoard()
+                            }, showCreateCustom: false, customIconPreviews: customIconPreviews)
+                            
+                        }
+                    } else {
+                        if !tempDetails.isEmpty {
+                            Divider()
+                                .padding()
+                        }
+                        HStack {
+                            ForEach(0..<tempDetails.count, id: \.self) { detail in
+                                if lockButtonsOn && !unlockButtons {
+                                    if UIImage(named: tempDetails[detail]) == nil {
+                                        Image(uiImage: customIconPreviews[tempDetails[detail]] ?? UIImage(systemName: "square.fill")!)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 15))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 15)
+                                                    .stroke(.black, lineWidth: 10)
+                                            )
+                                            .padding()
+                                    } else {
+                                        Image(uiImage: customIconPreviews[tempDetails[detail]] ?? UIImage(systemName: "square.fill")!)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 15))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 15)
+                                                    .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 6 : 10)
+                                            )
+                                            .padding()
+                                    }
+                                } else {
+                                    Menu {
+                                        Button(role: .destructive) {
+                                            tempDetails.remove(at: detail)
+                                            currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = tempDetails
+                                            var newArray = loadSheetArray()
+                                            newArray[currSheetIndex] = currSheet
+                                            newArray[currSheetIndex] = autoRemoveSlots(newArray[currSheetIndex])
+                                            currSheet = newArray[currSheetIndex]
+                                            saveSheetArray(sheetObjects: newArray)
+                                            animate.toggle()
+                                        } label: {
+                                            Label("Delete from Details", systemImage: "trash")
+                                        }
+                                    } label: {
+                                        //loadImage() or getCustomIcon() depending
+                                        if UIImage(named: tempDetails[detail]) == nil {
+                                            Image(uiImage: customIconPreviews[tempDetails[detail]] ?? UIImage(systemName: "square.fill")!)
+                                                .resizable()
+                                                .scaledToFit()
+                                                .clipShape(RoundedRectangle(cornerRadius: 15))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 15)
+                                                        .stroke(.black, lineWidth: 6)
+                                                )
+                                        } else {
+                                            Image(tempDetails[detail])
+                                                .resizable()
+                                                .scaledToFit()
+                                                .clipShape(RoundedRectangle(cornerRadius: 15))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 15)
+                                                        .stroke(.black, lineWidth: horizontalSizeClass == .compact ? 6 : 10)
+                                                )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Spacer()
+                    }
+                    
+                    HStack(alignment: .top) {
+                        if !editMode {
+                            Button(action: {
+                                withAnimation(.spring) {
+                                    showMod.toggle()
+                                    unlockButtons = false
+                                }
+                                currListIndex = 0
+                                currSlotIndex = 0
+                            }) {
+                                VStack {
+                                    Image(systemName:"xmark.square.fill")
+                                        .resizable()
+                                        .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
+                                    
+                                    Text("Cancel")
+                                        .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
+                                }
+                            }
+                            .padding()
+                            .foregroundStyle(.gray)
+                            if lockButtonsOn && !unlockButtons {
+                                Button(action: {
+                                    if !canUseBiometrics() && !canUsePassword() {
+                                        animate.toggle()
+                                        showCustomPassword = true
+                                        showMod = false
+                                    } else {
+                                        Task {
+                                            unlockButtons = await authenticateWithBiometrics()
+                                            animate.toggle()
+                                        }
+                                        if unlockButtons {
+                                            Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { timer in
+                                                withAnimation(.spring) {
+                                                    unlockButtons = false
+                                                }
+                                            }
+                                        }
+                                    }
+                                }) {
+                                    VStack {
+                                        Image(systemName: "lock.square")
+                                            .resizable()
+                                            .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
+                                        Text("Buttons Locked")
+                                            .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
+                                    }
+                                }
+                                .padding()
+                                .foregroundStyle(.gray)
+                            } else {
+                                Button(action: {
+                                    if showMod {
+                                        withAnimation(.spring) {
+                                            showMod.toggle()
+                                            unlockButtons = false
+                                        }
+                                        updateUsage(currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon)
+                                        currSheet.removedIcons.append(currSheet.currGrid[currListIndex].currIcons[currSlotIndex])
+                                        currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currIcon = ""
+                                        currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails = []
+                                        var newArray = loadSheetArray()
+                                        newArray[currSheetIndex] = currSheet
+                                        newArray[currSheetIndex] = autoRemoveSlots(newArray[currSheetIndex])
+                                        currSheet = newArray[currSheetIndex]
+                                        saveSheetArray(sheetObjects: newArray)
+                                        animate.toggle()
+                                        if removedSelectedLabel == "All Sheets" {
+                                            removedSelected = getAllRemoved()
+                                        } else {
+                                            removedSelected = getAllRemoved()
+                                            currSheet = loadSheetArray()[currSheetIndex]
+                                            
+                                            removedSelected = currSheet.removedIcons
+                                        }
+                                        hapticFeedback(type: 1)
+                                        currListIndex = 0
+                                        currSlotIndex = 0
+                                    }
+                                }) {
+                                    VStack {
+                                        ZStack {
+                                            Image(systemName: "square.fill")
+                                                .resizable()
+                                                .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
+                                            Image(systemName: "square.slash")
+                                                .resizable()
+                                                .frame(width: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250), height: horizontalSizeClass == .compact ? min(75, 125) : min(100, 250))
+                                                .foregroundStyle(Color(.systemBackground))
+                                                .symbolRenderingMode(.hierarchical)
+                                        }
+                                        Text(tempDetails.isEmpty ? "Remove Icon" : "Remove All")
+                                            .font(.system(size: horizontalSizeClass == .compact ? 15 : 25, weight: .semibold, design: .rounded))
+                                    }
+                                }
+                                .padding()
+                                .foregroundStyle(.pink)
+                            }
+                        } else {
+                            Button(action: {
+                                withAnimation(.spring) {
+                                    showMod.toggle()
+                                    unlockButtons = false
+                                }
+                                checkDetails = []
+                            }) {
+                                if checkDetails == currSheet.currGrid[currListIndex].currIcons[currSlotIndex].currDetails ?? [] {
+                                    Image(systemName:"xmark.square.fill")
+                                        .resizable()
+                                        .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
+                                        .foregroundStyle(.gray)
+                                } else {
+                                    Image(systemName:"checkmark.square.fill")
+                                        .resizable()
+                                        .frame(width: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500), height: horizontalSizeClass == .compact ? min(100, 350) : min(150, 500))
+                                        .foregroundStyle(.green)
+                                }
+                            }
+                            .padding()
+                        }
+                    }
+                }
+                .transition(.move(edge: .bottom))
             }
         }
         .animation(.spring, value: animate)
@@ -2702,7 +2635,6 @@ struct ContentView: View {
     private func cleanUp() {
         // Reset states
         editMode = false
-        wasEditing = false
         showIcons = false
         showTime = false
         showLabels = false

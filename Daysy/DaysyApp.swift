@@ -19,6 +19,7 @@ struct DaysyApp: App {
             if defaults.bool(forKey: "completedTutorial") {
                 //                WelcomeView()
                 ContentView()
+//                FaceMeshView()
             } else {
                 WelcomeView()
             }

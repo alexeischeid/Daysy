@@ -28,6 +28,8 @@
 		D49C44582B0B085F00362DD5 /* CustomPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49C44572B0B085F00362DD5 /* CustomPasswordView.swift */; };
 		D4ADEDF42BE2C6B20039FA48 /* AllIconsPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4ADEDF32BE2C6B20039FA48 /* AllIconsPickerView.swift */; };
 		D4ADEDF62BE4360E0039FA48 /* PrivateKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4ADEDF52BE4360E0039FA48 /* PrivateKeys.swift */; };
+		D4B94CF42C2DA45400992E6A /* FaceMeshView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B94CF32C2DA45400992E6A /* FaceMeshView.swift */; };
+		D4B94CF62C2DA5BB00992E6A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4B94CF52C2DA5BB00992E6A /* Main.storyboard */; };
 		D4E696242AE1A097004AEF99 /* DaysyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E696232AE1A097004AEF99 /* DaysyApp.swift */; };
 		D4E696262AE1A097004AEF99 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E696252AE1A097004AEF99 /* ContentView.swift */; };
 		D4E6962B2AE1A09C004AEF99 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4E6962A2AE1A09C004AEF99 /* Preview Assets.xcassets */; };
@@ -113,6 +115,8 @@
 		D49C44572B0B085F00362DD5 /* CustomPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPasswordView.swift; sourceTree = "<group>"; };
 		D4ADEDF32BE2C6B20039FA48 /* AllIconsPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AllIconsPickerView.swift; path = ../AllIconsPickerView.swift; sourceTree = "<group>"; };
 		D4ADEDF52BE4360E0039FA48 /* PrivateKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivateKeys.swift; sourceTree = "<group>"; };
+		D4B94CF32C2DA45400992E6A /* FaceMeshView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMeshView.swift; sourceTree = "<group>"; };
+		D4B94CF52C2DA5BB00992E6A /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = SOURCE_ROOT; };
 		D4E696202AE1A097004AEF99 /* Daysy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daysy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4E696232AE1A097004AEF99 /* DaysyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyApp.swift; sourceTree = "<group>"; };
 		D4E696252AE1A097004AEF99 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -123,7 +127,7 @@
 		D4E6963E2AE1A09C004AEF99 /* DaysyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyUITests.swift; sourceTree = "<group>"; };
 		D4E696402AE1A09C004AEF99 /* DaysyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaysyUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		D4E6964F2AE428E0004AEF99 /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
-		D4EB24322C21D2D30072CAC3 /* SupaTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SupaTestView.swift; path = Daysy/SupaTestView.swift; sourceTree = "<group>"; };
+		D4EB24322C21D2D30072CAC3 /* SupaTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupaTestView.swift; sourceTree = "<group>"; };
 		D4EEDCFD2BD98D8A008114D5 /* LoadingBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingBar.swift; sourceTree = "<group>"; };
 		D4EEDCFE2BD98D8A008114D5 /* LoadingBarStripes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingBarStripes.swift; sourceTree = "<group>"; };
 		D4EEDCFF2BD98D8A008114D5 /* LoadingCircleBars.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingCircleBars.swift; sourceTree = "<group>"; };
@@ -203,11 +207,10 @@
 			children = (
 				D470F9BC2BF2B6C400E4B2BA /* MobileNetV2.mlmodel */,
 				D476EFAC2BEC076700745F0D /* Launch Screen.storyboard */,
-				D4427A502AEDC95700C9DDB9 /* DebugView.swift */,
+				D4B94CF52C2DA5BB00992E6A /* Main.storyboard */,
 				D44985952B02852E003084DA /* DaysyFuncs.swift */,
 				D44985932B0284DC003084DA /* DaysyItems.swift */,
 				D44985912B028494003084DA /* DaysyStructs.swift */,
-				D4EB24322C21D2D30072CAC3 /* SupaTestView.swift */,
 				D4ADEDF52BE4360E0039FA48 /* PrivateKeys.swift */,
 				D4E696222AE1A097004AEF99 /* Daysy */,
 				D4EEDD132BD98D8A008114D5 /* Animations */,
@@ -235,13 +238,16 @@
 				D4F89E2B2B15363600089DB8 /* Info.plist */,
 				D41543FC2C17942C00230F39 /* Assets.xcassets */,
 				D4E696232AE1A097004AEF99 /* DaysyApp.swift */,
+				D4E696252AE1A097004AEF99 /* ContentView.swift */,
+				D4EEDD2C2BD9DFE6008114D5 /* CommunicationBoardView.swift */,
+				D4B94CF32C2DA45400992E6A /* FaceMeshView.swift */,
+				D4EB24322C21D2D30072CAC3 /* SupaTestView.swift */,
+				D4427A502AEDC95700C9DDB9 /* DebugView.swift */,
 				D480F2952C0A06310071A659 /* CreateIconView.swift */,
 				D4ADEDF32BE2C6B20039FA48 /* AllIconsPickerView.swift */,
 				D47074962BE95AA30084A8BF /* TimeLabelPickerView.swift */,
-				D4E696252AE1A097004AEF99 /* ContentView.swift */,
 				D4F40EAE2C01260E00544A92 /* CanvasView.swift */,
 				D4E6964F2AE428E0004AEF99 /* TutorialView.swift */,
-				D4EEDD2C2BD9DFE6008114D5 /* CommunicationBoardView.swift */,
 				D49C44572B0B085F00362DD5 /* CustomPasswordView.swift */,
 				D41E55032AE9509D003E8E91 /* SettingsView.swift */,
 				D44B50F62AF1465C00AF0511 /* StatisticsView.swift */,
@@ -421,6 +427,7 @@
 				D476EFAD2BEC076700745F0D /* Launch Screen.storyboard in Resources */,
 				D41543FD2C17942C00230F39 /* Assets.xcassets in Resources */,
 				D4E6962B2AE1A09C004AEF99 /* Preview Assets.xcassets in Resources */,
+				D4B94CF62C2DA5BB00992E6A /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,6 +471,7 @@
 				D4EEDD1E2BD98D8A008114D5 /* LoadingFiveLinesPulse.swift in Sources */,
 				D4EEDD142BD98D8A008114D5 /* LoadingBar.swift in Sources */,
 				D4EEDD162BD98D8A008114D5 /* LoadingCircleBars.swift in Sources */,
+				D4B94CF42C2DA45400992E6A /* FaceMeshView.swift in Sources */,
 				D4EEDD252BD98D8A008114D5 /* LoadingText.swift in Sources */,
 				D4EEDD272BD98D8A008114D5 /* LoadingThreeBallsBouncing.swift in Sources */,
 				D41543F62C1774A300230F39 /* BarView.swift in Sources */,
@@ -656,9 +664,9 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"Daysy/Preview Content\"";
-				DEVELOPMENT_TEAM = Z435YPV42W;
+				DEVELOPMENT_TEAM = 2QWBSSQMCQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Daysy/Info.plist;
@@ -699,9 +707,9 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"Daysy/Preview Content\"";
-				DEVELOPMENT_TEAM = Z435YPV42W;
+				DEVELOPMENT_TEAM = 2QWBSSQMCQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Daysy/Info.plist;

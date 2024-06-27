@@ -303,9 +303,9 @@ func autoRemoveSlots(_ currSheet: SheetObject) -> SheetObject {
     if defaults.bool(forKey: "emptyOn") {
         for (index, _) in newSheet.currGrid.enumerated() {
             newSheet.currGrid[index].currIcons.sort { (object1, object2) -> Bool in
-                if object1.currIcon == "plus.viewfinder" {
+                if object1.currIcon.isEmpty {
                     return false
-                } else if object2.currIcon == "plus.viewfinder" {
+                } else if object2.currIcon.isEmpty {
                     return true
                 } else {
                     return false // or false based on your sorting criteria for other icons

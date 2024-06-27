@@ -63,7 +63,7 @@ struct TimePickerView: View {
                         .resizable()
                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
                     
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(.gray)
                         .padding()
                 } else {
                     Image(systemName:"checkmark.square.fill")
@@ -143,7 +143,7 @@ struct LabelPickerView: View {
                     Image(systemName:"xmark.square.fill")
                         .resizable()
                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(.gray)
                         .padding()
                 } else {
                     Image(systemName:"checkmark.square.fill")

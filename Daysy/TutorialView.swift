@@ -265,8 +265,8 @@ struct ButtonView: View {
                                     .multilineTextAlignment(.trailing)
                             }
                         }
-                        .foregroundStyle(Color(.systemGray))
-                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        .foregroundStyle(.gray)
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: horizontalSizeClass == .compact ? 65 : 75)
                         
                         HStack {
                             Spacer()
@@ -279,8 +279,8 @@ struct ButtonView: View {
                                     .multilineTextAlignment(.trailing)
                             }
                         }
-                        .foregroundStyle(Color(.systemGray))
-                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        .foregroundStyle(.gray)
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: horizontalSizeClass == .compact ? 65 : 75)
                         
                         HStack {
                             Spacer()
@@ -294,7 +294,7 @@ struct ButtonView: View {
                             }
                         }
                         .foregroundStyle(.cyan)
-                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: horizontalSizeClass == .compact ? 65 : 75)
                         
                         HStack {
                             Spacer()
@@ -308,7 +308,7 @@ struct ButtonView: View {
                             }
                         }
                         .foregroundStyle(.green)
-                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: horizontalSizeClass == .compact ? 65 : 75)
                         
                         HStack {
                             Spacer()
@@ -322,7 +322,7 @@ struct ButtonView: View {
                             }
                         }
                         .foregroundStyle(.blue)
-                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: horizontalSizeClass == .compact ? 65 : 75)
                         
                         HStack {
                             Spacer()
@@ -335,8 +335,8 @@ struct ButtonView: View {
                                     .multilineTextAlignment(.trailing)
                             }
                         }
-                        .foregroundStyle(Color(.systemGray))
-                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        .foregroundStyle(.gray)
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: horizontalSizeClass == .compact ? 65 : 75)
                         
                         HStack {
                             Spacer()
@@ -350,7 +350,7 @@ struct ButtonView: View {
                             }
                         }
                         .foregroundStyle(.purple)
-                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: 75)
+                        .frame(width: horizontalSizeClass == .compact ? 200 : 500, height: horizontalSizeClass == .compact ? 65 : 75)
                         
                     }.opacity(openMenu ? 1.0 : 0.0)
                     if openMenu {
@@ -361,11 +361,11 @@ struct ButtonView: View {
                                     ZStack {
                                         Image(systemName: "square.fill")
                                             .resizable()
-                                            .frame(width: 75, height: 75)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
+                                            .foregroundStyle(.gray)
                                         Image(systemName: "magnifyingglass")
                                             .resizable()
-                                            .frame(width: min(40, 100), height: min(40, 100))
+                                            .frame(width: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100), height: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100))
                                             .foregroundStyle(Color(.systemGray6))
                                     }
                                 }
@@ -377,11 +377,11 @@ struct ButtonView: View {
                                     ZStack {
                                         Image(systemName: "square.fill")
                                             .resizable()
-                                            .frame(width: 75, height: 75)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
+                                            .foregroundStyle(.gray)
                                         Image(systemName: "keyboard")
                                             .resizable()
-                                            .frame(width: min(52, 130), height: min(40, 100))
+                                            .frame(width: horizontalSizeClass == .compact ? min(39, 98) : min(40, 100), height: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100))
                                             .foregroundStyle(Color(.systemGray6))
                                     }
                                 }
@@ -393,11 +393,11 @@ struct ButtonView: View {
                                     ZStack {
                                         Image(systemName: "square.fill")
                                             .resizable()
-                                            .frame(width: 75, height: 75)
+                                            .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
                                             .foregroundStyle(.cyan)
                                         Image(systemName: "pencil.and.outline")
                                             .resizable()
-                                            .frame(width: min(40, 100), height: min(40, 100))
+                                            .frame(width: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100), height: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100))
                                             .foregroundStyle(Color(.systemGray6))
                                             .symbolRenderingMode(.hierarchical)
                                     }
@@ -410,11 +410,11 @@ struct ButtonView: View {
                                     ZStack {
                                         Image(systemName: "square.fill")
                                             .resizable()
-                                            .frame(width: 75, height: 75)
+                                            .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
                                             .foregroundStyle(.green)
                                         Image(systemName: "plus.viewfinder")
                                             .resizable()
-                                            .frame(width: min(40, 100), height: min(40, 100))
+                                            .frame(width: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100), height: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100))
                                             .foregroundStyle(Color(.systemGray6))
                                             .symbolRenderingMode(.hierarchical)
                                     }
@@ -427,11 +427,11 @@ struct ButtonView: View {
                                     ZStack {
                                         Image(systemName: "square.fill")
                                             .resizable()
-                                            .frame(width: 75, height: 75)
+                                            .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
                                             .foregroundStyle(.blue)
                                         Image(systemName: "folder.badge.plus")
                                             .resizable()
-                                            .frame(width: min(52.4, 131), height: min(40, 100))
+                                            .frame(width: horizontalSizeClass == .compact ? min(39, 98) : min(40, 100), height: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100))
                                             .foregroundStyle(Color(.systemGray6))
                                             .padding(.leading, 5)
                                             .padding(.bottom, 3)
@@ -445,11 +445,11 @@ struct ButtonView: View {
                                     ZStack {
                                         Image(systemName: "square.fill")
                                             .resizable()
-                                            .frame(width: 75, height: 75)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
+                                            .foregroundStyle(.gray)
                                         Image(systemName: "gear")
                                             .resizable()
-                                            .frame(width: min(40, 100), height: min(40, 100))
+                                            .frame(width: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100), height: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100))
                                             .foregroundStyle(Color(.systemGray6))
                                     }
                                 }
@@ -461,11 +461,11 @@ struct ButtonView: View {
                                     ZStack {
                                         Image(systemName: "square.fill")
                                             .resizable()
-                                            .frame(width: 75, height: 75)
+                                            .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
                                             .foregroundStyle(.purple)
                                         Image(systemName: "newspaper")
                                             .resizable()
-                                            .frame(width: min(45.6, 114), height: min(40, 100))
+                                            .frame(width: horizontalSizeClass == .compact ? min(35, 86) : min(40, 100), height: horizontalSizeClass == .compact ? min(30, 75) : min(40, 100))
                                             .foregroundStyle(Color(.systemGray6))
                                     }
                                 }
@@ -474,8 +474,8 @@ struct ButtonView: View {
                         .transition(.move(edge: .trailing))
                         .padding()
                         .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color(.systemGray6))
+                            .thinMaterial,
+                            in: RoundedRectangle(cornerRadius: 20)
                         )
                     }
                 }
@@ -489,15 +489,16 @@ struct ButtonView: View {
                         ZStack {
                             Image(systemName: "square.fill")
                                 .resizable()
-                                .frame(width: 75, height: 75)
-                                .foregroundStyle(Color(.systemGray))
-                            Text("\(Image(systemName: openMenu ? "square.3.layers.3d.slash" : "square.3.layers.3d"))")
-                                .font(.system(size: 40))
-                                .foregroundStyle(Color(.systemGray6))
+                                .frame(width: horizontalSizeClass == .compact ? 65 : 75, height: horizontalSizeClass == .compact ? 65 : 75)
+                                .foregroundStyle(.thickMaterial)
+                                .shadow(color: Color(.systemBackground), radius: 15.0)
+                            Text("\(Image(systemName: openMenu ? "menucard.fill" : "menucard"))")
+                                .font(.system(size: horizontalSizeClass == .compact ? 30 : 40))
+                                .foregroundStyle(.gray)
                                 .symbolRenderingMode(openMenu ? .hierarchical : .monochrome)
                         }
                         .padding(.trailing)
-                        .padding(.bottom, 5)
+                        .padding(.bottom, horizontalSizeClass == .compact ? 0 : 5)
                     }
                     .padding(.bottom)
                 }
@@ -995,7 +996,7 @@ struct TryItView: View { //interactive little mini sheet to play with
                                             .minimumScaleFactor(0.01)
                                             .frame(width: 30, height: 30)
                                             .padding(.leading)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.gray)
                                         
                                         Text(currTime)
                                             .lineLimit(1)
@@ -1016,7 +1017,7 @@ struct TryItView: View { //interactive little mini sheet to play with
                                                 .resizable()
                                                 .scaledToFit()
                                                 .symbolRenderingMode(.hierarchical)
-                                                .foregroundStyle(Color(.systemGray))
+                                                .foregroundStyle(.gray)
                                                 .padding()
                                         } else {
                                             currGrid[index]
@@ -1048,7 +1049,7 @@ struct TryItView: View { //interactive little mini sheet to play with
                                             .minimumScaleFactor(0.01)
                                             .frame(width: 30, height: 30)
                                             .padding(.leading)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.gray)
                                         
                                         Text(currLabel)
                                             .lineLimit(1)
@@ -1070,7 +1071,7 @@ struct TryItView: View { //interactive little mini sheet to play with
                                                 .resizable()
                                                 .scaledToFit()
                                                 .symbolRenderingMode(.hierarchical)
-                                                .foregroundStyle(Color(.systemGray))
+                                                .foregroundStyle(.gray)
                                                 .padding()
                                         } else {
                                             currGrid[index]
@@ -1108,7 +1109,7 @@ struct TryItView: View { //interactive little mini sheet to play with
                                             .minimumScaleFactor(0.01)
                                             .frame(width: 30, height: 30)
                                             .padding(.leading)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.gray)
                                         
                                         Text(currTime)
                                             .lineLimit(1)
@@ -1130,7 +1131,7 @@ struct TryItView: View { //interactive little mini sheet to play with
                                                         .resizable()
                                                         .scaledToFit()
                                                         .symbolRenderingMode(.hierarchical)
-                                                        .foregroundStyle(Color(.systemGray))
+                                                        .foregroundStyle(.gray)
                                                         .padding()
                                                 } else {
                                                     currGrid[index]
@@ -1162,7 +1163,7 @@ struct TryItView: View { //interactive little mini sheet to play with
                                             .minimumScaleFactor(0.01)
                                             .frame(width: 30, height: 30)
                                             .padding(.leading)
-                                            .foregroundStyle(Color(.systemGray))
+                                            .foregroundStyle(.gray)
                                         
                                         Text(currLabel)
                                             .lineLimit(1)
@@ -1184,7 +1185,7 @@ struct TryItView: View { //interactive little mini sheet to play with
                                                         .resizable()
                                                         .scaledToFit()
                                                         .symbolRenderingMode(.hierarchical)
-                                                        .foregroundStyle(Color(.systemGray))
+                                                        .foregroundStyle(.gray)
                                                         .padding()
                                                 } else {
                                                     currGrid[index]
@@ -1366,7 +1367,7 @@ struct ModIconView: View { //tutorial view on completing or removing icon
                             }
                         }
                         .padding()
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(.gray)
                         
                         Button(action: {
                             showMod.toggle()
@@ -1465,7 +1466,7 @@ struct ButtonsView: View { //view describing the buttons on a sheet
                             .resizable()
                             .padding()
                             .frame(width: min(100, 200), height: min(100, 200))
-                            .foregroundStyle(Color(.systemGray))
+                            .foregroundStyle(.gray)
                         Image(systemName: "gear")
                             .resizable()
                             .frame(width: min(40, 100), height: min(40, 100))

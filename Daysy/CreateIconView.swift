@@ -552,7 +552,7 @@ struct CreateIconView: View {
                     Image(systemName:"xmark.square.fill")
                         .resizable()
                         .frame(width: horizontalSizeClass == .compact ? 75 : 100, height: horizontalSizeClass == .compact ? 75 : 100)
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(.gray)
                         .padding()
                 }
                 if !isLoading && (selectedCustomImage != nil || !currCustomIconText.isEmpty) {

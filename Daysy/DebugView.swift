@@ -80,7 +80,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -94,7 +94,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -108,7 +108,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: 30,weight: .semibold,  design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -122,7 +122,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -136,7 +136,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -150,7 +150,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -164,7 +164,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -178,7 +178,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -193,13 +193,13 @@ struct DebugView: View {
                             .minimumScaleFactor(0.01)
                             .multilineTextAlignment(.center)
                             .font(.system(size: 30, weight: .semibold, design: .rounded))
-                            .foregroundColor(Color(.systemGray))
+                            .foregroundColor(.gray)
                     } else {
                         Text("Password Not Set")
                             .minimumScaleFactor(0.01)
                             .multilineTextAlignment(.center)
                             .font(.system(size: 30, weight: .semibold, design: .rounded))
-                            .foregroundColor(Color(.systemGray))
+                            .foregroundColor(.gray)
                     }
                 }
                 Divider()
@@ -214,7 +214,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -228,7 +228,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -242,7 +242,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -256,7 +256,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -270,7 +270,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -284,7 +284,7 @@ struct DebugView: View {
                         .minimumScaleFactor(0.01)
                         .multilineTextAlignment(.center)
                         .font(.system(size: horizontalSizeClass == .compact ? 15 : 30, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color(.systemGray))
+                        .foregroundColor(.gray)
                 }
                 Divider()
                     .padding()
@@ -302,7 +302,7 @@ struct DebugView: View {
                                             .minimumScaleFactor(0.01)
                                             .multilineTextAlignment(.center)
                                             .font(.system(size: horizontalSizeClass == .compact ? 20 : 30, weight: .bold, design: .rounded))
-                                            .foregroundColor(Color(.systemGray))
+                                            .foregroundColor(.gray)
                                         Divider()
                                             .padding(.leading)
                                             .padding(.trailing)
